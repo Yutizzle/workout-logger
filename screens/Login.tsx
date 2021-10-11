@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 function LoginScreen() {
     return (
-        <SafeAreaView style={loginStyles.viewContainer}>
+        <View style={loginStyles.viewContainer}>
             {/* Background Image */}
             <Image style={loginStyles.titleBackground}
                 source={require('../assets/plate-weight.jpg')} 
@@ -46,7 +46,7 @@ function LoginScreen() {
 
                 {/*  */}
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -56,7 +56,6 @@ const loginStyles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around',
-        padding: 20,
         backgroundColor: '#fff'
     },
     titleContainer: {
