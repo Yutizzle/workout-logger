@@ -1,52 +1,55 @@
 import * as React from 'react';
-import { View, SafeAreaView, StyleSheet, Text, TextInput, Image } from 'react-native';
+import { View, ImageBackground, StyleSheet, Text, TextInput, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 function LoginScreen() {
     return (
         <View style={loginStyles.viewContainer}>
             {/* Background Image */}
-            <Image style={loginStyles.titleBackground}
-                source={require('../assets/plate-weight.jpg')} 
-            />
+            <ImageBackground style={loginStyles.backgroundImage}
+                source={require('../assets/images/plate-weight.jpg')} 
+            >
+                {/* Login Area */}
+                <View style={loginStyles.loginContainer}>
 
-            {/* Login Area */}
-            <View style={loginStyles.loginContainer}>
+                    {/* App Title */}
+                    <View style={loginStyles.titleContainer}>
+                        <Text style={loginStyles.title}>Workout Logger</Text>
+                    </View>
 
-                {/* App Title */}
-                <View style={loginStyles.titleContainer}>
-                    <Text style={loginStyles.title}>Workout Logger</Text>
-                </View>
+                    {/* Username Field */}
+                    <TextInput style={loginStyles.inputs}
+                        placeholder="Username"
+                    />
 
-                {/* Username Field */}
-                <TextInput style={loginStyles.inputs}
-                    placeholder="Username"
-                />
+                    {/* Password Field */}
+                    <TextInput style={loginStyles.inputs}
+                        placeholder="Password"
+                        secureTextEntry={true}
+                        textContentType='password'
+                        autoCompleteType='password'
+                    />
 
-                {/* Password Field */}
-                <TextInput style={loginStyles.inputs}
-                    placeholder="Password"
-                />
-
-                {/* Login Button */}
-                <TouchableOpacity style={loginStyles.buttons}
-                    onPress={() => console.log('logging in!')}
-                >
-                    <Text style={loginStyles.buttonText}>Login</Text>
-                </TouchableOpacity>
-
-                {/* Register Link */}
-                <View style={loginStyles.registerContainer}>
-                    <Text style={loginStyles.registerText}>Don't have an account?</Text>
-                    <TouchableOpacity
-                        onPress={() => console.log('signing up!')}
+                    {/* Login Button */}
+                    <TouchableOpacity style={loginStyles.buttons}
+                        onPress={() => console.log('logging in!')}
                     >
-                        <Text style={loginStyles.links}> Sign Up!</Text>
+                        <Text style={loginStyles.buttonText}>Login</Text>
                     </TouchableOpacity>
-                </View>
 
-                {/*  */}
-            </View>
+                    {/* Register Link */}
+                    <View style={loginStyles.registerContainer}>
+                        <Text style={loginStyles.registerText}>Don't have an account?</Text>
+                        <TouchableOpacity
+                            onPress={() => console.log('signing up!')}
+                        >
+                            <Text style={loginStyles.links}> Sign Up!</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/*  */}
+                </View>
+            </ImageBackground>
         </View>
     );
 }
@@ -56,7 +59,7 @@ const loginStyles = StyleSheet.create({
         flexDirection: 'column',
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
         backgroundColor: '#fff'
     },
     titleContainer: {
@@ -70,16 +73,11 @@ const loginStyles = StyleSheet.create({
         fontSize: 24,
         color: '#000'
     },
-    titleBackground: {
+    backgroundImage: {
         height: '100%',
         width: '100%',
-        position: 'absolute',
-        zIndex: 0
-    },
-    logo: {
-        height: 50,
-        width: 150,
-        margin: 10
+        alignItems: 'center',
+        justifyContent: 'flex-end'
     },
     loginContainer: {
         height: '75%',
@@ -106,13 +104,11 @@ const loginStyles = StyleSheet.create({
         backgroundColor: '#4A148C',
         borderRadius: 30,
         padding: 15,
-        margin: 10
-    },
-    buttonGroup: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 10
+        margin: 10,
+        shadowColor: '#000',
+        shadowOffset: {height: 3, width: 3},
+        shadowRadius: 3,
+        shadowOpacity: 0.3
     },
     buttonText: {
         fontFamily: 'OpenSans_400Regular',
