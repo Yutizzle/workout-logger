@@ -38,7 +38,7 @@ function LoginScreen() {
 
                 {/* Register Link */}
                 <View style={loginStyles.registerContainer}>
-                    <Text>Don't have an account?</Text>
+                    <Text style={loginStyles.registerText}>Don't have an account?</Text>
                     <TouchableOpacity
                         onPress={() => console.log('signing up!')}
                     >
@@ -67,7 +67,7 @@ const loginStyles = StyleSheet.create({
         paddingBottom: 10
     },
     title: {
-        fontFamily: 'OpenSansBold',
+        fontFamily: 'OpenSans_700Bold',
         fontSize: 24,
         color: '#000'
     },
@@ -91,6 +91,7 @@ const loginStyles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     inputs: {
+        fontFamily: 'OpenSans_400Regular',
         flexDirection: 'column',
         borderColor: '#9E9E9E',
         borderWidth: 2,
@@ -115,6 +116,7 @@ const loginStyles = StyleSheet.create({
         margin: 10
     },
     buttonText: {
+        fontFamily: 'OpenSans_400Regular',
         fontSize: 16,
         color: '#fff'
     },
@@ -123,7 +125,11 @@ const loginStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+    registerText: {
+        fontFamily: 'OpenSans_400Regular',
+    },
     links: {
+        fontFamily: 'OpenSans_400Regular',
         color: '#AB47BC'
     }
 });
