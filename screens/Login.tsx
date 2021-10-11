@@ -8,15 +8,17 @@ function LoginScreen() {
             {/* Background Image */}
             <Image style={loginStyles.titleBackground}
                 source={require('../assets/plate-weight.jpg')} 
+                blurRadius={1}
             />
 
-            {/* App Title */}
-            <View style={loginStyles.titleContainer}>
-                <Text style={loginStyles.title}>Workout Logger</Text>
-            </View>
-            
             {/* Login Area */}
             <View style={loginStyles.loginContainer}>
+
+                {/* App Title */}
+                <View style={loginStyles.titleContainer}>
+                    <Text style={loginStyles.title}>Workout Logger</Text>
+                </View>
+
                 {/* Username Field */}
                 <TextInput style={loginStyles.inputs}
                     placeholder="Username"
@@ -55,22 +57,19 @@ const loginStyles = StyleSheet.create({
         flexDirection: 'column',
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'flex-end',
         backgroundColor: '#fff'
     },
     titleContainer: {
-        height: '30%',
-        width: '100%',
         flexShrink: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingBottom: 10
     },
     title: {
-        fontSize: 36,
-        color: '#fff',
-        textShadowColor: '#000',
-        textShadowOffset: {width: 5, height: 5},
-        textShadowRadius: 10
+        fontFamily: 'OpenSansBold',
+        fontSize: 24,
+        color: '#000'
     },
     titleBackground: {
         height: '100%',
@@ -84,13 +83,11 @@ const loginStyles = StyleSheet.create({
         margin: 10
     },
     loginContainer: {
+        height: '75%',
         width: '100%',
-        paddingTop: 40,
-        paddingLeft: 20,
-        paddingRight: 20,
+        padding: 20,
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
-        flex: 1,
         backgroundColor: '#fff'
     },
     inputs: {
