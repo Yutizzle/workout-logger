@@ -8,7 +8,6 @@ function LoginScreen() {
             {/* Background Image */}
             <Image style={loginStyles.titleBackground}
                 source={require('../assets/plate-weight.jpg')} 
-                blurRadius={1}
             />
 
             {/* Login Area */}
