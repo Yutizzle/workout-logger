@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { View, ImageBackground, StyleSheet, Text, TextInput, Image } from 'react-native';
+import { View, ImageBackground, StyleSheet, Text, TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import {Ionicons} from '@expo/vector-icons'
 
 function LoginScreen() {
+    const [passHide, togglePassHide] = React.useState(true);
     return (
         <View style={loginStyles.viewContainer}>
             {/* Background Image */}
@@ -18,17 +20,26 @@ function LoginScreen() {
                     </View>
 
                     {/* Username Field */}
-                    <TextInput style={loginStyles.inputs}
-                        placeholder="Username"
-                    />
+                    <View style={loginStyles.inputContainer}>
+                        <TextInput style={loginStyles.inputs}
+                            placeholder="Username"
+                        />
+                    </View>
 
                     {/* Password Field */}
-                    <TextInput style={loginStyles.inputs}
-                        placeholder="Password"
-                        secureTextEntry={true}
-                        textContentType='password'
-                        autoCompleteType='password'
-                    />
+                    <View style={loginStyles.inputContainer}>
+                        <TextInput style={loginStyles.inputs}
+                            placeholder="Password"
+                            secureTextEntry={passHide}
+                            textContentType='password'
+                            autoCompleteType='password'
+                        />
+                        <Ionicons name={passHide ? "eye-off-sharp" : "eye-sharp"} 
+                            size={20} 
+                            color="gray"
+                            onPress={()=>togglePassHide(!passHide)}
+                        />
+                    </View>
 
                     {/* Login Button */}
                     <TouchableOpacity style={loginStyles.buttons}
@@ -46,8 +57,6 @@ function LoginScreen() {
                             <Text style={loginStyles.links}> Sign Up!</Text>
                         </TouchableOpacity>
                     </View>
-
-                    {/*  */}
                 </View>
             </ImageBackground>
         </View>
@@ -87,15 +96,19 @@ const loginStyles = StyleSheet.create({
         borderTopRightRadius: 50,
         backgroundColor: '#fff'
     },
-    inputs: {
-        fontFamily: 'OpenSans_400Regular',
-        flexDirection: 'column',
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
         borderColor: '#9E9E9E',
         borderWidth: 2,
         borderRadius: 6,
         padding: 10,
         margin: 10,
-
+    },
+    inputs: {
+        flex: 1,
+        fontFamily: 'OpenSans_400Regular',
     },
     buttons: {
         flexDirection: 'column',
