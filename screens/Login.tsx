@@ -1,38 +1,59 @@
-import * as React from 'react';
+import React, { FC, useState } from 'react';
 import { View, ImageBackground, StyleSheet, Text, TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import {Ionicons} from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
+import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+import { ErrorMessage } from '../components';
+import LoginStyles from '../styles/LoginStyles';
 
-function LoginScreen() {
-    const [passHide, togglePassHide] = React.useState(true);
+const auth = getAuth();
+
+const LoginScreen : FC = ({ navigation }: any) =>  {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [passHide, togglePassHide] = useState(true);
+    const [loginError, setLoginError] = useState('');
+
+    const onLogin = async () => {
+        try {
+            if (email !== '' && password !== '') {
+                await signInWithEmailAndPassword(auth, email, password);
+            }
+        } catch (error: any) {
+            setLoginError(error.message);
+        }
+    };
+
     return (
-        <View style={loginStyles.viewContainer}>
+        <View style={LoginStyles.viewContainer}>
             {/* Background Image */}
-            <ImageBackground style={loginStyles.backgroundImage}
+            <ImageBackground style={LoginStyles.backgroundImage}
                 source={require('../assets/images/plate-weight.jpg')} 
             >
                 {/* Login Area */}
-                <View style={loginStyles.loginContainer}>
+                <View style={LoginStyles.loginContainer}>
 
                     {/* App Title */}
-                    <View style={loginStyles.titleContainer}>
-                        <Text style={loginStyles.title}>Workout Logger</Text>
+                    <View style={LoginStyles.titleContainer}>
+                        <Text style={LoginStyles.title}>Workout Logger</Text>
                     </View>
 
                     {/* Username Field */}
-                    <View style={loginStyles.inputContainer}>
-                        <TextInput style={loginStyles.inputs}
+                    <View style={LoginStyles.inputContainer}>
+                        <TextInput style={LoginStyles.inputs}
                             placeholder="Username"
+                            onChangeText={email => setEmail(email)}
                         />
                     </View>
 
                     {/* Password Field */}
-                    <View style={loginStyles.inputContainer}>
-                        <TextInput style={loginStyles.inputs}
+                    <View style={LoginStyles.inputContainer}>
+                        <TextInput style={LoginStyles.inputs}
                             placeholder="Password"
                             secureTextEntry={passHide}
                             textContentType='password'
                             autoCompleteType='password'
+                            onChangeText={pass => setPassword(pass)}
                         />
                         <Ionicons name={passHide ? "eye-off-sharp" : "eye-sharp"} 
                             size={20} 
@@ -41,20 +62,21 @@ function LoginScreen() {
                         />
                     </View>
 
+                    {/* Error message */}
+                    {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
+
                     {/* Login Button */}
-                    <TouchableOpacity style={loginStyles.buttons}
-                        onPress={() => console.log('logging in!')}
+                    <TouchableOpacity style={LoginStyles.buttons}
+                        onPress={onLogin}
                     >
-                        <Text style={loginStyles.buttonText}>Login</Text>
+                        <Text style={LoginStyles.buttonText}>Login</Text>
                     </TouchableOpacity>
 
                     {/* Register Link */}
-                    <View style={loginStyles.registerContainer}>
-                        <Text style={loginStyles.registerText}>Don't have an account?</Text>
-                        <TouchableOpacity
-                            onPress={() => console.log('signing up!')}
-                        >
-                            <Text style={loginStyles.links}> Sign Up!</Text>
+                    <View style={LoginStyles.registerContainer}>
+                        <Text style={LoginStyles.registerText}>Don't have an account?</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
+                            <Text style={LoginStyles.links}> Sign Up!</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -62,85 +84,5 @@ function LoginScreen() {
         </View>
     );
 }
-
-const loginStyles = StyleSheet.create({
-    viewContainer: {
-        flexDirection: 'column',
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff'
-    },
-    titleContainer: {
-        flexShrink: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingBottom: 10
-    },
-    title: {
-        fontFamily: 'OpenSans_700Bold',
-        fontSize: 24,
-        color: '#000'
-    },
-    backgroundImage: {
-        height: '100%',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'flex-end'
-    },
-    loginContainer: {
-        height: '75%',
-        width: '100%',
-        padding: 20,
-        borderTopLeftRadius: 50,
-        borderTopRightRadius: 50,
-        backgroundColor: '#fff'
-    },
-    inputContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        borderColor: '#9E9E9E',
-        borderWidth: 2,
-        borderRadius: 6,
-        padding: 10,
-        margin: 10,
-    },
-    inputs: {
-        flex: 1,
-        fontFamily: 'OpenSans_400Regular',
-    },
-    buttons: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#4A148C',
-        borderRadius: 30,
-        padding: 15,
-        margin: 10,
-        shadowColor: '#000',
-        shadowOffset: {height: 3, width: 3},
-        shadowRadius: 3,
-        shadowOpacity: 0.3
-    },
-    buttonText: {
-        fontFamily: 'OpenSans_400Regular',
-        fontSize: 16,
-        color: '#fff'
-    },
-    registerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    registerText: {
-        fontFamily: 'OpenSans_400Regular',
-    },
-    links: {
-        fontFamily: 'OpenSans_400Regular',
-        color: '#AB47BC'
-    }
-});
-
 
 export default LoginScreen;
