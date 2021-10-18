@@ -1,13 +1,13 @@
 import React, { useState, createContext, FC, Dispatch, SetStateAction} from 'react';
 import { User } from 'firebase/auth'
 
-//define react context types
+//init AuthContext prop types
 export type AuthUser = {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
 }
 
-//create react context -- default values null / empty function
+//create AuthContext -- default values: null, empty function
 export const AuthContext = createContext<AuthUser>({user: null, setUser: () => {}});
 
 //AuthProvider component

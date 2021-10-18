@@ -1,21 +1,19 @@
 import React, { FC } from "react";
-import { Text, StyleSheet } from "react-native";
+import { Text } from "react-native";
+import LoginStyles from "../styles/LoginStyles";
 
-type Error = {
+// init functional component prop types
+export type Error = {
     error: String | null;
     visible: Boolean;
 }
 
+// Error message component
 const ErrorMessage: FC<Error> = ({ error, visible }) => {
     if(!error || !visible)
         return null;
     else
-        return <Text style={errorStyles.text}>{error}</Text>;
+        return <Text style={LoginStyles.errorText}>{error}</Text>;
 }
 
-const errorStyles = StyleSheet.create({
-    text: {
-        color: 'red'
-    }
-});
 export default ErrorMessage;

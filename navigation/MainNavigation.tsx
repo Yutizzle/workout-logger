@@ -8,8 +8,10 @@ import AuthStack from "./AuthStack";
 const auth = getAuth();
 
 const MainNav : FC = () => {
+    //get AuthContext
     const { user, setUser } = useContext(AuthContext);
     
+    //check and set user on mount
     useEffect(() => {
         const unsubscriber = onAuthStateChanged(auth, async (authenticatedUser: User | null) => {
             try {
@@ -21,6 +23,7 @@ const MainNav : FC = () => {
         return unsubscriber;
     },[]);
     
+    // show AuthStack if user not logged in
     return(
         <NavigationContainer>
             {user !== null ? <AppStack /> : <AuthStack />}

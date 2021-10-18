@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+// LoginScreen styles
 export default StyleSheet.create({
     viewContainer: {
         flexDirection: 'column',
@@ -76,5 +77,11 @@ export default StyleSheet.create({
     links: {
         fontFamily: 'OpenSans_400Regular',
         color: '#AB47BC'
+    },
+    errorText: {
+        fontFamily: 'OpenSans_400Regular',
+        fontSize: 14,
+        color: 'red',
+        alignSelf: 'center'
     }
 });

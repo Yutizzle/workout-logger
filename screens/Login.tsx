@@ -5,6 +5,9 @@ import { Ionicons } from '@expo/vector-icons'
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 import { ErrorMessage } from '../components';
 import LoginStyles from '../styles/LoginStyles';
+import { StatusBar } from 'expo-status-bar';
+import { AuthErrorCodes } from '@firebase/auth';
+import { ErrorMessages } from '../config/constants';
 
 const auth = getAuth();
 
@@ -18,14 +21,25 @@ const LoginScreen : FC = ({ navigation }: any) =>  {
         try {
             if (email !== '' && password !== '') {
                 await signInWithEmailAndPassword(auth, email, password);
+            } else {
+                setLoginError(ErrorMessages.EMPTY_LOGIN_FIELD);
             }
         } catch (error: any) {
-            setLoginError(error.message);
+            if(error.code == AuthErrorCodes.USER_DELETED ||
+                error.code == AuthErrorCodes.INVALID_EMAIL ||
+                error.code == AuthErrorCodes.INVALID_PASSWORD ) {
+                    setLoginError(ErrorMessages.LOGIN_INVALID);
+                }
+
+            console.log(error.code);
         }
     };
 
     return (
         <View style={LoginStyles.viewContainer}>
+            {/* Status Bar */}
+            <StatusBar style="light"/>
+
             {/* Background Image */}
             <ImageBackground style={LoginStyles.backgroundImage}
                 source={require('../assets/images/plate-weight.jpg')} 

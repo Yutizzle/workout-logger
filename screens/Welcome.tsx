@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getAuth, signOut } from '@firebase/auth';
 import LoginStyles from '../styles/LoginStyles';
+import { StatusBar } from 'expo-status-bar';
 
 const auth = getAuth();
 
@@ -12,7 +13,8 @@ const WelcomeScreen : FC = () => {
     }
 
     return (
-        <View>
+        <View style={LoginStyles.viewContainer}>
+            <StatusBar style="dark"/>
             <Text>Welcome Screen</Text>
             {/* Login Button */}
             <TouchableOpacity style={LoginStyles.buttons}
@@ -21,6 +23,7 @@ const WelcomeScreen : FC = () => {
                 <Text style={LoginStyles.buttonText}>Logout</Text>
             </TouchableOpacity>
         </View>
+
     );
 }
 
