@@ -3,17 +3,17 @@ import { Text } from "react-native";
 import LoginStyles from "../styles/LoginStyles";
 
 // init functional component prop types
-export type Error = {
+type Error = {
     error: String | null;
     visible: Boolean;
 }
 
 // Error message component
-const ErrorMessage: FC<Error> = ({ error, visible }) => {
-    if(!error || !visible)
+const ErrorMessage = (props: Error) => {
+    if(!props.error || !props.visible)
         return null;
     else
-        return <Text style={LoginStyles.errorText}>{error}</Text>;
+        return <Text style={LoginStyles.errorText}>{props.error}</Text>;
 }
 
 export default ErrorMessage;

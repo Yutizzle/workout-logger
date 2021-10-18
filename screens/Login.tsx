@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { View, ImageBackground, StyleSheet, Text, TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons'
@@ -9,9 +9,12 @@ import { StatusBar } from 'expo-status-bar';
 import { AuthErrorCodes } from '@firebase/auth';
 import { ErrorMessages } from '../config/constants';
 
+type Login = {
+
+}
 const auth = getAuth();
 
-const LoginScreen : FC = ({ navigation }: any) =>  {
+const LoginScreen = ({ navigation }: any) =>  {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passHide, togglePassHide] = useState(true);

@@ -1,11 +1,11 @@
-import React, {FC} from "react";
+import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen, RegisterScreen } from "../screens";
 
 //create navigation stack
 const {Navigator, Screen} = createStackNavigator();
 
-const AuthStack : FC = () => {
+const AuthStack = () => {
     //Navigation for AuthStack, default route: LoginScreen
     return(
         <Navigator initialRouteName="LoginScreen" screenOptions={{headerShown: false}}>

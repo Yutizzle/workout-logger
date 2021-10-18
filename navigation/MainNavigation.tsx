@@ -1,13 +1,13 @@
-import React, {FC, useContext, useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import { getAuth, onAuthStateChanged, User} from 'firebase/auth'
 import { NavigationContainer } from "@react-navigation/native";
-import { AuthContext } from "./AuthenticatedUserProvider";
+import { AuthContext } from "../components/AuthProvider";
 import AppStack from './AppStack'
 import AuthStack from "./AuthStack";
 
 const auth = getAuth();
 
-const MainNav : FC = () => {
+const MainNav = () => {
     //get AuthContext
     const { user, setUser } = useContext(AuthContext);
     
