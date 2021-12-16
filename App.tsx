@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import './config/firebase'; //initialize firebase app
 import AppLoading from 'expo-app-loading';
 import { useFonts, OpenSans_400Regular, OpenSans_700Bold } from '@expo-google-fonts/open-sans';
 import { Routes } from './navigation'

@@ -1,26 +1,38 @@
-import React, { useState, createContext, Dispatch, SetStateAction, ReactNode} from 'react';
-import { User } from 'firebase/auth'
+import React, { useState, createContext, useEffect, ReactNode, FC} from 'react';
+//import { User } from 'firebase/auth'
+import { supabase } from '../config/supabase';
+import { Session } from '@supabase/supabase-js'
 
 //init AuthContext prop types
-type AuthUser = {
-    user: User | null;
-    setUser: Dispatch<SetStateAction<User | null>>;
+interface AuthUser {
+    userSession: Session | null;
 }
 
-type AuthContextProvider = {
+type Props = {
     children: ReactNode;
 }
 
-//create AuthContext -- default values: null, empty function
-export const AuthContext = createContext<AuthUser>({user: null, setUser: () => {}});
+//create AuthContext
+export const AuthContext = createContext<AuthUser>({userSession: null});
 
 //AuthProvider component
-export const AuthProvider = ({ children }: AuthContextProvider) => {
-    const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = (props: Props) => {
+    //user null = loading
+    const [userSession, setSession] = useState<Session | null>(null);
+	
+    //get and set user session with supabase auth
+    useEffect(() => {
+		const userSession = supabase.auth.session();
+		setSession(userSession);
+
+		supabase.auth.onAuthStateChange((_event, session) => {
+		  setSession(session);
+		});
+	  }, [userSession]);
 
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
-            {children}
+        <AuthContext.Provider value={{ userSession }}>
+            {props.children}
         </AuthContext.Provider>
     );
 };

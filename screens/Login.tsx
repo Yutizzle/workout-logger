@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-import { View, ImageBackground, StyleSheet, Text, TextInput } from 'react-native';
+import { View, ImageBackground, Text, TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons'
-import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 import { ErrorMessage } from '../components';
 import LoginStyles from '../styles/LoginStyles';
 import { StatusBar } from 'expo-status-bar';
-import { AuthErrorCodes } from '@firebase/auth';
 import { ErrorMessages } from '../config/constants';
-
-type Login = {
-
-}
-const auth = getAuth();
+import {supabase} from '../config/supabase'
 
 const LoginScreen = ({ navigation }: any) =>  {
     const [email, setEmail] = useState('');
@@ -21,21 +15,18 @@ const LoginScreen = ({ navigation }: any) =>  {
     const [loginError, setLoginError] = useState('');
 
     const onLogin = async () => {
-        try {
-            if (email !== '' && password !== '') {
-                await signInWithEmailAndPassword(auth, email, password);
-            } else {
-                setLoginError(ErrorMessages.EMPTY_LOGIN_FIELD);
+        if (email !== '' && password !== '') {
+            //await signInWithEmailAndPassword(auth, email, password);
+            const { user, error } = await supabase.auth.signIn({email: email, password: password});
+            if(error) {
+                setLoginError(error.message);
+    
+                console.log('error:', error);
             }
-        } catch (error: any) {
-            if(error.code == AuthErrorCodes.USER_DELETED ||
-                error.code == AuthErrorCodes.INVALID_EMAIL ||
-                error.code == AuthErrorCodes.INVALID_PASSWORD ) {
-                    setLoginError(ErrorMessages.LOGIN_INVALID);
-                }
-
-            console.log(error.code);
+        } else {
+            setLoginError(ErrorMessages.EMPTY_LOGIN_FIELD);
         }
+        
     };
 
     return (
