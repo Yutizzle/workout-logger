@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import LoginStyles from '../styles/LoginStyles';
+import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
 import {supabase} from '../config/supabase'
 
@@ -11,14 +11,14 @@ const WelcomeScreen = () => {
     }
 
     return (
-        <View style={LoginStyles.viewContainer}>
+        <View style={CommonStyles.viewContainer}>
             <StatusBar style="dark"/>
             <Text>Welcome Screen</Text>
             {/* Login Button */}
-            <TouchableOpacity style={LoginStyles.buttons}
+            <TouchableOpacity style={CommonStyles.buttons}
                         onPress={signout}
                     >
-                <Text style={LoginStyles.buttonText}>Logout</Text>
+                <Text style={CommonStyles.buttonText}>Logout</Text>
             </TouchableOpacity>
         </View>
 

@@ -8,11 +8,7 @@ const supabaseAnonKey:string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjo
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     localStorage: AsyncStorage as any,
-    detectSessionInUrl: false,
-    // autoRefreshToken: true,
-    // persistSession: true
-    // url: string,
-    // headers?: { [key: string]: string },
+    detectSessionInUrl: false
 });
 
 export default supabase;

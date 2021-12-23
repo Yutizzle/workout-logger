@@ -6,7 +6,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { AuthContext } from "../components/AuthProvider";
 import AppStack from './AppStack'
 import AuthStack from "./AuthStack";
-import AppLoading from "expo-app-loading";
 
 const MainNav = () => {
     //get AuthContext

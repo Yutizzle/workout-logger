@@ -7,10 +7,16 @@ export default StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        width: '100%',
+        height: '100%'
+    },
+    flexGrow: {
+        flexGrow: 1
     },
     titleContainer: {
         flexShrink: 1,
+        flexGrow: 0,
         alignItems: 'center',
         justifyContent: 'center',
         paddingBottom: 10
@@ -34,11 +40,27 @@ export default StyleSheet.create({
         borderTopRightRadius: 50,
         backgroundColor: '#fff'
     },
+    registerContainer: {
+        height: '100%',
+        width: '100%',
+        padding: 20,
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
+        backgroundColor: '#fff'
+    },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
         borderColor: '#9E9E9E',
+        borderWidth: 2,
+        borderRadius: 6,
+        padding: 10,
+        margin: 10,
+    },
+    inputInvalidContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderColor: '#ff0033',
         borderWidth: 2,
         borderRadius: 6,
         padding: 10,
@@ -66,13 +88,26 @@ export default StyleSheet.create({
         fontSize: 16,
         color: '#fff'
     },
-    registerContainer: {
+    linkContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center'
     },
     registerText: {
         fontFamily: 'OpenSans_400Regular',
+    },
+    inputLabel: {
+        fontSize: 12,
+        paddingLeft: 10
+    },
+    inlineInputRowContainer: {
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        justifyContent: 'space-between',
+        width: '100%'
+    },
+    inlineInput: {
+        width: 40
     },
     links: {
         fontFamily: 'OpenSans_400Regular',

@@ -1,5 +1,4 @@
-import React, { useState, createContext, useEffect, ReactNode, FC} from 'react';
-//import { User } from 'firebase/auth'
+import React, { useState, createContext, useEffect, ReactNode } from 'react';
 import { supabase } from '../config/supabase';
 import { Session } from '@supabase/supabase-js'
 
@@ -28,7 +27,7 @@ export const AuthProvider = (props: Props) => {
 		supabase.auth.onAuthStateChange((_event, session) => {
 		  setSession(session);
 		});
-	  }, [userSession]);
+	  }, []);
 
     return (
         <AuthContext.Provider value={{ userSession }}>
