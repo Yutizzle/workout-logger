@@ -14,6 +14,18 @@ export default StyleSheet.create({
     flexGrow: {
         flexGrow: 1
     },
+    halfBasis: {
+        flexBasis: '50%'
+    },
+    thirdBasis: {
+        flexBasis: '33.3%'
+    },
+    marginRightSm: {
+        marginRight: 2.5
+    },
+    marginLeftSm: {
+        marginLeft: 2.5
+    },
     titleContainer: {
         flexShrink: 1,
         flexGrow: 0,
@@ -55,7 +67,16 @@ export default StyleSheet.create({
         borderWidth: 2,
         borderRadius: 6,
         padding: 10,
-        margin: 10,
+        marginTop: 5,
+        marginBottom: 5
+    },
+    inputSpacerLeft: {
+        flexDirection: "row",
+        paddingLeft: 5
+    },
+    inputSpacerRight: {
+        flexDirection: "row",
+        paddingRight: 5
     },
     inputInvalidContainer: {
         flexDirection: "row",
@@ -64,7 +85,8 @@ export default StyleSheet.create({
         borderWidth: 2,
         borderRadius: 6,
         padding: 10,
-        margin: 10,
+        marginTop: 5,
+        marginBottom: 5
     },
     inputs: {
         flex: 1,

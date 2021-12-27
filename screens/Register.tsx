@@ -7,15 +7,14 @@ import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
 import { ErrorMessages } from '../config/constants';
 import {supabase} from '../config/supabase'
-import moment from 'moment';
-import Common from '../styles/Common';
+import { format, isExists, getYear, subYears } from 'date-fns';
 
 const RegisterScreen = ({ navigation }: any) =>  {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [month, setMonth] = useState({value: ''});
-    const [day, setDay] = useState({value: ''});
-    const [year, setYear] = useState({value: ''});
+    const [month, setMonth] = useState('');
+    const [day, setDay] = useState('');
+    const [year, setYear] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,31 +26,41 @@ const RegisterScreen = ({ navigation }: any) =>  {
     const [dayValid, setDayValid] = useState(true);
     const [emailValid, setEmailValid] = useState(true);
     const [passwordMatch, setPasswordMatch] = useState(true);
+    const [dateOfBirth, setDateOfBirth] = useState(format(new Date(), 'yyyy-MM-dd'));
 
-    const validateDateOfBirth = (year:string, month: string, day: string) => {
-        if(year.length == 4 && month.length == 2 && day.length == 2 && moment(year + '-' + month + '-' + day).isValid()) {
-            setYearValid(true);
-            setMonthValid(true);
-            setDayValid(true);
-        } else if(year.length == 4 && month.length == 2 && day.length == 2 && !moment(year + '-' + month + '-' + day).isValid()){
-            setYearValid(false);
-            setMonthValid(false);
-            setDayValid(false);
+    const validateDateOfBirth = (y:string, m: string, d: string) => {
+        const numYear = parseInt(y, 10);
+        const numMonth = parseInt(m, 10);
+        const numDay = parseInt(d, 10);
+        const today = new Date();
+        const maxDOB = subYears(today, 100);
+
+        //validation for all dob fields filled
+        if(y.length == 4 && m.length == 2 && d.length == 2) {
+            if(numYear > getYear(maxDOB) && numYear <= getYear(today) && isExists(numYear, numMonth - 1, numDay)) {
+                setYearValid(true);
+                setMonthValid(true);
+                setDayValid(true);
+            } else {
+                setYearValid(false);
+                setMonthValid(false);
+                setDayValid(false);
+            }
+        //validation for dob fields filled partially    
         } else {
 
-            if(day.length == 2 && parseInt(day) < 32 && parseInt(day) > 0) {
+            if(d.length == 2 && numDay < 32 && numDay > 0) {
                 setDayValid(true);
             } else {
                 setDayValid(false);
             }
 
-            if(month.length == 2 && parseInt(month) < 13 && parseInt(month) > 0) {
+            if(m.length == 2 && numMonth < 13 && numMonth > 0) {
                 setMonthValid(true);
             } else {
                 setMonthValid(false);
             }
-
-            if(year.length == 4 && parseInt(year) < moment().year() && parseInt(year) > moment().year() - 100) {
+            if(y.length == 4 && numYear > getYear(maxDOB)) {
                 setYearValid(true);
             } else {
                 setYearValid(false);
@@ -59,9 +68,13 @@ const RegisterScreen = ({ navigation }: any) =>  {
         }
 
         //remove non-numeric characters
-        setYear({value: year.replace(/[^0-9]/g, '')});
-        setMonth({value: month.replace(/[^0-9]/g, '')});
-        setDay({value: day.replace(/[^0-9]/g, '')});
+        setYear(y.replace(/[^0-9]/g, ''));
+        setMonth(m.replace(/[^0-9]/g, ''));
+        setDay(d.replace(/[^0-9]/g, ''));
+
+        if(yearValid && monthValid && dayValid) {
+            setDateOfBirth(format(new Date(numYear, numMonth, numDay), 'yyyy-MM-dd'));
+        }
     }
 
     const validateEmail = (email: string) => {
@@ -85,6 +98,7 @@ const RegisterScreen = ({ navigation }: any) =>  {
     
     const onRegister = async () => {
         if (firstName !== '' && lastName !== '' && monthValid && dayValid && yearValid && emailValid && password !== '' && passwordMatch) {
+            
             const { user, error } = await supabase.auth.signUp(
                 {
                     email: email, 
@@ -94,7 +108,7 @@ const RegisterScreen = ({ navigation }: any) =>  {
                     data: {
                         first_name: firstName,
                         last_name: lastName,
-                        date_of_birth: new Date(parseInt(year.value), parseInt(month.value), parseInt(day.value))
+                        date_of_birth: dateOfBirth
                     }
                 });
 
@@ -103,6 +117,12 @@ const RegisterScreen = ({ navigation }: any) =>  {
     
                 console.log('error:', error);
             }
+        } else if (firstName == '' && lastName == '') {
+            setLoginError(ErrorMessages.EMPTY_NAME);
+        } else if(!monthValid || !dayValid || !yearValid) {
+            setLoginError(ErrorMessages.DOB_INVALID);
+        } else if(!emailValid) {
+            setLoginError(ErrorMessages.EMAIL_INVALID);
         } else if(password !== confirmPassword) {
             setLoginError(ErrorMessages.PASSWORDS_NOT_MATCH)
         } else {
@@ -131,55 +151,67 @@ const RegisterScreen = ({ navigation }: any) =>  {
                         {/* First & Last Name Field */}
                         <Text style={CommonStyles.inputLabel}>Name</Text>
                         <View style={CommonStyles.inlineInputRowContainer}>
-                            <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
-                                <TextInput
-                                    placeholder="First Name"
-                                    onChangeText={firstName => setFirstName(firstName)}
-                                />
-                            </View>
-                            <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
-                                <TextInput
-                                        placeholder="Last Name"
-                                        onChangeText={lastName => setLastName(lastName)}
+                            <View style={[CommonStyles.inputSpacerRight, CommonStyles.flexGrow, CommonStyles.halfBasis]}>
+                                <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
+                                    <TextInput
+                                        placeholder="First Name"
+                                        onChangeText={firstName => setFirstName(firstName.replace(/[^a-zA-Z]/g, ''))}
+                                        value={firstName}
                                     />
+                                </View>
+                            </View>
+                            <View style={[CommonStyles.inputSpacerLeft, CommonStyles.flexGrow, CommonStyles.halfBasis]}>
+                                <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
+                                    <TextInput
+                                            placeholder="Last Name"
+                                            onChangeText={lastName => setLastName(lastName.replace(/[^a-zA-Z]/g, ''))}
+                                            value={lastName}
+                                        />
+                                </View>
                             </View>
                         </View>
 
                         {/* DOB Field */}
                         <Text style={CommonStyles.inputLabel}>Date of Birth</Text>
                         <View style={CommonStyles.inlineInputRowContainer}>
-                            <View style={monthValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
-                                    [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow]}>
-                                <TextInput
-                                    placeholder="MM"
-                                    keyboardType="numeric"
-                                    maxLength={2}
-                                    onChangeText={month => validateDateOfBirth(year.value, month, day.value)}
-                                    value={month.value}
-                                    style={CommonStyles.inlineInput}
-                                />
-                            </View>
-                            <View style={dayValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
-                                    [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow]}>
-                                <TextInput
-                                        placeholder="DD"
+                            <View style={[CommonStyles.inputSpacerRight, CommonStyles.flexGrow, CommonStyles.thirdBasis]}>
+                                <View style={monthValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
+                                        [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow, CommonStyles.marginRightSm]}>
+                                    <TextInput
+                                        placeholder="MM"
                                         keyboardType="numeric"
                                         maxLength={2}
-                                        onChangeText={day => validateDateOfBirth(year.value, month.value, day)}
-                                        value={day.value}
+                                        onChangeText={month => validateDateOfBirth(year, month, day)}
+                                        value={month}
                                         style={CommonStyles.inlineInput}
                                     />
+                                </View>
                             </View>
-                            <View style={yearValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
-                                    [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow]}>
-                                <TextInput
-                                        placeholder="YYYY"
-                                        keyboardType="numeric"
-                                        maxLength={4}
-                                        onChangeText={year => validateDateOfBirth(year, month.value, day.value)}
-                                        value={year.value}
-                                        style={CommonStyles.inlineInput}
-                                    />
+                            <View style={[CommonStyles.inputSpacerLeft, CommonStyles.inputSpacerRight, CommonStyles.flexGrow, CommonStyles.thirdBasis]}>
+                                <View style={dayValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow, CommonStyles.marginRightSm] : 
+                                        [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow, CommonStyles.marginRightSm]}>
+                                    <TextInput
+                                            placeholder="DD"
+                                            keyboardType="numeric"
+                                            maxLength={2}
+                                            onChangeText={day => validateDateOfBirth(year, month, day)}
+                                            value={day}
+                                            style={CommonStyles.inlineInput}
+                                        />
+                                </View>
+                            </View>
+                            <View style={[CommonStyles.inputSpacerLeft, CommonStyles.flexGrow, CommonStyles.thirdBasis]}>
+                                <View style={yearValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
+                                        [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow]}>
+                                    <TextInput
+                                            placeholder="YYYY"
+                                            keyboardType="numeric"
+                                            maxLength={4}
+                                            onChangeText={year => validateDateOfBirth(year, month, day)}
+                                            value={year}
+                                            style={CommonStyles.inlineInput}
+                                        />
+                                </View>
                             </View>
                         </View>
 
