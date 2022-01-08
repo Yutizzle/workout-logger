@@ -5,128 +5,145 @@ import { Ionicons } from '@expo/vector-icons'
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
-import { ErrorMessages } from '../config/constants';
-import {supabase} from '../config/supabase'
+import { ErrorMessages } from '../api/constants';
 import { format, isExists, getYear, subYears } from 'date-fns';
+import { useInsert, useSignUp } from 'react-supabase';
+import { RegisterData } from '../common/types';
+
 
 const RegisterScreen = ({ navigation }: any) =>  {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [month, setMonth] = useState('');
-    const [day, setDay] = useState('');
-    const [year, setYear] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [passHide, togglePassHide] = useState(true);
     const [confirmPassHide, toggleConfirmPassHide] = useState(true);
-    const [loginError, setLoginError] = useState('');
-    const [yearValid, setYearValid] = useState(true);
-    const [monthValid, setMonthValid] = useState(true);
-    const [dayValid, setDayValid] = useState(true);
-    const [emailValid, setEmailValid] = useState(true);
-    const [passwordMatch, setPasswordMatch] = useState(true);
-    const [dateOfBirth, setDateOfBirth] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [signUpError, setSignUpError] = useState('');
 
-    const validateDateOfBirth = (y:string, m: string, d: string) => {
+    const initRegisterData: RegisterData = {
+        firstName: '',
+        lastName: '',
+        month: '',
+        day: '',
+        year: '',
+        dateOfBirth: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        yearValid: true,
+        monthValid: true,
+        dayValid: true,
+        emailValid: true,
+        passwordMatch: true
+    };
+
+    const [registerData, setRegisterData] = useState<RegisterData>(initRegisterData);
+    const [useSignUpState, signUp] = useSignUp();
+    const [useUpdateState, insertUserData] = useInsert('user');
+
+    const validateDateOfBirth = async (y:string, m: string, d: string) => {
         const numYear = parseInt(y, 10);
         const numMonth = parseInt(m, 10);
         const numDay = parseInt(d, 10);
         const today = new Date();
         const maxDOB = subYears(today, 100);
+        let yearValid = false;
+        let monthValid = false;
+        let dayValid = false;
+        let dateOfBirth = '';
 
         //validation for all dob fields filled
         if(y.length == 4 && m.length == 2 && d.length == 2) {
             if(numYear > getYear(maxDOB) && numYear <= getYear(today) && isExists(numYear, numMonth - 1, numDay)) {
-                setYearValid(true);
-                setMonthValid(true);
-                setDayValid(true);
-            } else {
-                setYearValid(false);
-                setMonthValid(false);
-                setDayValid(false);
+                dateOfBirth = format(new Date(numYear, numMonth, numDay), 'yyyy-MM-dd');
+                yearValid = true;
+                monthValid = true;
+                dayValid = true;
             }
         //validation for dob fields filled partially    
         } else {
+            
+            if(numDay < 32 && numDay > 0) {
+                dayValid = true;
+            } 
 
-            if(d.length == 2 && numDay < 32 && numDay > 0) {
-                setDayValid(true);
-            } else {
-                setDayValid(false);
-            }
+            if(numMonth < 13 && numMonth > 0) {
+                monthValid = true;
+            } 
 
-            if(m.length == 2 && numMonth < 13 && numMonth > 0) {
-                setMonthValid(true);
-            } else {
-                setMonthValid(false);
-            }
-            if(y.length == 4 && numYear > getYear(maxDOB)) {
-                setYearValid(true);
-            } else {
-                setYearValid(false);
+            if(numYear > getYear(maxDOB)) {
+                yearValid = true;
             }
         }
-
+        
         //remove non-numeric characters
-        setYear(y.replace(/[^0-9]/g, ''));
-        setMonth(m.replace(/[^0-9]/g, ''));
-        setDay(d.replace(/[^0-9]/g, ''));
-
-        if(yearValid && monthValid && dayValid) {
-            setDateOfBirth(format(new Date(numYear, numMonth, numDay), 'yyyy-MM-dd'));
-        }
+        setRegisterData({...registerData, 
+            year: y.replace(/[^0-9]/g, ''),
+            month: m.replace(/[^0-9]/g, ''),
+            day: d.replace(/[^0-9]/g, ''),
+            yearValid: yearValid,
+            monthValid: monthValid,
+            dayValid: dayValid,
+            dateOfBirth: dateOfBirth
+        });
     }
 
     const validateEmail = (email: string) => {
         if(email.indexOf('@') > 0)
-            setEmailValid(true);
+            setRegisterData({...registerData, emailValid: true, email: email});
         else    
-            setEmailValid(false);
-        
-        setEmail(email);
+            setRegisterData({...registerData, emailValid: false, email: email});
     };
 
     const validatePasswordMatch = (pass: string) => {
-        if(pass == password) {
-            setPasswordMatch(true);
-        } else {
-            setPasswordMatch(false);
-        }
-
-        setConfirmPassword(pass);
+        if(pass == registerData.password)
+            setRegisterData({...registerData, passwordMatch: true, confirmPassword: pass});
+        else
+            setRegisterData({...registerData, passwordMatch: false, confirmPassword: pass});
     }
     
     const onRegister = async () => {
-        if (firstName !== '' && lastName !== '' && monthValid && dayValid && yearValid && emailValid && password !== '' && passwordMatch) {
+        if (registerData.firstName !== '' && 
+            registerData.lastName !== '' && 
+            registerData.monthValid && 
+            registerData.dayValid && 
+            registerData.yearValid && 
+            registerData.emailValid && 
+            registerData.password !== '' && 
+            registerData.passwordMatch) {
             
-            const { user, error } = await supabase.auth.signUp(
-                {
-                    email: email, 
-                    password: password
-                },
-                {
-                    data: {
-                        first_name: firstName,
-                        last_name: lastName,
-                        date_of_birth: dateOfBirth
-                    }
+            const { error, session, user } = await signUp({
+                    email: registerData.email, 
+                    password: registerData.password
                 });
 
             if(error) {
-                setLoginError(error.message);
-    
+                setSignUpError(error.message);
                 console.log('error:', error);
+
+            } else if(!error && user){
+
+                const { count, data, error } = await insertUserData(
+                    { 
+                        id: user.id,
+                        first_name: registerData.firstName,
+                        last_name: registerData.lastName,
+                        email: registerData.email,
+                        date_of_birth: registerData.dateOfBirth,
+                        created_by: user.id
+                    }
+                );
+
+                if(error) {
+                    console.log('error:', error);
+                }
             }
-        } else if (firstName == '' && lastName == '') {
-            setLoginError(ErrorMessages.EMPTY_NAME);
-        } else if(!monthValid || !dayValid || !yearValid) {
-            setLoginError(ErrorMessages.DOB_INVALID);
-        } else if(!emailValid) {
-            setLoginError(ErrorMessages.EMAIL_INVALID);
-        } else if(password !== confirmPassword) {
-            setLoginError(ErrorMessages.PASSWORDS_NOT_MATCH)
+        } else if (registerData.firstName == '' && registerData.lastName == '') {
+            setSignUpError(ErrorMessages.EMPTY_NAME);
+        } else if(!registerData.monthValid || !registerData.dayValid || !registerData.yearValid) {
+            setSignUpError(ErrorMessages.DOB_INVALID);
+        } else if(!registerData.emailValid) {
+            setSignUpError(ErrorMessages.EMAIL_INVALID);
+        } else if(!registerData.passwordMatch) {
+            setSignUpError(ErrorMessages.PASSWORDS_NOT_MATCH)
         } else {
-            setLoginError(ErrorMessages.EMPTY_LOGIN_FIELD);
+            setSignUpError(ErrorMessages.EMPTY_LOGIN_FIELD);
         }
         
     };
@@ -155,8 +172,8 @@ const RegisterScreen = ({ navigation }: any) =>  {
                                 <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
                                     <TextInput
                                         placeholder="First Name"
-                                        onChangeText={firstName => setFirstName(firstName.replace(/[^a-zA-Z]/g, ''))}
-                                        value={firstName}
+                                        onChangeText={firstName => setRegisterData({...registerData, firstName: firstName.replace(/[^a-zA-Z]/g, '')})}
+                                        value={registerData.firstName}
                                     />
                                 </View>
                             </View>
@@ -164,8 +181,8 @@ const RegisterScreen = ({ navigation }: any) =>  {
                                 <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
                                     <TextInput
                                             placeholder="Last Name"
-                                            onChangeText={lastName => setLastName(lastName.replace(/[^a-zA-Z]/g, ''))}
-                                            value={lastName}
+                                            onChangeText={lastName => setRegisterData({...registerData, lastName: lastName.replace(/[^a-zA-Z]/g, '')})}
+                                            value={registerData.lastName}
                                         />
                                 </View>
                             </View>
@@ -175,40 +192,40 @@ const RegisterScreen = ({ navigation }: any) =>  {
                         <Text style={CommonStyles.inputLabel}>Date of Birth</Text>
                         <View style={CommonStyles.inlineInputRowContainer}>
                             <View style={[CommonStyles.inputSpacerRight, CommonStyles.flexGrow, CommonStyles.thirdBasis]}>
-                                <View style={monthValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
+                                <View style={registerData.monthValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
                                         [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow, CommonStyles.marginRightSm]}>
                                     <TextInput
                                         placeholder="MM"
                                         keyboardType="numeric"
                                         maxLength={2}
-                                        onChangeText={month => validateDateOfBirth(year, month, day)}
-                                        value={month}
+                                        onChangeText={month => validateDateOfBirth(registerData.year, month, registerData.day)}
+                                        value={registerData.month}
                                         style={CommonStyles.inlineInput}
                                     />
                                 </View>
                             </View>
                             <View style={[CommonStyles.inputSpacerLeft, CommonStyles.inputSpacerRight, CommonStyles.flexGrow, CommonStyles.thirdBasis]}>
-                                <View style={dayValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow, CommonStyles.marginRightSm] : 
+                                <View style={registerData.dayValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow, CommonStyles.marginRightSm] : 
                                         [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow, CommonStyles.marginRightSm]}>
                                     <TextInput
                                             placeholder="DD"
                                             keyboardType="numeric"
                                             maxLength={2}
-                                            onChangeText={day => validateDateOfBirth(year, month, day)}
-                                            value={day}
+                                            onChangeText={day => validateDateOfBirth(registerData.year, registerData.month, day)}
+                                            value={registerData.day}
                                             style={CommonStyles.inlineInput}
                                         />
                                 </View>
                             </View>
                             <View style={[CommonStyles.inputSpacerLeft, CommonStyles.flexGrow, CommonStyles.thirdBasis]}>
-                                <View style={yearValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
+                                <View style={registerData.yearValid ? [CommonStyles.inputContainer, CommonStyles.flexGrow] : 
                                         [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow]}>
                                     <TextInput
                                             placeholder="YYYY"
                                             keyboardType="numeric"
                                             maxLength={4}
-                                            onChangeText={year => validateDateOfBirth(year, month, day)}
-                                            value={year}
+                                            onChangeText={year => validateDateOfBirth(year, registerData.month, registerData.day)}
+                                            value={registerData.year}
                                             style={CommonStyles.inlineInput}
                                         />
                                 </View>
@@ -217,7 +234,7 @@ const RegisterScreen = ({ navigation }: any) =>  {
 
                         {/* Username Field */}
                         <Text style={CommonStyles.inputLabel}>Email</Text>
-                        <View style={emailValid ? CommonStyles.inputContainer : CommonStyles.inputInvalidContainer}>
+                        <View style={registerData.emailValid ? CommonStyles.inputContainer : CommonStyles.inputInvalidContainer}>
                             <TextInput style={CommonStyles.inputs}
                                 placeholder="Email"
                                 keyboardType="email-address"
@@ -233,7 +250,7 @@ const RegisterScreen = ({ navigation }: any) =>  {
                                 secureTextEntry={passHide}
                                 textContentType='password'
                                 autoCompleteType='password'
-                                onChangeText={pass => setPassword(pass)}
+                                onChangeText={pass => setRegisterData({...registerData, password: pass})}
                             />
                             <Ionicons name={passHide ? "eye-off-sharp" : "eye-sharp"} 
                                 size={20} 
@@ -243,7 +260,7 @@ const RegisterScreen = ({ navigation }: any) =>  {
                         </View>
 
                         {/* Confirm Password Field */}
-                        <View style={passwordMatch ? CommonStyles.inputContainer : CommonStyles.inputInvalidContainer}>
+                        <View style={registerData.passwordMatch ? CommonStyles.inputContainer : CommonStyles.inputInvalidContainer}>
                             <TextInput style={CommonStyles.inputs}
                                 placeholder="Confirm Password"
                                 secureTextEntry={confirmPassHide}
@@ -259,7 +276,7 @@ const RegisterScreen = ({ navigation }: any) =>  {
                         </View>
 
                         {/* Error message */}
-                        {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
+                        {signUpError ? <ErrorMessage error={signUpError} visible={true} /> : null}
 
                         {/* Login Button */}
                         <TouchableOpacity style={CommonStyles.buttons}

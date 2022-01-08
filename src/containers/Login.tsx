@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View, ImageBackground, Text, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard } from 'react-native';
+import { View, ImageBackground, Text, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard, ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons'
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
-import { ErrorMessages } from '../config/constants';
-import { supabase } from '../config/supabase'
+import { ErrorMessages } from '../api/constants';
+import { useSignIn } from 'react-supabase';
 
 const LoginScreen = ({ navigation }: any) =>  {
+    const [{ error, fetching, session, user }, signIn] = useSignIn();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passHide, togglePassHide] = useState(true);
@@ -16,7 +18,11 @@ const LoginScreen = ({ navigation }: any) =>  {
 
     const onLogin = async () => {
         if (email !== '' && password !== '') {
-            const { user, error } = await supabase.auth.signIn({email: email, password: password});
+            const { error, session, user } = await signIn({
+                email: email, 
+                password: password
+            });
+
             if(error) {
                 setLoginError(error.message);
     
@@ -81,7 +87,10 @@ const LoginScreen = ({ navigation }: any) =>  {
                             <TouchableOpacity style={CommonStyles.buttons}
                                 onPress={onLogin}
                             >
-                                <Text style={CommonStyles.buttonText}>Login</Text>
+                                {fetching ? 
+                                    <ActivityIndicator size="small" color="#fff" /> :
+                                    <Text style={CommonStyles.buttonText}>Login</Text>
+                                }
                             </TouchableOpacity>
 
                             {/* Register Link */}
