@@ -8,10 +8,10 @@ import { StatusBar } from 'expo-status-bar';
 import { ErrorMessages } from '../api/constants';
 import { format, isExists, getYear, subYears } from 'date-fns';
 import { useInsert, useSignUp } from 'react-supabase';
-import { RegisterData } from '../common/types';
+import { RegisterData, AuthStackParamList } from '../common/types';
+import { RegisterScreenNavigationProp } from '../common/types';
 
-
-const RegisterScreen = ({ navigation }: any) =>  {
+const RegisterScreen = ({ navigation }: RegisterScreenNavigationProp) =>  {
     const [passHide, togglePassHide] = useState(true);
     const [confirmPassHide, toggleConfirmPassHide] = useState(true);
     const [signUpError, setSignUpError] = useState('');

@@ -26,9 +26,10 @@ export const AuthProvider = (props: Props) => {
     useEffect(() => {
         const session = client.auth.session();
         setState({ session, user: session?.user ?? null });
+
     }, []);
 
-    useAuthStateChange((_event, session) => {
+    useAuthStateChange((event, session) => {
         setState({ session, user: session?.user ?? null });
     });
 

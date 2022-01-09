@@ -1,9 +1,10 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen, RegisterScreen } from "../containers";
+import { AuthStackParamList } from "../common/types";
 
 //create navigation stack
-const {Navigator, Screen} = createStackNavigator();
+const {Navigator, Screen} = createStackNavigator<AuthStackParamList>();
 
 const AuthStack = () => {
     //Navigation for AuthStack, default route: LoginScreen

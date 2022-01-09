@@ -1,42 +1,17 @@
 import React from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import CommonStyles from '../styles/Common';
+import CommonStyles from '../styles/Common'
+import { KeyboardAvoidingView, View, Text, Platform, TouchableOpacity } from 'react-native';
+import { WorkoutScreenNavigationProp } from '../common/types';
+import { Header } from 'react-native-elements';
 import { StatusBar } from 'expo-status-bar';
-import { useSelect, useFilter, useSignOut, useRealtime, useClient } from 'react-supabase';
-import { Header } from "react-native-elements";
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
-import { WorkoutCard } from '../components/WorkoutCard';
-import { WorkoutData } from '../common/types';
-import { WelcomeScreenNavigationProp } from '../common/types';
+import { useSignOut } from 'react-supabase';
 
-const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
+const WorkoutScreen = ({ navigation }: WorkoutScreenNavigationProp) => {
     //get AuthContext
     const { session, user } = useAuth();
     const [ signOutState, signOut ] = useSignOut();
-
-    const filter = useFilter(
-        (query) => query.eq('user_id', user?.id),
-        [user?.id],
-      );
-    
-    const [ result, getUserData ] = useSelect<WorkoutData>('user_workout_exercise', {
-        columns: `
-            program_id,
-            program_run,
-            current_program_cycle,
-            workout_history_id,
-            workout_id,
-            workout_name,
-            exercise,
-            set,
-            reps,
-            weight,
-            set_duration
-        `,
-        filter
-    });
 
     const signout = async () => {
         await signOut();
@@ -61,10 +36,8 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
                 centerContainerStyle={CommonStyles.justifyCenter}
                 containerStyle={CommonStyles.headerContainer}
                 leftComponent={
-                    <TouchableOpacity>
-                        <View style={CommonStyles.rotate90}>
-                            <MaterialIcons name="bar-chart" style={CommonStyles.headerIcons} />
-                        </View>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <MaterialIcons name="arrow-back" style={CommonStyles.headerIcons} />
                     </TouchableOpacity>
                 }
                 leftContainerStyle={CommonStyles.justifyCenter}
@@ -77,13 +50,8 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
                 rightContainerStyle={CommonStyles.justifyCenter}
                 statusBarProps={{}}
                 />
-            {/* Workout */}
-            <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
-                <WorkoutCard workouts={result.data} />
-            </ScrollView>
         </KeyboardAvoidingView>
-
     );
 }
 
-export default WelcomeScreen;
+export default WorkoutScreen;
