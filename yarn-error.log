@@ -1,8 +1,8 @@
 Arguments: 
-  /usr/local/bin/node /Users/yutalovan/.yarn/bin/yarn.js remove momen
+  /usr/local/bin/node /Users/yutalovan/.yarn/bin/yarn.js install
 
 PATH: 
-  /Users/yutalovan/.yarn/bin:/Users/yutalovan/.config/yarn/global/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Users/yutalovan/Library/Android/sdk/platform-tools:/opt/homebrew/bin:/opt/homebrew/sbin
+  /Users/yutalovan/.yarn/bin:/Users/yutalovan/.config/yarn/global/node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/Apple/usr/bin:/Users/yutalovan/Library/Android/sdk/platform-tools:/Users/yutalovan/.yarn/bin:/Users/yutalovan/.config/yarn/global/node_modules/.bin:/opt/homebrew/bin:/opt/homebrew/sbin
 
 Yarn version: 
   1.22.17
@@ -14,7 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: EACCES: permission denied, unlink '/Users/yutalovan/Projects/WorkoutLogger/node_modules/@babel/core/node_modules/debug/LICENSE'
+  Error: EACCES: permission denied, unlink '/Users/yutalovan/Projects/WorkoutLogger/node_modules/@babel/core/node_modules/@babel/code-frame/package.json'
 
 npm manifest: 
   {
@@ -36,30 +36,40 @@ npm manifest:
       "@react-navigation/stack": "^6.0.9",
       "@supabase/supabase-js": "^1.28.0",
       "@use-expo/font": "^2.0.0",
+      "date-fns": "^2.27.0",
       "dotenv": "^10.0.0",
       "expo": "^43.0.0",
       "expo-app-loading": "~1.2.1",
+      "expo-constants": "~12.1.3",
       "expo-font": "~10.0.3",
+      "expo-linear-gradient": "~10.0.3",
       "expo-status-bar": "~1.1.0",
       "firebase": "^9.1.3",
       "react": "17.0.1",
       "react-dom": "17.0.1",
       "react-native": "0.64.3",
       "react-native-async-storage": "^0.0.1",
+      "react-native-elements": "^3.4.2",
       "react-native-gesture-handler": "~1.10.2",
       "react-native-safe-area-context": "3.3.2",
       "react-native-screens": "~3.8.0",
       "react-native-url-polyfill": "^1.3.0",
       "react-native-web": "0.17.1",
+      "react-supabase": "^0.2.0",
       "supabase": "^0.5.0"
     },
     "devDependencies": {
       "@babel/core": "^7.12.9",
+      "@expo/config": "^6.0.15",
+      "@types/lodash": "^4.14.178",
       "@types/react": "~17.0.21",
       "@types/react-native": "~0.64.12",
       "typescript": "~4.3.5"
     },
-    "private": true
+    "private": true,
+    "resolutions": {
+      "react-devtools-core": "4.12.4"
+    }
   }
 
 yarn manifest: 
@@ -1156,10 +1166,32 @@ Lockfile:
       xcode "^3.0.1"
       xml2js "^0.4.23"
   
-  "@expo/config-plugins@4.0.13", "@expo/config-plugins@^4.0.2":
+  "@expo/config-plugins@4.0.13":
     version "4.0.13"
     resolved "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-4.0.13.tgz"
     integrity sha512-yFcqqllAKz472UUdMRtcmfz8cHBT5VJ044cDY2E5JvaO/DQ9lfe4j/0soVUv7aeiHIWOheywJeefNfqpCo0glQ==
+    dependencies:
+      "@expo/config-types" "^43.0.1"
+      "@expo/json-file" "8.2.34"
+      "@expo/plist" "0.0.16"
+      "@expo/sdk-runtime-versions" "^1.0.0"
+      "@react-native/normalize-color" "^2.0.0"
+      chalk "^4.1.2"
+      debug "^4.3.1"
+      find-up "~5.0.0"
+      fs-extra "9.0.0"
+      getenv "^1.0.0"
+      glob "7.1.6"
+      resolve-from "^5.0.0"
+      semver "^7.3.5"
+      slash "^3.0.0"
+      xcode "^3.0.1"
+      xml2js "0.4.23"
+  
+  "@expo/config-plugins@4.0.15", "@expo/config-plugins@^4.0.2":
+    version "4.0.15"
+    resolved "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-4.0.15.tgz"
+    integrity sha512-QqxVEt2bFu3ZuI1soULRJv7i0Zrg/FMZ0IxNV7Y3AjH7fhtUJH3pPo9f6MURvqNr+PLxhBlkofkWfunrVejSkw==
     dependencies:
       "@expo/config-types" "^43.0.1"
       "@expo/json-file" "8.2.34"
@@ -1212,6 +1244,23 @@ Lockfile:
     dependencies:
       "@babel/code-frame" "~7.10.4"
       "@expo/config-plugins" "4.0.13"
+      "@expo/config-types" "^43.0.1"
+      "@expo/json-file" "8.2.34"
+      getenv "^1.0.0"
+      glob "7.1.6"
+      require-from-string "^2.0.2"
+      resolve-from "^5.0.0"
+      semver "7.3.2"
+      slugify "^1.3.4"
+      sucrase "^3.20.0"
+  
+  "@expo/config@^6.0.15":
+    version "6.0.15"
+    resolved "https://registry.npmjs.org/@expo/config/-/config-6.0.15.tgz"
+    integrity sha512-nrG+OUe/2n3ulNSgHRs9V70zXu3lpkuzJ6F0VmCuhjyHqT7UYimkgSCJGqaE3N+AayBTK+YffOT6bTWH17wxjQ==
+    dependencies:
+      "@babel/code-frame" "~7.10.4"
+      "@expo/config-plugins" "4.0.15"
       "@expo/config-types" "^43.0.1"
       "@expo/json-file" "8.2.34"
       getenv "^1.0.0"
@@ -1956,7 +2005,7 @@ Lockfile:
   
   "@react-native-community/datetimepicker@3.5.2":
     version "3.5.2"
-    resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-3.5.2.tgz#8e6feb30f2620e5abdf565d5fe74c0c04edcf6ae"
+    resolved "https://registry.npmjs.org/@react-native-community/datetimepicker/-/datetimepicker-3.5.2.tgz"
     integrity sha512-TWRuAtr/DnrEcRewqvXMLea2oB+YF+SbtuYLHguALLxNJQLl/RFB7aTNZeF+OoH75zKFqtXECXV1/uxQUpA+sg==
     dependencies:
       invariant "^2.2.4"
@@ -2117,6 +2166,11 @@ Lockfile:
     dependencies:
       "@types/istanbul-lib-report" "*"
   
+  "@types/lodash@^4.14.178":
+    version "4.14.178"
+    resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.178.tgz"
+    integrity sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==
+  
   "@types/long@^4.0.1":
     version "4.0.1"
     resolved "https://registry.npmjs.org/@types/long/-/long-4.0.1.tgz"
@@ -2137,7 +2191,15 @@ Lockfile:
     resolved "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.4.tgz"
     integrity sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==
   
-  "@types/react-native@~0.64.12":
+  "@types/react-native-vector-icons@^6.4.6":
+    version "6.4.10"
+    resolved "https://registry.npmjs.org/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.10.tgz"
+    integrity sha512-z4sexbuZ7nmYsp7Z9YB5fSQoN3KFn6nZA3QsCkQLOYnVmVlxX4U22v/bM9Xx/6dOA1vClxoRZo2CFDX16uryXQ==
+    dependencies:
+      "@types/react" "*"
+      "@types/react-native" "*"
+  
+  "@types/react-native@*", "@types/react-native@~0.64.12":
     version "0.64.19"
     resolved "https://registry.npmjs.org/@types/react-native/-/react-native-0.64.19.tgz"
     integrity sha512-bT62QhaPvOKFGmlfURIC98ILjUDoIFrc2Bn5EzL3qciZrT91vHwkxFOkuEyQJy+DWaHCa2z3IrtIEJywkGu/Bg==
@@ -2843,7 +2905,7 @@ Lockfile:
       color-name "^1.0.0"
       simple-swizzle "^0.2.2"
   
-  color@^3.1.3:
+  color@^3.1.2, color@^3.1.3:
     version "3.2.1"
     resolved "https://registry.npmjs.org/color/-/color-3.2.1.tgz"
     integrity sha512-aBl7dZI9ENN6fUGC7mWpMTPNHmWUSNan9tuWN6ahh5ZLNk9baLJOnSMlrQkHcrfFgz2/RigjUVAjdx36VcemKA==
@@ -3058,6 +3120,11 @@ Lockfile:
       es5-ext "^0.10.50"
       type "^1.0.1"
   
+  date-fns@^2.27.0:
+    version "2.28.0"
+    resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.28.0.tgz"
+    integrity sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==
+  
   dayjs@^1.8.15:
     version "1.10.7"
     resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.10.7.tgz"
@@ -3091,6 +3158,11 @@ Lockfile:
     version "3.3.0"
     resolved "https://registry.npmjs.org/deepmerge/-/deepmerge-3.3.0.tgz"
     integrity sha512-GRQOafGHwMHpjPx9iCvTgpu9NojZ49q794EEL94JVEw6VaeA8XTUyBKvAkOOjBX9oJNiV6G3P+T+tihFjo2TqA==
+  
+  deepmerge@^4.2.2:
+    version "4.2.2"
+    resolved "https://registry.npmjs.org/deepmerge/-/deepmerge-4.2.2.tgz"
+    integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
   
   defaults@^1.0.3:
     version "1.0.3"
@@ -3394,6 +3466,13 @@ Lockfile:
     version "10.0.0"
     resolved "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-10.0.0.tgz"
     integrity sha512-x5zRTjIvSry/EISKvjWpnLERGZj5maCwEouOfiDk0JPa0UTg/zFkT7pmiadAfHT95XUgjjb2DOku+wj6J7el7Q==
+  
+  expo-linear-gradient@~10.0.3:
+    version "10.0.3"
+    resolved "https://registry.yarnpkg.com/expo-linear-gradient/-/expo-linear-gradient-10.0.3.tgz#06ad72e164f5bf36c4afcfc8ccd31138a3a78d6e"
+    integrity sha512-zKkBhHvTvDywpb0y5BJDHTbxX5/2C60qW/M8uyZXKIZcTUwY7j/9Kcx0YzoNNglq7p6aQ/DWO7sM8LHr93985Q==
+    dependencies:
+      expo-modules-core "~0.4.4"
   
   expo-modules-autolinking@~0.3.4:
     version "0.3.4"
@@ -3945,7 +4024,7 @@ Lockfile:
     dependencies:
       source-map "^0.7.3"
   
-  hoist-non-react-statics@^3.3.0:
+  hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
     version "3.3.2"
     resolved "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz"
     integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
@@ -5217,11 +5296,6 @@ Lockfile:
     dependencies:
       minimist "^1.2.5"
   
-  momen@^0.0.1-security:
-    version "0.0.1-security"
-    resolved "https://registry.yarnpkg.com/momen/-/momen-0.0.1-security.tgz#42673ef848a18c66d4640f1d9be3b7728f347580"
-    integrity sha512-pFEyYVJ8FmAj6+WfCRZGVJKFI9I7XHS8jy2LdTuOPR8Qiq72rXGajxToS9E62DuJ3v4sFwcv2GnOVlhDWoCjVg==
-  
   ms@2.0.0:
     version "2.0.0"
     resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
@@ -5485,6 +5559,11 @@ Lockfile:
     integrity sha512-IFenVPgF70fSm1keSd2iDBIDIBZkroLeuffXq+wKTzTJlBpesFWojV9lb8mzOfaAzM1sr7HQHuO0vtV0zYekGg==
     dependencies:
       is-wsl "^1.1.0"
+  
+  opencollective-postinstall@^2.0.3:
+    version "2.0.3"
+    resolved "https://registry.npmjs.org/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz"
+    integrity sha512-8AV/sCtuzUeTo8gQK5qDZzARrulB3egtLzFgteqB2tcT4Mw7B8Kt7JcDHmltjz6FOAHsvTevk70gZEbhM4ZS9Q==
   
   options@>=0.0.5:
     version "0.0.6"
@@ -5889,6 +5968,20 @@ Lockfile:
       jscodeshift "^0.11.0"
       nullthrows "^1.1.1"
   
+  react-native-elements@^3.4.2:
+    version "3.4.2"
+    resolved "https://registry.npmjs.org/react-native-elements/-/react-native-elements-3.4.2.tgz"
+    integrity sha512-m0eAWOn7JuR1wNTNY0WHuaqst4LI/gFE4N5Bbyfsc4DiryWsMST7aAg5w/Gos4IexWIzhLKCIkPxthND1m/8Xg==
+    dependencies:
+      "@types/react-native-vector-icons" "^6.4.6"
+      color "^3.1.2"
+      deepmerge "^4.2.2"
+      hoist-non-react-statics "^3.3.2"
+      lodash.isequal "^4.5.0"
+      opencollective-postinstall "^2.0.3"
+      react-native-ratings "8.0.4"
+      react-native-size-matters "^0.3.1"
+  
   react-native-gesture-handler@~1.10.2:
     version "1.10.3"
     resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-1.10.3.tgz"
@@ -5899,6 +5992,13 @@ Lockfile:
       hoist-non-react-statics "^3.3.0"
       invariant "^2.2.4"
       prop-types "^15.7.2"
+  
+  react-native-ratings@8.0.4:
+    version "8.0.4"
+    resolved "https://registry.npmjs.org/react-native-ratings/-/react-native-ratings-8.0.4.tgz"
+    integrity sha512-Xczu5lskIIRD6BEdz9A0jDRpEck/SFxRqiglkXi0u67yAtI1/pcJC76P4MukCbT8K4BPVl+42w83YqXBoBRl7A==
+    dependencies:
+      lodash "^4.17.15"
   
   react-native-safe-area-context@3.3.2:
     version "3.3.2"
@@ -5911,6 +6011,11 @@ Lockfile:
     integrity sha512-lHrnB/elAoMJKv8O12U6BLgeup4lB6ZKJHEOVuG/D72nv/OE9wUusbou6YCB5tp3YbaSpHflPnkFmHA/vCejpw==
     dependencies:
       warn-once "^0.1.0"
+  
+  react-native-size-matters@^0.3.1:
+    version "0.3.1"
+    resolved "https://registry.npmjs.org/react-native-size-matters/-/react-native-size-matters-0.3.1.tgz"
+    integrity sha512-mKOfBLIBFBcs9br1rlZDvxD5+mAl8Gfr5CounwJtxI6Z82rGrMO+Kgl9EIg3RMVf3G855a85YVqHJL2f5EDRlw==
   
   react-native-url-polyfill@^1.3.0:
     version "1.3.0"
@@ -5974,6 +6079,11 @@ Lockfile:
     version "0.4.3"
     resolved "https://registry.npmjs.org/react-refresh/-/react-refresh-0.4.3.tgz"
     integrity sha512-Hwln1VNuGl/6bVwnd0Xdn1e84gT/8T9aYNL+HAKDArLCS7LWjwr7StE30IEYbIkx0Vi3vs+coQxe+SQDbGbbpA==
+  
+  react-supabase@^0.2.0:
+    version "0.2.0"
+    resolved "https://registry.npmjs.org/react-supabase/-/react-supabase-0.2.0.tgz"
+    integrity sha512-dlAOhkFaWr8ZqHUkWflGvDpFUT69DbWE7+LxmH/a56ma/qS1EinsIKcxskPcPlaWO70QI7hxu9y8imp8qxDCLw==
   
   react@17.0.1:
     version "17.0.1"

@@ -14,7 +14,11 @@ export type AuthStackParamList = {
 
 export type AppStackParamList = {
     WelcomeScreen: undefined,
-    WorkoutScreen: undefined
+    WorkoutScreen: { 
+        workout_data: WorkoutData[],
+        workout_name: string,
+        workout_history_id: number
+    }
 }
 
 export interface RegisterData {
@@ -46,6 +50,23 @@ export interface WorkoutData {
     reps: number,
     weight: number,
     set_duration: number
+}
+
+export interface WorkoutExecutionData {
+    program_id: number,
+    program_run: number,
+    current_program_cycle: number,
+    workout_history_id: number | null,
+    workout_id: number,
+    workout_name: string,
+    exercise: string,
+    set: number,
+    reps: number,
+    weight: number,
+    set_duration: number,
+    completed: boolean,
+    reps_completed: number,
+    set_duration_completed: number
 }
 
 export interface WorkoutHistory {

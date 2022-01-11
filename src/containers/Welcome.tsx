@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import CommonStyles from '../styles/Common';
@@ -15,7 +15,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
     //get AuthContext
     const { session, user } = useAuth();
     const [ signOutState, signOut ] = useSignOut();
-
+    
     const filter = useFilter(
         (query) => query.eq('user_id', user?.id),
         [user?.id],
@@ -37,6 +37,8 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
         `,
         filter
     });
+
+    const data: WorkoutData[] = result.data ?? [];
 
     const signout = async () => {
         await signOut();
@@ -79,7 +81,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
                 />
             {/* Workout */}
             <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
-                <WorkoutCard workouts={result.data} />
+                <WorkoutCard workouts={data} />
             </ScrollView>
         </KeyboardAvoidingView>
 

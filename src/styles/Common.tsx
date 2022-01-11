@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 import { StatusBar } from "react-native";
 
 // LoginScreen styles
+//TODO: create variables for colors and fonts to make it easier to change everywhere
 export default StyleSheet.create({
     viewContainer: {
         flexDirection: 'column',
@@ -62,6 +63,61 @@ export default StyleSheet.create({
         color: '#2B3A39',
         fontSize: 14,
         paddingLeft: 12
+    },
+    todoContainer: {
+        padding: 20
+    },
+    todoTextHead: {
+        fontFamily: 'OpenSans_700Bold',
+        color: '#2B3A39',
+        fontSize: 18,
+        paddingLeft: 4
+    },
+    setTodoContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 10
+    },
+    setTodoText: {
+        fontFamily: 'OpenSans_400Regular',
+        color: '#2B3A39',
+        fontSize: 14,
+        paddingLeft: 10
+    },
+    dividerGradient: {
+        width: '90%', 
+        height: 2, 
+        borderRadius: 1
+    },
+    setTodoGradientContainer: {
+        shadowColor: "#2B3A39",
+        shadowRadius: 2,
+        shadowOpacity: 0.3,
+        shadowOffset: {
+            height: 0,
+            width: -2,
+        },
+        elevation: 3,
+        backgroundColor: "#f9f9f9",
+        borderRadius: 25
+    },
+    setTodoGradient: {
+        width: 50, 
+        height: 50, 
+        borderRadius: 25,
+        padding: 5
+    },
+    setTodoGradientContent: {
+        flex: 1,
+        borderRadius: 25,
+        backgroundColor: "#f9f9f9",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    setTodoGradientText: {
+        fontFamily: 'OpenSans_700Bold',
+        color: '#2B3A39',
+        fontSize: 18
     },
     flexGrow: {
         flexGrow: 1

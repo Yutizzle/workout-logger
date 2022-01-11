@@ -1,14 +1,12 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { Card } from 'react-native-elements'
 import CommonStyles from '../styles/Common'
 import { WelcomeScreenUseNavigationProp, WorkoutData, WorkoutHistory } from '../common/types'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useInsert, useRealtime } from 'react-supabase';
+import { useInsert } from 'react-supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigation } from '@react-navigation/native';
-import { UseSelectState } from 'react-supabase';
-
 
 const Exercise = (props: {exercise: string}) => {
     return (
@@ -29,16 +27,20 @@ const ExerciseDetail = (props: {exercise: WorkoutData}) => {
     );
 }
 
-export const WorkoutCard = (props: {workouts: WorkoutData[] | null | undefined}) => {
+export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
     const { session, user } = useAuth();
     const navigation = useNavigation<WelcomeScreenUseNavigationProp>();
     const [insertState , insertHistory] = useInsert('user_workout_history');
-
-    const startWorkout = async (data: WorkoutHistory) => {
+    const [workouts, setWorkouts] = useState<Array<WorkoutHistory>>([]);
+    const cards: ReactElement[] = [];
+    
+    const startWorkout = async (data: WorkoutHistory, idx: number) => {
         if(session && user?.id) {
+            let workoutHistoryId = data.workout_history_id ?? 0;
+
             //add workout history if not exists
-            if(data.workout_history_id == null) {
-                await insertHistory({
+            if(workoutHistoryId == 0) {
+                const insert = await insertHistory({
                     user_id: user?.id,
                     program_id: data.program_id,
                     workout_id: data.workout_id,
@@ -46,90 +48,99 @@ export const WorkoutCard = (props: {workouts: WorkoutData[] | null | undefined})
                     program_run: data.program_run,
                     start_time: new Date()
                 });
+
+                workoutHistoryId = insert.data[0].id;
+                
+                setWorkouts(prevState => { 
+                    const workouts = [...prevState];
+                    workouts[idx] = {...workouts[idx], workout_history_id: workoutHistoryId};
+                    return workouts;
+                });
+                
             }
-            
+
             if(insertState.error) {
                 console.log(insertState.error);
             } else {
-                navigation.navigate('WorkoutScreen');
+                navigation.navigate('WorkoutScreen', { 
+                    workout_data: props.workouts, 
+                    workout_name: data.workout_name,
+                    workout_history_id: workoutHistoryId,
+                });
             }
+            
         }
     }
 
-    const WorkoutButtonContent = (fetching: boolean, workoutData: WorkoutHistory) => {
-        let buttonText = 'Start Workout';
-        if(workoutData.workout_history_id !== null)
-            buttonText = 'Resume Workout';
-    
-        return (
-            <>
-            {fetching ? 
-                <ActivityIndicator size="small" color="#fff"></ActivityIndicator> :
-                <Text style={CommonStyles.buttonText}>{buttonText}</Text>
-            }
-            </>
-        );
-    }
+    useEffect(() => {
+        if(props.workouts) { 
+            /* get unique workouts from json data */
+            const temp = new Set<string>(
+                props.workouts.map((w:WorkoutData, index) => JSON.stringify({
+                    workout_id: w.workout_id, 
+                    workout_history_id: w.workout_history_id,
+                    workout_name: w.workout_name, 
+                    program_id: w.program_id, 
+                    program_run: w.program_run,
+                    program_cycle: w.current_program_cycle
+                }))
+            );
+            
+            const workouts = Array.from(temp).map(workout => { return JSON.parse(workout)});
+            setWorkouts(workouts);
+        }
+    }, [props.workouts]);
 
-    if(props.workouts) { 
-        const cards: ReactElement[] = [];
-
-        /* get unique workouts from json data */
-        const workouts = new Set<string>(
-            props.workouts.map((w:WorkoutData) => JSON.stringify({
-                workout_id: w.workout_id, 
-                workout_history_id: w.workout_history_id,
-                workout_name: w.workout_name, 
-                program_id: w.program_id, 
-                program_run: w.program_run,
-                program_cycle: w.current_program_cycle
-            }))
-        );
-
+    if(props.workouts) {
         /* for each workout, display each exercise and its details */
-        workouts.forEach((workout) => {
-            const currWorkout: WorkoutHistory = JSON.parse(workout);
+        workouts.forEach((workout, index) => {
             let prevExercise = '';
 
             /* get and display exercise data for current workout */
-            const exerciseList = props.workouts?.filter((exercise: WorkoutData) => exercise.workout_id === currWorkout.workout_id)
+            const exerciseList = props.workouts?.filter((exercise: WorkoutData) => exercise.workout_id === workout.workout_id)
                 .map((exercise: WorkoutData, i: number) => {
                     if (exercise.exercise !== prevExercise) {
                         prevExercise = exercise.exercise;
                         return (
-                            <React.Fragment key={`${exercise.workout_name}-${currWorkout.workout_id}-${i}`}>
+                            <React.Fragment key={`${exercise.workout_name}-${workout.workout_id}-${i}`}>
                                 {/* Exercise Name */}
-                                <Exercise key={`${exercise.exercise}-${currWorkout.workout_id}`} exercise={exercise.exercise}></Exercise>
+                                <Exercise key={`${exercise.exercise}-${workout.workout_id}`} exercise={exercise.exercise}></Exercise>
                                 {/* Exercise Set Detail */}
-                                <ExerciseDetail key={`${exercise.exercise}-${exercise.set}-${currWorkout.workout_id}`} exercise={exercise}></ExerciseDetail>
+                                <ExerciseDetail key={`${exercise.exercise}-${exercise.set}-${workout.workout_id}`} exercise={exercise}></ExerciseDetail>
                             </React.Fragment>
                         );
                     } else {
                         {/* Exercise Set Detail */}
-                        return(<ExerciseDetail key={`${exercise.exercise}-${exercise.set}-${currWorkout.workout_id}`} exercise={exercise}></ExerciseDetail>);
+                        return(<ExerciseDetail key={`${exercise.exercise}-${exercise.set}-${workout.workout_id}`} exercise={exercise}></ExerciseDetail>);
                     }    
                 }
             );
-        
+            
             cards.push(
-                <Card key={currWorkout.workout_id} containerStyle={CommonStyles.cardContainer} wrapperStyle={{}}>
+                <Card key={workout.workout_id} containerStyle={CommonStyles.cardContainer} wrapperStyle={{}}>
                     {/* Workout Title*/}
-                    <Card.Title style={CommonStyles.cardTitle}>{currWorkout.workout_name}</Card.Title>
+                    <Card.Title style={CommonStyles.cardTitle}>{workout.workout_name}</Card.Title>
                     <Card.Divider />
                     {/* Exercise List */}
                     <View style={CommonStyles.cardTextContainer}>{exerciseList}</View>
                     {/* Start Workout Button */}
                     <TouchableOpacity style={CommonStyles.buttons}
-                                        onPress={() => {startWorkout({
-                                            program_id: currWorkout.program_id, 
-                                            program_run: currWorkout.program_run, 
-                                            program_cycle: currWorkout.program_cycle, 
-                                            workout_id: currWorkout.workout_id,
-                                            workout_name: currWorkout.workout_name,
-                                            workout_history_id: currWorkout.workout_history_id})
+                                        onPress={async () => {await startWorkout({
+                                            program_id: workout.program_id, 
+                                            program_run: workout.program_run, 
+                                            program_cycle: workout.program_cycle, 
+                                            workout_id: workout.workout_id,
+                                            workout_name: workout.workout_name,
+                                            workout_history_id: workout.workout_history_id}, index)
                                         }}
                                     >
-                        {WorkoutButtonContent(insertState.fetching, currWorkout)}
+                        {
+                            insertState.fetching ? 
+                                <ActivityIndicator size="small" color="#fff"></ActivityIndicator> :
+                                <Text style={CommonStyles.buttonText}>
+                                    {workouts[index].workout_history_id != null ? 'Resume Workout' : 'Start Workout'}
+                                </Text>
+                        }
                     </TouchableOpacity>
                 </Card>
             );
@@ -140,4 +151,3 @@ export const WorkoutCard = (props: {workouts: WorkoutData[] | null | undefined})
         return <></>
     }
 }
-
