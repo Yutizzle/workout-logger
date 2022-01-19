@@ -128,6 +128,11 @@ export default StyleSheet.create({
         alignItems: "center",
         justifyContent: "center"
     },
+    setTodoGradientCompleted: {
+        width: 30, 
+        height: 30, 
+        borderRadius: 15
+    },
     setTodoIndicatorContainer: {
         paddingLeft: 4,
         paddingRight: 8
