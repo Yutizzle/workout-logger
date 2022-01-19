@@ -100,7 +100,7 @@ const SetTodo =  (props: {data: WorkoutExecutionData, setWorkoutDataHandler: Rea
                     colors={["#284b63", "#f9f9f9" ,"#fff"]}
                     start={{x: 0, y: 1}}
                     end={{x: 3, y: 1}}
-                    style={!exerciseData.completed ? CommonStyles.setTodoGradient : CommonStyles.setTodoCompleted}>
+                    style={!exerciseData.completed ? CommonStyles.setTodoGradient : CommonStyles.setTodoGradientCompleted}>
                         <View style={!exerciseData.completed ? CommonStyles.setTodoGradientContent : CommonStyles.setTodoCompleted}>
                             <MaterialIcons name="check" style={exerciseData.completed ? CommonStyles.textLight : {}}></MaterialIcons>
                         </View>
