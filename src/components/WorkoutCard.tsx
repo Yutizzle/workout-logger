@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { Card } from 'react-native-elements'
 import CommonStyles from '../styles/Common'
-import { WelcomeScreenUseNavigationProp, WorkoutData, WorkoutHistory } from '../common/types'
+import { WelcomeScreenUseNavigationProp, WorkoutExecutionData, Workouts } from '../common/types'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useInsert } from 'react-supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -16,7 +16,7 @@ const Exercise = (props: {exercise: string}) => {
     );
 }
 
-const ExerciseDetail = (props: {exercise: WorkoutData}) => {
+const ExerciseDetail = (props: {exercise: WorkoutExecutionData}) => {
     return (
         <View style={CommonStyles.cardTextRowContainer}>
             {props.exercise.set ? <Text style={CommonStyles.cardText}>Set: {props.exercise.set}</Text> : <></>}
@@ -27,15 +27,15 @@ const ExerciseDetail = (props: {exercise: WorkoutData}) => {
     );
 }
 
-export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
+export const WorkoutCard = (props: {workouts: WorkoutExecutionData[]}) => {
     const { session, user } = useAuth();
     const navigation = useNavigation<WelcomeScreenUseNavigationProp>();
     const [ insertState , insertHistory ] = useInsert('user_workout_history');
-    const [ workouts, setWorkouts ] = useState<WorkoutHistory[]>([]);
-    const [ exerciseData, setExerciseData ]  = useState<WorkoutData[]>([]);
+    const [ workouts, setWorkouts ] = useState<Workouts[]>([]);
+    const [ exerciseData, setExerciseData ]  = useState<WorkoutExecutionData[]>([]);
     const cards: ReactElement[] = [];
     
-    const startWorkout = async (data: WorkoutHistory, idx: number) => {
+    const startWorkout = async (data: Workouts, idx: number) => {
         if(session && user?.id) {
             let workoutHistoryId = data.workout_history_id ?? 0;
 
@@ -87,7 +87,7 @@ export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
         if(props.workouts) { 
             /* get unique workouts from json data */
             const temp = new Set<string>(
-                props.workouts.map((w:WorkoutData, index) => JSON.stringify({
+                props.workouts.map((w:WorkoutExecutionData, index) => JSON.stringify({
                     workout_id: w.workout_id, 
                     workout_history_id: w.workout_history_id,
                     workout_name: w.workout_name, 
@@ -111,8 +111,8 @@ export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
             let prevExercise = '';
 
             /* get and display exercise data for current workout */
-            const exerciseList = props.workouts?.filter((exercise: WorkoutData) => exercise.workout_id === workout.workout_id)
-                .map((exercise: WorkoutData, i: number) => {
+            const exerciseList = props.workouts?.filter((exercise: WorkoutExecutionData) => exercise.workout_id === workout.workout_id)
+                .map((exercise: WorkoutExecutionData, i: number) => {
                     if (exercise.exercise !== prevExercise) {
                         prevExercise = exercise.exercise;
                         return (

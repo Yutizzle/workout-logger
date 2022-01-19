@@ -8,13 +8,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useInsert } from "react-supabase";
 import { useAuth } from "../hooks/useAuth";
 
-const SetTodo =  (props: {data: WorkoutExecutionData}) => {
+const SetTodo =  (props: {data: WorkoutExecutionData, setWorkoutDataHandler: React.Dispatch<React.SetStateAction<WorkoutExecutionData[]>>}) => {
     const session = useAuth();
     const [insertState, insertSet] = useInsert('user_exercise_history');
     const [exerciseData, setExerciseData] = useState<WorkoutExecutionData>(props.data);
     const [userInputData, setUserInputData] = useState({reps: '', weight: '', set_duration: ''});
     const [buttonState, setButtonState] = useState({disabled: false});
-    
     
     useEffect(() => {
         const reps = props.data.reps_completed ?? props.data.reps;
@@ -40,8 +39,7 @@ const SetTodo =  (props: {data: WorkoutExecutionData}) => {
             console.log('Error: Input is not a valid number!');
             console.log('User Input: ', userInputData);
         } else {
-
-            var set = await insertSet({
+            let data = {
                 user_id: session.user?.id,
                 workout_id: exerciseData.workout_id,
                 exercise: exerciseData.exercise,
@@ -54,25 +52,14 @@ const SetTodo =  (props: {data: WorkoutExecutionData}) => {
                     || ((exerciseData.set_duration && setDurationCompleted < exerciseData.set_duration) ?? false),
                 user_workout_history_id: exerciseData.workout_history_id,
                 created_by: session.user?.id
-            });
+            }
+            const set = await insertSet(data);
 
             if(set.error) {
                 console.log('error: ', set.error);
-                console.log('Insert Data: ', {
-                    user_id: session.user?.id,
-                    workout_id: exerciseData.workout_id,
-                    exercise: exerciseData.exercise,
-                    set_completed: exerciseData.set,
-                    reps_completed: repsCompleted,
-                    weight: weightCompleted,
-                    set_duration_completed: setDurationCompleted,
-                    set_failed: ((exerciseData.reps && repsCompleted < exerciseData.reps) ?? false)
-                        || ((exerciseData.weight && weightCompleted < exerciseData.weight) ?? false)
-                        || ((exerciseData.set_duration && setDurationCompleted < exerciseData.set_duration) ?? false),
-                    user_workout_history_id: exerciseData.workout_history_id,
-                    created_by: session.user?.id
-                });
+                console.log('Insert Data: ', data);
             } else {
+                //update child component SetTodo data
                 setExerciseData(prev => {
                     return {
                         ...prev,
@@ -80,8 +67,26 @@ const SetTodo =  (props: {data: WorkoutExecutionData}) => {
                         reps_completed: repsCompleted,
                         weight_completed: weightCompleted,
                         set_duration_completed: setDurationCompleted
-                    };
+                    }
                 });
+
+                //update parent component WorkoutScreen data
+                props.setWorkoutDataHandler(prev => {
+                    return prev.map((set) => {
+                        if(set.exercise == exerciseData.exercise && set.set == exerciseData.set){
+                            return {
+                                ...exerciseData,
+                                completed: true,
+                                reps_completed: repsCompleted,
+                                weight_completed: weightCompleted,
+                                set_duration_completed: setDurationCompleted
+                            }
+                        } else {
+                            return set;
+                        }
+                    });
+                });
+                
             }
         }
         setButtonState({disabled: false});
@@ -148,7 +153,7 @@ const SetTodo =  (props: {data: WorkoutExecutionData}) => {
     );
 }
 
-export const WorkoutTodo = (props: {data: WorkoutExecutionData[]}) => {
+export const WorkoutTodo = (props: {data: WorkoutExecutionData[], setWorkoutDataHandler: React.Dispatch<React.SetStateAction<WorkoutExecutionData[]>>}) => {
     let prevExercise = '';
     const todo = props.data.map((set, index) => {
         if(set.exercise != prevExercise) {
@@ -164,12 +169,12 @@ export const WorkoutTodo = (props: {data: WorkoutExecutionData[]}) => {
                         end={{x: 1, y: 0}}
                         style={CommonStyles.dividerGradient}
                     />
-                    <SetTodo key={`${set.exercise}-${set.set}`} data={set}></SetTodo>
+                    <SetTodo key={`${set.exercise}-${set.set}`} data={set} setWorkoutDataHandler={props.setWorkoutDataHandler}></SetTodo>
                 </React.Fragment>
             );
         } else {
             return (
-                <SetTodo key={`${set.exercise}-${set.set}`} data={set}></SetTodo>
+                <SetTodo key={`${set.exercise}-${set.set}`} data={set} setWorkoutDataHandler={props.setWorkoutDataHandler}></SetTodo>
             );
         }
     });

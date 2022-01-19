@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import CommonStyles from '../styles/Common'
 import { KeyboardAvoidingView, Text, Platform, TouchableOpacity, Alert } from 'react-native';
-import { WorkoutExecutionData, WorkoutScreenNavigationProp } from '../common/types';
+import { CompletedSets, WorkoutExecutionData, WorkoutScreenNavigationProp } from '../common/types';
 import { Header } from 'react-native-elements';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,18 +14,24 @@ const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
     //get AuthContext
     const { session, user } = useAuth();
     const [ signOutState, signOut ] = useSignOut();
-    const [ workoutData, setWorkoutData ] = useState<WorkoutExecutionData[]>([]);
+    const [ workoutData, setWorkoutData ] = useState<WorkoutExecutionData[]>(route.params.workout_data);
+
+    //hook for updating user_workout_history
     const [ updateWorkout, executeUpdateWorkout ] = useUpdate('user_workout_history', {
         filter: (query) => query.eq('id', route.params.workout_history_id)
     });
+
+    //hook for updating user_program
     const [ updateProgram, executeUpdateProgram ] = useUpdate('user_program', {
         filter: (query) => query.eq('program_id', route.params.program_id)
     });
+
+    //hook for selecting from user_exercise_history
     const filter = useFilter(
         (query) => query.eq('user_workout_history_id', route.params.workout_history_id),
         [route.params.workout_history_id],
     );
-    const [ completedSets, getCompletedSets ] = useSelect('user_exercise_history', {
+    const [ completedSets, getCompletedSets ] = useSelect<CompletedSets>('user_exercise_history', {
         columns: `
             workout_id,
             exercise,
@@ -38,10 +44,10 @@ const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
         filter
     });
 
-    useEffect(() => {
+    const updateCompletedExercises = (completedSets: CompletedSets[]) => {
         //apply completed sets to workout_data
-        const executionData = route.params.workout_data.map((set) => {
-            let completed = completedSets.data?.find((completed) => {
+        const executionData = workoutData.map((set) => {
+            let completed = completedSets.find((completed) => {
                 return completed.exercise == set.exercise && completed.set_completed == set.set;
             });
             
@@ -54,22 +60,27 @@ const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
                     set_duration_completed: completed.set_duration_completed
                 });
             } else {
-                return ({
-                    ...set, 
-                    completed: false, 
-                    reps_completed: null, 
-                    weight_completed: null,
-                    set_duration_completed: null
-                });
+                return set;
             }
         });
 
         setWorkoutData(executionData);
 
-    }, [completedSets]);
+        return executionData;
+    }
 
     const completeWorkout = async () => {
-        await getCompletedSets();
+        //validate completed sets with database
+        const completedSets = await getCompletedSets();
+        let workoutData:WorkoutExecutionData[] = [];
+
+        if(completedSets?.data) {
+            workoutData = updateCompletedExercises(completedSets?.data);
+        } else if (completedSets?.error) {
+            console.log('error:', completedSets.error)
+        }
+
+        //get exercise set not completed yet
         let allSetsCompleted = true;
         let exerciseNotCompleted = {exercise: '', set: 0};
         workoutData.forEach((set) => {
@@ -80,6 +91,7 @@ const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
             }
         });
 
+        //update database tables if all sets are completed
         if(allSetsCompleted) {
             const now = new Date();
             const update = await executeUpdateWorkout({
@@ -151,9 +163,9 @@ const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
                 statusBarProps={{}}
                 />
                 <ScrollView contentContainerStyle={[CommonStyles.flexGrow, CommonStyles.todoContainer]}>
-                    <WorkoutTodo data={workoutData}></WorkoutTodo>
+                    <WorkoutTodo data={workoutData} setWorkoutDataHandler={setWorkoutData}></WorkoutTodo>
                     {/* Complete Workout Button */}
-                    <TouchableOpacity style={CommonStyles.buttons} onPress={async () => await completeWorkout()}>
+                    <TouchableOpacity style={CommonStyles.buttons} onPress={async () => {await completeWorkout();}}>
                         <Text style={CommonStyles.buttonText}>Complete Workout</Text>
                     </TouchableOpacity>
                 </ScrollView>

@@ -8,7 +8,7 @@ import { Header } from "react-native-elements";
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
 import { WorkoutCard } from '../components/WorkoutCard';
-import { WorkoutData } from '../common/types';
+import { WorkoutExecutionData } from '../common/types';
 import { WelcomeScreenNavigationProp } from '../common/types';
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
@@ -21,7 +21,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
         [user?.id],
       );
     
-    const [ result, getUserData ] = useSelect<WorkoutData>('user_workout_exercise', {
+    const [ result, getUserData ] = useSelect<WorkoutExecutionData>('user_workout_exercise', {
         columns: `
             program_id,
             program_run,
@@ -35,12 +35,17 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
             weight,
             set_duration,
             next_program_cycle,
-            next_workout_id
+            next_workout_id,
+            completed,
+            set_completed,
+            reps_completed,
+            weight_completed,
+            set_duration_completed
         `,
         filter
     });
 
-    const data: WorkoutData[] = result.data ?? [];
+    const data: WorkoutExecutionData[] = result.data ?? [];
     
     const signout = async () => {
         await signOut();
