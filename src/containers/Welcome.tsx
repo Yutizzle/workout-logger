@@ -33,19 +33,24 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
             set,
             reps,
             weight,
-            set_duration
+            set_duration,
+            next_program_cycle,
+            next_workout_id
         `,
         filter
     });
 
     const data: WorkoutData[] = result.data ?? [];
-
+    
     const signout = async () => {
         await signOut();
         if(signOutState.error) {
             console.log('error:', signOutState.error);
         }
     }
+    useEffect(() => {
+        navigation.addListener('focus', () => getUserData());
+    }, [navigation]);
 
     return (
         <KeyboardAvoidingView 
@@ -72,7 +77,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
                 leftContainerStyle={CommonStyles.justifyCenter}
                 placement="center"
                 rightComponent={
-                    <TouchableOpacity onPress={signout}>
+                    <TouchableOpacity onPress={async () => {await signout()}}>
                         <MaterialIcons name="logout" style={CommonStyles.headerIcons} />
                     </TouchableOpacity>
                 }

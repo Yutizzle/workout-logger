@@ -17,7 +17,10 @@ export type AppStackParamList = {
     WorkoutScreen: { 
         workout_data: WorkoutData[],
         workout_name: string,
-        workout_history_id: number
+        workout_history_id: number,
+        program_id: number,
+        next_program_cycle: number,
+        next_workout_id: number
     }
 }
 
@@ -42,21 +45,7 @@ export interface WorkoutData {
     program_id: number,
     program_run: number,
     current_program_cycle: number,
-    workout_history_id: number | null,
-    workout_id: number,
-    workout_name: string,
-    exercise: string,
-    set: number,
-    reps: number,
-    weight: number,
-    set_duration: number
-}
-
-export interface WorkoutExecutionData {
-    program_id: number,
-    program_run: number,
-    current_program_cycle: number,
-    workout_history_id: number | null,
+    workout_history_id: number,
     workout_id: number,
     workout_name: string,
     exercise: string,
@@ -64,9 +53,26 @@ export interface WorkoutExecutionData {
     reps: number,
     weight: number,
     set_duration: number,
+    next_program_cycle: number,
+    next_workout_id: number
+}
+
+export interface WorkoutExecutionData {
+    program_id: number,
+    program_run: number,
+    current_program_cycle: number,
+    workout_history_id: number,
+    workout_id: number,
+    workout_name: string,
+    exercise: string,
+    set: number,
+    reps: number | null,
+    weight: number | null,
+    set_duration: number | null,
     completed: boolean,
-    reps_completed: number,
-    set_duration_completed: number
+    reps_completed: number | null,
+    weight_completed: number | null,
+    set_duration_completed: number | null
 }
 
 export interface WorkoutHistory {
@@ -75,5 +81,7 @@ export interface WorkoutHistory {
     program_cycle: number,
     workout_id: number,
     workout_name: string,
-    workout_history_id: number | null
+    workout_history_id: number | null,
+    next_program_cycle: number,
+    next_workout_id: number
 }

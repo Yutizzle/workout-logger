@@ -65,7 +65,7 @@ export default StyleSheet.create({
         paddingLeft: 12
     },
     todoContainer: {
-        padding: 20
+        padding: 10
     },
     todoTextHead: {
         fontFamily: 'OpenSans_700Bold',
@@ -76,13 +76,14 @@ export default StyleSheet.create({
     setTodoContainer: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 10
+        paddingTop: 10,
+        paddingLeft: 10
     },
     setTodoText: {
         fontFamily: 'OpenSans_400Regular',
         color: '#2B3A39',
         fontSize: 14,
-        paddingLeft: 10
+        padding: 8
     },
     dividerGradient: {
         width: '90%', 
@@ -99,17 +100,17 @@ export default StyleSheet.create({
         },
         elevation: 3,
         backgroundColor: "#f9f9f9",
-        borderRadius: 25
+        borderRadius: 15,
     },
     setTodoGradient: {
-        width: 50, 
-        height: 50, 
-        borderRadius: 25,
-        padding: 5
+        width: 30, 
+        height: 30, 
+        borderRadius: 15,
+        padding: 2
     },
     setTodoGradientContent: {
         flex: 1,
-        borderRadius: 25,
+        borderRadius: 15,
         backgroundColor: "#f9f9f9",
         justifyContent: "center",
         alignItems: "center"
@@ -118,6 +119,26 @@ export default StyleSheet.create({
         fontFamily: 'OpenSans_700Bold',
         color: '#2B3A39',
         fontSize: 18
+    },
+    setTodoCompleted: {
+        backgroundColor: '#417b5a',
+        width: 30, 
+        height: 30, 
+        borderRadius: 15,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    setTodoIndicatorContainer: {
+        paddingLeft: 4,
+        paddingRight: 8
+    },
+    setTodoIndicator: {
+        width: 4, 
+        height: 50, 
+        borderRadius: 2
+    },
+    opacityNone: {
+        opacity: 0
     },
     flexGrow: {
         flexGrow: 1
@@ -207,6 +228,9 @@ export default StyleSheet.create({
         fontFamily: 'OpenSans_400Regular',
         color: '#4e5d5c'
     },
+    disabled: {
+        opacity: 0.5
+    },
     buttons: {
         flexDirection: 'column',
         alignItems: 'center',
@@ -234,6 +258,9 @@ export default StyleSheet.create({
     registerText: {
         fontFamily: 'OpenSans_400Regular',
         color: '#4e5d5c'
+    },
+    textLight: {
+        color: '#f9f9f9'
     },
     inputLabel: {
         fontFamily: 'OpenSans_400Regular',

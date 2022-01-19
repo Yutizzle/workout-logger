@@ -30,8 +30,9 @@ const ExerciseDetail = (props: {exercise: WorkoutData}) => {
 export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
     const { session, user } = useAuth();
     const navigation = useNavigation<WelcomeScreenUseNavigationProp>();
-    const [insertState , insertHistory] = useInsert('user_workout_history');
-    const [workouts, setWorkouts] = useState<Array<WorkoutHistory>>([]);
+    const [ insertState , insertHistory ] = useInsert('user_workout_history');
+    const [ workouts, setWorkouts ] = useState<WorkoutHistory[]>([]);
+    const [ exerciseData, setExerciseData ]  = useState<WorkoutData[]>([]);
     const cards: ReactElement[] = [];
     
     const startWorkout = async (data: WorkoutHistory, idx: number) => {
@@ -56,6 +57,13 @@ export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
                     workouts[idx] = {...workouts[idx], workout_history_id: workoutHistoryId};
                     return workouts;
                 });
+
+                setExerciseData(prev => {
+                    return prev.map((set) => {
+                        set.workout_history_id = workoutHistoryId;
+                        return set;
+                    });
+                });
                 
             }
 
@@ -63,9 +71,12 @@ export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
                 console.log(insertState.error);
             } else {
                 navigation.navigate('WorkoutScreen', { 
-                    workout_data: props.workouts, 
+                    workout_data: exerciseData,
                     workout_name: data.workout_name,
                     workout_history_id: workoutHistoryId,
+                    program_id: data.program_id,
+                    next_program_cycle: data.next_program_cycle,
+                    next_workout_id: data.next_workout_id
                 });
             }
             
@@ -82,16 +93,19 @@ export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
                     workout_name: w.workout_name, 
                     program_id: w.program_id, 
                     program_run: w.program_run,
-                    program_cycle: w.current_program_cycle
+                    program_cycle: w.current_program_cycle,
+                    next_program_cycle: w.next_program_cycle,
+                    next_workout_id: w.next_workout_id
                 }))
             );
             
             const workouts = Array.from(temp).map(workout => { return JSON.parse(workout)});
             setWorkouts(workouts);
+            setExerciseData(props.workouts)
         }
     }, [props.workouts]);
 
-    if(props.workouts) {
+    if(workouts) {
         /* for each workout, display each exercise and its details */
         workouts.forEach((workout, index) => {
             let prevExercise = '';
@@ -131,7 +145,9 @@ export const WorkoutCard = (props: {workouts: WorkoutData[]}) => {
                                             program_cycle: workout.program_cycle, 
                                             workout_id: workout.workout_id,
                                             workout_name: workout.workout_name,
-                                            workout_history_id: workout.workout_history_id}, index)
+                                            workout_history_id: workout.workout_history_id,
+                                            next_program_cycle: workout.next_program_cycle,
+                                            next_workout_id: workout.next_workout_id}, index)
                                         }}
                                     >
                         {
