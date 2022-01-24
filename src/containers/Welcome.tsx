@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { WorkoutExecutionData } from '../common/types';
 import { WelcomeScreenNavigationProp } from '../common/types';
-import { CommonHeader } from '../components/Header';
+import { MainHeader } from '../components/Header';
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
     //get AuthContext
@@ -53,7 +53,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={CommonStyles.viewContainer}>
             <StatusBar style="dark"/>
-            <CommonHeader />
+            <MainHeader />
             {/* Workout */}
             <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
                 <WorkoutCard workouts={data} />

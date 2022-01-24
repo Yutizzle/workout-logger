@@ -1,13 +1,28 @@
 import React from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView, View, Text, TouchableOpacity} from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import CommonStyles from '../styles/Common'
-import { AntDesign } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
 import { MenuHeader } from '../components/Header'
+import { useSignOut } from 'react-supabase'
+
+const MenuItem = (props: {name: string, onPress: () => void}) => {
+    return (
+        <TouchableOpacity style={CommonStyles.menuItemContainer} onPress={props.onPress}>
+            <Text style={[CommonStyles.headerTitle]}>{props.name}</Text>
+        </TouchableOpacity>
+    );
+}
 
 const MenuScreen = () => {
-    const navigation = useNavigation();
+    const [signOutState, signOut] = useSignOut();
+
+    const signout = async () => {
+        await signOut();
+        if(signOutState.error) {
+            console.log('error:', signOutState.error);
+        }
+    }
+
     return(
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -15,6 +30,17 @@ const MenuScreen = () => {
             <StatusBar style="dark"/>
             <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
                 <MenuHeader />
+                <View style={[CommonStyles.flexGrow, CommonStyles.flexDirectionColumn]}>
+                    <View style={CommonStyles.flexGrow}>
+                        <MenuItem name={'My Profile'} onPress={() => {}}/>
+                        <MenuItem name={'My Programs'} onPress={() => {}}/>
+                    </View>
+                    <View style={CommonStyles.flexShrink}>
+                    <TouchableOpacity style={[CommonStyles.buttons, CommonStyles.buttonsSecondary]} onPress={async () => {await signout();}}>
+                        <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>Logout</Text>
+                    </TouchableOpacity>
+                    </View>
+                </View>
             </ScrollView>
         </KeyboardAvoidingView>
     )

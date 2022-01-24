@@ -4,7 +4,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 export type LoginScreenNavigationProp = NativeStackScreenProps<AuthStackParamList, 'LoginScreen'>;
 export type RegisterScreenNavigationProp = NativeStackScreenProps<AuthStackParamList, 'RegisterScreen'>;
 export type WelcomeScreenNavigationProp = NativeStackScreenProps<AppStackParamList, 'WelcomeScreen'>;
-export type MenuScreenUseNavigationProp = StackNavigationProp<AppStackParamList, 'MenuScreen'>;
+export type WelcomeScreenUseNavigationProp = StackNavigationProp<AppStackParamList, 'WelcomeScreen'>;
+export type MenuScreenUseNavigationProp = StackNavigationProp<AppStackParamList, 'WelcomeScreen'>;
 export type WorkoutScreenNavigationProp = NativeStackScreenProps<AppStackParamList, 'WorkoutScreen'>;
 
 export type AuthStackParamList = {

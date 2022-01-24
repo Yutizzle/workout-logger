@@ -4,10 +4,10 @@ import { KeyboardAvoidingView, Text, Platform, TouchableOpacity, Alert } from 'r
 import { CompletedSets, WorkoutExecutionData, WorkoutScreenNavigationProp } from '../common/types';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../hooks/useAuth';
-import { useSignOut, useSelect, useFilter, useUpdate } from 'react-supabase';
+import { useSelect, useFilter, useUpdate } from 'react-supabase';
 import { ScrollView } from 'react-native-gesture-handler';
 import { WorkoutTodo } from '../components/WorkoutTodo';
-import { CommonHeader } from '../components/Header';
+import { WorkoutHeader } from '../components/Header';
 
 const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
     //get AuthContext
@@ -128,12 +128,12 @@ const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={CommonStyles.viewContainer}>
             <StatusBar style="dark"/>
-            <CommonHeader />
+            <WorkoutHeader workoutName={route.params.workout_name} />
                 <ScrollView contentContainerStyle={[CommonStyles.flexGrow, CommonStyles.todoContainer]}>
                     <WorkoutTodo data={workoutData} setWorkoutDataHandler={setWorkoutData}></WorkoutTodo>
                     {/* Complete Workout Button */}
-                    <TouchableOpacity style={CommonStyles.buttons} onPress={async () => {await completeWorkout();}}>
-                        <Text style={CommonStyles.buttonText}>Complete Workout</Text>
+                    <TouchableOpacity style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]} onPress={async () => {await completeWorkout();}}>
+                        <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Complete Workout</Text>
                     </TouchableOpacity>
                 </ScrollView>
         </KeyboardAvoidingView>
