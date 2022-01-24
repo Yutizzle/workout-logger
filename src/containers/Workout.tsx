@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import CommonStyles from '../styles/Common'
 import { KeyboardAvoidingView, Text, Platform, TouchableOpacity, Alert } from 'react-native';
 import { CompletedSets, WorkoutExecutionData, WorkoutScreenNavigationProp } from '../common/types';
-import { Header } from 'react-native-elements';
 import { StatusBar } from 'expo-status-bar';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../hooks/useAuth';
-import { useSignOut, useSelect, useFilter, useUpdate } from 'react-supabase';
+import { useSelect, useFilter, useUpdate } from 'react-supabase';
 import { ScrollView } from 'react-native-gesture-handler';
 import { WorkoutTodo } from '../components/WorkoutTodo';
+import { WorkoutHeader } from '../components/Header';
 
 const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
     //get AuthContext
     const { session, user } = useAuth();
-    const [ signOutState, signOut ] = useSignOut();
     const [ workoutData, setWorkoutData ] = useState<WorkoutExecutionData[]>(route.params.workout_data);
 
     //hook for updating user_workout_history
@@ -125,48 +123,17 @@ const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
         }
     }
 
-    const signout = async () => {
-        await signOut();
-        if(signOutState.error) {
-            console.log('error:', signOutState.error);
-        }
-    }
-    
     return (
         <KeyboardAvoidingView 
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={CommonStyles.viewContainer}>
             <StatusBar style="dark"/>
-            <Header
-                backgroundColor=""
-                backgroundImageStyle={{}}
-                barStyle="default"
-                centerComponent={
-                    <Text style={CommonStyles.headerTitle}>
-                        {route.params.workout_name}
-                    </Text>}
-                centerContainerStyle={CommonStyles.justifyCenter}
-                containerStyle={CommonStyles.headerContainer}
-                leftComponent={
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <MaterialIcons name="arrow-back" style={CommonStyles.headerIcons} />
-                    </TouchableOpacity>
-                }
-                leftContainerStyle={CommonStyles.justifyCenter}
-                placement="center"
-                rightComponent={
-                    <TouchableOpacity onPress={signout}>
-                        <MaterialIcons name="logout" style={CommonStyles.headerIcons} />
-                    </TouchableOpacity>
-                }
-                rightContainerStyle={CommonStyles.justifyCenter}
-                statusBarProps={{}}
-                />
+            <WorkoutHeader workoutName={route.params.workout_name} />
                 <ScrollView contentContainerStyle={[CommonStyles.flexGrow, CommonStyles.todoContainer]}>
                     <WorkoutTodo data={workoutData} setWorkoutDataHandler={setWorkoutData}></WorkoutTodo>
                     {/* Complete Workout Button */}
-                    <TouchableOpacity style={CommonStyles.buttons} onPress={async () => {await completeWorkout();}}>
-                        <Text style={CommonStyles.buttonText}>Complete Workout</Text>
+                    <TouchableOpacity style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]} onPress={async () => {await completeWorkout();}}>
+                        <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Complete Workout</Text>
                     </TouchableOpacity>
                 </ScrollView>
         </KeyboardAvoidingView>

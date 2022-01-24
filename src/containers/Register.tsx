@@ -8,7 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ErrorMessages } from '../api/constants';
 import { format, isExists, getYear, subYears } from 'date-fns';
 import { useInsert, useSignUp } from 'react-supabase';
-import { RegisterData, AuthStackParamList } from '../common/types';
+import { RegisterData } from '../common/types';
 import { RegisterScreenNavigationProp } from '../common/types';
 
 const RegisterScreen = ({ navigation }: RegisterScreenNavigationProp) =>  {
@@ -279,10 +279,10 @@ const RegisterScreen = ({ navigation }: RegisterScreenNavigationProp) =>  {
                         {signUpError ? <ErrorMessage error={signUpError} visible={true} /> : null}
 
                         {/* Login Button */}
-                        <TouchableOpacity style={CommonStyles.buttons}
+                        <TouchableOpacity style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
                             onPress={onRegister}
                         >
-                            <Text style={CommonStyles.buttonText}>Register</Text>
+                            <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Register</Text>
                         </TouchableOpacity>
 
                         {/* Register Link */}

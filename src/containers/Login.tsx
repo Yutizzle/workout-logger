@@ -7,8 +7,8 @@ import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
 import { ErrorMessages } from '../api/constants';
 import { useSignIn } from 'react-supabase';
-import { AuthStackParamList } from '../common/types';
 import { LoginScreenNavigationProp } from '../common/types';
+import Common from '../styles/Common';
 
 const LoginScreen = ({ navigation }: LoginScreenNavigationProp) =>  {
     const [{ error, fetching, session, user }, signIn] = useSignIn();
@@ -86,12 +86,12 @@ const LoginScreen = ({ navigation }: LoginScreenNavigationProp) =>  {
                             {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
 
                             {/* Login Button */}
-                            <TouchableOpacity style={CommonStyles.buttons}
+                            <TouchableOpacity style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
                                 onPress={onLogin}
                             >
                                 {fetching ? 
                                     <ActivityIndicator size="small" color="#fff" /> :
-                                    <Text style={CommonStyles.buttonText}>Login</Text>
+                                    <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Login</Text>
                                 }
                             </TouchableOpacity>
 

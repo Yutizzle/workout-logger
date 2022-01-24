@@ -1,20 +1,17 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, View } from 'react-native';
 import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
-import { useSelect, useFilter, useSignOut, useRealtime, useClient } from 'react-supabase';
-import { Header } from "react-native-elements";
-import { MaterialIcons } from '@expo/vector-icons';
+import { useSelect, useFilter, useSignOut } from 'react-supabase';
 import { useAuth } from '../hooks/useAuth';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { WorkoutExecutionData } from '../common/types';
 import { WelcomeScreenNavigationProp } from '../common/types';
+import { MainHeader } from '../components/Header';
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
     //get AuthContext
     const { session, user } = useAuth();
-    const [ signOutState, signOut ] = useSignOut();
     
     const filter = useFilter(
         (query) => query.eq('user_id', user?.id),
@@ -47,53 +44,19 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
 
     const data: WorkoutExecutionData[] = result.data ?? [];
     
-    const signout = async () => {
-        await signOut();
-        if(signOutState.error) {
-            console.log('error:', signOutState.error);
-        }
-    }
     useEffect(() => {
         navigation.addListener('focus', () => getUserData());
     }, [navigation]);
 
     return (
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={CommonStyles.viewContainer}>
+        <View style={CommonStyles.viewContainer}>
             <StatusBar style="dark"/>
-            <Header
-                backgroundColor=""
-                backgroundImageStyle={{}}
-                barStyle="default"
-                centerComponent={
-                    <Text style={CommonStyles.headerTitle}>
-                        Today's Workout
-                    </Text>}
-                centerContainerStyle={CommonStyles.justifyCenter}
-                containerStyle={CommonStyles.headerContainer}
-                leftComponent={
-                    <TouchableOpacity>
-                        <View style={CommonStyles.rotate90}>
-                            <MaterialIcons name="bar-chart" style={CommonStyles.headerIcons} />
-                        </View>
-                    </TouchableOpacity>
-                }
-                leftContainerStyle={CommonStyles.justifyCenter}
-                placement="center"
-                rightComponent={
-                    <TouchableOpacity onPress={async () => {await signout()}}>
-                        <MaterialIcons name="logout" style={CommonStyles.headerIcons} />
-                    </TouchableOpacity>
-                }
-                rightContainerStyle={CommonStyles.justifyCenter}
-                statusBarProps={{}}
-                />
+            <MainHeader />
             {/* Workout */}
             <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
                 <WorkoutCard workouts={data} />
             </ScrollView>
-        </KeyboardAvoidingView>
+        </View>
 
     );
 }

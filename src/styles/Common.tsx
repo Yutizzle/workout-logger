@@ -19,8 +19,6 @@ export default StyleSheet.create({
     headerTitle: {
         fontFamily: 'OpenSans_700Bold',
         fontSize: 20,
-        //color: '#4e5d5c'
-        //color: '#353535'
         color: '#2B3A39'
     },
     headerIcons: {
@@ -63,6 +61,12 @@ export default StyleSheet.create({
         color: '#2B3A39',
         fontSize: 14,
         paddingLeft: 12
+    },
+    menuItemContainer: {
+        width: '100%',
+        borderBottomColor: '#d9d9d9',
+        borderBottomWidth: 1,
+        padding: 10
     },
     todoContainer: {
         padding: 10
@@ -146,7 +150,24 @@ export default StyleSheet.create({
         opacity: 0
     },
     flexGrow: {
-        flexGrow: 1
+        flexGrow: 1,
+        flexShrink: 0
+    },
+    flexShrink: {
+        flexGrow: 0,
+        flexShrink: 1
+    },
+    flexStart: {
+        alignSelf: 'flex-start'
+    },
+    flexEnd: {
+        alignSelf: 'flex-end'
+    },
+    flexDirectionColumn: {
+        flexDirection: 'column'
+    },
+    justifySpaceBetween: {
+        justifyContent: 'space-between'
     },
     justifyCenter: {
         justifyContent: 'center'
@@ -203,7 +224,6 @@ export default StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         borderColor: '#9E9E9E',
-        //borderColor: '#353535',
         borderWidth: 1,
         borderRadius: 6,
         padding: 10,
@@ -240,8 +260,7 @@ export default StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        //backgroundColor: '#4A148C',
-        backgroundColor: '#284b63',
+        
         borderRadius: 30,
         padding: 15,
         margin: 10,
@@ -252,8 +271,15 @@ export default StyleSheet.create({
     },
     buttonText: {
         fontFamily: 'OpenSans_400Regular',
-        fontSize: 16,
-        color: '#fff'
+        fontSize: 16
+    },
+    buttonsPrimary: {
+        backgroundColor: '#284b63'
+    },
+    buttonsSecondary: {
+        borderColor: '#284b63',
+        borderWidth: 1,
+        backgroundColor: '#f9f9f9'
     },
     linkContainer: {
         flexDirection: 'row',
@@ -266,6 +292,9 @@ export default StyleSheet.create({
     },
     textLight: {
         color: '#f9f9f9'
+    },
+    textDark: {
+        color: '#284b63'
     },
     inputLabel: {
         fontFamily: 'OpenSans_400Regular',

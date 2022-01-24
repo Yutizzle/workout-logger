@@ -5,6 +5,7 @@ export type LoginScreenNavigationProp = NativeStackScreenProps<AuthStackParamLis
 export type RegisterScreenNavigationProp = NativeStackScreenProps<AuthStackParamList, 'RegisterScreen'>;
 export type WelcomeScreenNavigationProp = NativeStackScreenProps<AppStackParamList, 'WelcomeScreen'>;
 export type WelcomeScreenUseNavigationProp = StackNavigationProp<AppStackParamList, 'WelcomeScreen'>;
+export type MenuScreenUseNavigationProp = StackNavigationProp<AppStackParamList, 'WelcomeScreen'>;
 export type WorkoutScreenNavigationProp = NativeStackScreenProps<AppStackParamList, 'WorkoutScreen'>;
 
 export type AuthStackParamList = {
@@ -14,6 +15,7 @@ export type AuthStackParamList = {
 
 export type AppStackParamList = {
     WelcomeScreen: undefined,
+    MenuScreen: undefined,
     WorkoutScreen: { 
         workout_data: WorkoutExecutionData[],
         workout_name: string,

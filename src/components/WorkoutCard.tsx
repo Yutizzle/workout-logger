@@ -138,7 +138,7 @@ export const WorkoutCard = (props: {workouts: WorkoutExecutionData[]}) => {
                     {/* Exercise List */}
                     <View style={CommonStyles.cardTextContainer}>{exerciseList}</View>
                     {/* Start Workout Button */}
-                    <TouchableOpacity style={CommonStyles.buttons}
+                    <TouchableOpacity style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
                                         onPress={async () => {await startWorkout({
                                             program_id: workout.program_id, 
                                             program_run: workout.program_run, 
@@ -153,7 +153,7 @@ export const WorkoutCard = (props: {workouts: WorkoutExecutionData[]}) => {
                         {
                             insertState.fetching ? 
                                 <ActivityIndicator size="small" color="#fff"></ActivityIndicator> :
-                                <Text style={CommonStyles.buttonText}>
+                                <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>
                                     {workouts[index].workout_history_id != null ? 'Resume Workout' : 'Start Workout'}
                                 </Text>
                         }
