@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { WorkoutExecutionData } from '../common/types';
 import { WelcomeScreenNavigationProp } from '../common/types';
-import CommonHeader from '../components/Header';
+import { CommonHeader } from '../components/Header';
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
     //get AuthContext

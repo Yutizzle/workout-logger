@@ -7,7 +7,6 @@ import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
 import { ErrorMessages } from '../api/constants';
 import { useSignIn } from 'react-supabase';
-import { AuthStackParamList } from '../common/types';
 import { LoginScreenNavigationProp } from '../common/types';
 
 const LoginScreen = ({ navigation }: LoginScreenNavigationProp) =>  {

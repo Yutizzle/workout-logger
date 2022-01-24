@@ -7,7 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useSignOut, useSelect, useFilter, useUpdate } from 'react-supabase';
 import { ScrollView } from 'react-native-gesture-handler';
 import { WorkoutTodo } from '../components/WorkoutTodo';
-import CommonHeader from '../components/Header';
+import { CommonHeader } from '../components/Header';
 
 const WorkoutScreen = ({ navigation, route }: WorkoutScreenNavigationProp) => {
     //get AuthContext
