@@ -1,5 +1,5 @@
 import React from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, View, Text, TouchableOpacity} from 'react-native'
+import { ScrollView, View, Text, TouchableOpacity} from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import CommonStyles from '../styles/Common'
 import { MenuHeader } from '../components/Header'
@@ -24,15 +24,12 @@ const MenuScreen = () => {
     }
 
     return(
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={CommonStyles.viewContainer}>
+        <View style={CommonStyles.viewContainer}>
             <StatusBar style="dark"/>
             <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
                 <MenuHeader />
                 <View style={[CommonStyles.flexGrow, CommonStyles.flexDirectionColumn]}>
                     <View style={CommonStyles.flexGrow}>
-                        <MenuItem name={'My Profile'} onPress={() => {}}/>
                         <MenuItem name={'My Programs'} onPress={() => {}}/>
                     </View>
                     <View style={CommonStyles.flexShrink}>
@@ -42,7 +39,7 @@ const MenuScreen = () => {
                     </View>
                 </View>
             </ScrollView>
-        </KeyboardAvoidingView>
+        </View>
     )
 }
 

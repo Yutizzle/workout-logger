@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
 import { useSelect, useFilter, useSignOut } from 'react-supabase';
@@ -49,16 +49,14 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
     }, [navigation]);
 
     return (
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={CommonStyles.viewContainer}>
+        <View style={CommonStyles.viewContainer}>
             <StatusBar style="dark"/>
             <MainHeader />
             {/* Workout */}
             <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
                 <WorkoutCard workouts={data} />
             </ScrollView>
-        </KeyboardAvoidingView>
+        </View>
 
     );
 }

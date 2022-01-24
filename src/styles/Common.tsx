@@ -19,8 +19,6 @@ export default StyleSheet.create({
     headerTitle: {
         fontFamily: 'OpenSans_700Bold',
         fontSize: 20,
-        //color: '#4e5d5c'
-        //color: '#353535'
         color: '#2B3A39'
     },
     headerIcons: {
@@ -226,7 +224,6 @@ export default StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         borderColor: '#9E9E9E',
-        //borderColor: '#353535',
         borderWidth: 1,
         borderRadius: 6,
         padding: 10,
@@ -274,20 +271,15 @@ export default StyleSheet.create({
     },
     buttonText: {
         fontFamily: 'OpenSans_400Regular',
-        fontSize: 16,
-        //color: '#fff'
+        fontSize: 16
     },
     buttonsPrimary: {
-        //backgroundColor: '#4A148C',
-        backgroundColor: '#284b63',
-        //color: '#fff'
+        backgroundColor: '#284b63'
     },
     buttonsSecondary: {
-        //borderColor: '#a31621',
         borderColor: '#284b63',
         borderWidth: 1,
-        backgroundColor: '#f9f9f9',
-        //color: '#fff'
+        backgroundColor: '#f9f9f9'
     },
     linkContainer: {
         flexDirection: 'row',
