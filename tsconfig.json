@@ -4,5 +4,5 @@
   "compilerOptions": {
     "strict": true
   },
-  "include": [".eslintrc.js", "App.tsx", "src"]
+  "include": [".eslintrc.js", "app.config.js", "App.tsx", "src"]
 }
