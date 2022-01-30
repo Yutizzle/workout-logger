@@ -1,29 +1,27 @@
-import React, { FC } from 'react';
+import React from 'react';
 import AppLoading from 'expo-app-loading';
 import { useFonts, OpenSans_400Regular, OpenSans_700Bold } from '@expo-google-fonts/open-sans';
-import { Routes } from './src/navigation'
-import { supabase } from './src/api/supabase'
 import { Provider } from 'react-supabase';
+import Routes from './src/navigation';
+import { supabase } from './src/api/supabase';
 
-const App = () => {
+function App() {
   // load google fonts with useFonts
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     OpenSans_400Regular,
     OpenSans_700Bold,
   });
 
   // show expo loading indicator if fonts not loaded yet
   if (!fontsLoaded) {
-    return (<AppLoading />);
-  } else {
-    // show Routes component
-    return (
-      <Provider value={supabase}>
-        <Routes />
-      </Provider>
-    );
+    return <AppLoading />;
   }
-  
+  // show Routes component
+  return (
+    <Provider value={supabase}>
+      <Routes />
+    </Provider>
+  );
 }
 
 export default App;

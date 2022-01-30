@@ -1,113 +1,125 @@
 import React, { useState } from 'react';
-import { View, ImageBackground, Text, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard, ActivityIndicator } from 'react-native';
+import {
+  View,
+  ImageBackground,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Platform,
+  Keyboard,
+  ActivityIndicator,
+} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
+import { useSignIn } from 'react-supabase';
+import ErrorMessages from '../api/constants';
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
-import { StatusBar } from 'expo-status-bar';
-import { ErrorMessages } from '../api/constants';
-import { useSignIn } from 'react-supabase';
-import { LoginScreenNavigationProp } from '../common/types';
-import Common from '../styles/Common';
+import { LoginScreenNavigationProp } from '../types';
+import plateLogo from '../assets/images/plate-weight.jpg';
 
-const LoginScreen = ({ navigation }: LoginScreenNavigationProp) =>  {
-    const [{ error, fetching, session, user }, signIn] = useSignIn();
+function LoginScreen({ navigation }: LoginScreenNavigationProp) {
+  const [signInState, signIn] = useSignIn();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passHide, togglePassHide] = useState(true);
-    const [loginError, setLoginError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passHide, togglePassHide] = useState(true);
+  const [loginError, setLoginError] = useState('');
 
-    const onLogin = async () => {
-        if (email !== '' && password !== '') {
-            const { error, session, user } = await signIn({
-                email: email, 
-                password: password
-            });
+  const onLogin = async () => {
+    if (email !== '' && password !== '') {
+      const state = await signIn({
+        email,
+        password,
+      });
 
-            if(error) {
-                setLoginError(error.message);
-    
-                console.log('error:', error);
-            }
-        } else {
-            setLoginError(ErrorMessages.EMPTY_LOGIN_FIELD);
-        }
-        
-    };
+      if (state.error) {
+        setLoginError(state.error.message);
 
-    return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={CommonStyles.viewContainer}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={CommonStyles.viewContainer}>
-                    {/* Status Bar */}
-                    <StatusBar style="light"/>
+        // console.log('error:', state.error);
+      }
+    } else {
+      setLoginError(ErrorMessages.EMPTY_LOGIN_FIELD);
+    }
+  };
 
-                    {/* Background Image */}
-                    <ImageBackground style={CommonStyles.backgroundImage}
-                        source={require('../assets/images/plate-weight.jpg')} 
-                    >
-                        {/* Login Area */}
-                        <View style={CommonStyles.loginContainer}>
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={CommonStyles.viewContainer}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={CommonStyles.viewContainer}>
+          {/* Status Bar */}
+          <StatusBar style="light" />
 
-                            {/* App Title */}
-                            <View style={CommonStyles.titleContainer}>
-                                <Text style={CommonStyles.title}>Workout Logger</Text>
-                            </View>
+          {/* Background Image */}
+          <ImageBackground style={CommonStyles.backgroundImage} source={plateLogo}>
+            {/* Login Area */}
+            <View style={CommonStyles.loginContainer}>
+              {/* App Title */}
+              <View style={CommonStyles.titleContainer}>
+                <Text style={CommonStyles.title}>Workout Logger</Text>
+              </View>
 
-                            {/* Username Field */}
-                            <View style={CommonStyles.inputContainer}>
-                                <TextInput style={CommonStyles.inputs}
-                                    placeholder="Username"
-                                    keyboardType="email-address"
-                                    onChangeText={email => setEmail(email)}
-                                />
-                            </View>
+              {/* Username Field */}
+              <View style={CommonStyles.inputContainer}>
+                <TextInput
+                  style={CommonStyles.inputs}
+                  placeholder="Username"
+                  keyboardType="email-address"
+                  onChangeText={(em) => setEmail(em)}
+                />
+              </View>
 
-                            {/* Password Field */}
-                            <View style={CommonStyles.inputContainer}>
-                                <TextInput style={CommonStyles.inputs}
-                                    placeholder="Password"
-                                    secureTextEntry={passHide}
-                                    textContentType='password'
-                                    autoCompleteType='password'
-                                    onChangeText={pass => setPassword(pass)}
-                                />
-                                <Ionicons name={passHide ? "eye-off-sharp" : "eye-sharp"} 
-                                    size={20} 
-                                    color="gray"
-                                    onPress={()=>togglePassHide(!passHide)}
-                                />
-                            </View>
+              {/* Password Field */}
+              <View style={CommonStyles.inputContainer}>
+                <TextInput
+                  style={CommonStyles.inputs}
+                  placeholder="Password"
+                  secureTextEntry={passHide}
+                  textContentType="password"
+                  autoCompleteType="password"
+                  onChangeText={(pass) => setPassword(pass)}
+                />
+                <Ionicons
+                  name={passHide ? 'eye-off-sharp' : 'eye-sharp'}
+                  size={20}
+                  color="gray"
+                  onPress={() => togglePassHide(!passHide)}
+                />
+              </View>
 
-                            {/* Error message */}
-                            {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
+              {/* Error message */}
+              {loginError ? <ErrorMessage error={loginError} visible /> : null}
 
-                            {/* Login Button */}
-                            <TouchableOpacity style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-                                onPress={onLogin}
-                            >
-                                {fetching ? 
-                                    <ActivityIndicator size="small" color="#fff" /> :
-                                    <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Login</Text>
-                                }
-                            </TouchableOpacity>
+              {/* Login Button */}
+              <TouchableOpacity
+                style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
+                onPress={onLogin}
+              >
+                {signInState.fetching ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Login</Text>
+                )}
+              </TouchableOpacity>
 
-                            {/* Register Link */}
-                            <View style={CommonStyles.linkContainer}>
-                                <Text style={CommonStyles.registerText}>Don't have an account?</Text>
-                                <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
-                                    <Text style={CommonStyles.links}> Sign Up!</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </ImageBackground>
-                </View>
-            </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
-    );
+              {/* Register Link */}
+              <View style={CommonStyles.linkContainer}>
+                <Text style={CommonStyles.registerText}>Don&apos;t have an account?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
+                  <Text style={CommonStyles.links}> Sign Up!</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ImageBackground>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+  );
 }
 
 export default LoginScreen;
