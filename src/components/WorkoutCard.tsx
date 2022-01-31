@@ -8,13 +8,23 @@ import CommonStyles from '../styles/Common';
 import { WelcomeScreenUseNavigationProp, WorkoutExecutionData, Workouts } from '../types';
 import useAuth from '../hooks/useAuth';
 
-function Exercise(props: { exercise: string }) {
-  const { exercise } = props;
+type ExerciseProps = {
+  exercise: string;
+};
+
+type ExerciseDetailProps = {
+  exercise: WorkoutExecutionData;
+};
+
+type WorkoutCardProps = {
+  workoutSets: WorkoutExecutionData[];
+};
+
+function Exercise({ exercise }: ExerciseProps) {
   return <Text style={CommonStyles.cardTextHead}>{exercise}</Text>;
 }
 
-function ExerciseDetail(props: { exercise: WorkoutExecutionData }) {
-  const { exercise } = props;
+function ExerciseDetail({ exercise }: ExerciseDetailProps) {
   return (
     <View style={CommonStyles.cardTextRowContainer}>
       {exercise.set && <Text style={CommonStyles.cardText}>Set: {exercise.set}</Text>}
@@ -27,8 +37,7 @@ function ExerciseDetail(props: { exercise: WorkoutExecutionData }) {
   );
 }
 
-export default function WorkoutCard(props: { workoutSets: WorkoutExecutionData[] }) {
-  const { workoutSets } = props;
+export default function WorkoutCard({ workoutSets }: WorkoutCardProps) {
   const { session, user } = useAuth();
   const navigation = useNavigation<WelcomeScreenUseNavigationProp>();
   const [insertState, insertHistory] = useInsert('user_workout_history');

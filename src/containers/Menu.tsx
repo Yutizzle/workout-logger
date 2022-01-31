@@ -7,8 +7,12 @@ import CommonStyles from '../styles/Common';
 import { HeaderBackOnly } from '../components/Header';
 import { MenuScreenUseNavigationProp } from '../types';
 
-function MenuItem(props: { name: string; onPress: () => void }) {
-  const { name, onPress } = props;
+type MenuItemProps = {
+  name: string;
+  onPress: () => void;
+};
+
+function MenuItem({ name, onPress }: MenuItemProps) {
   return (
     <TouchableOpacity style={CommonStyles.menuItemContainer} onPress={onPress}>
       <Text style={[CommonStyles.headerTitle]}>{name}</Text>

@@ -6,9 +6,12 @@ import { useNavigation } from '@react-navigation/native';
 import CommonStyles from '../styles/Common';
 import { MenuScreenUseNavigationProp } from '../types';
 
-export function HeaderMenuOnly(props: { headerTitle: string }) {
+type HeaderProps = {
+  headerTitle: string;
+};
+
+export function HeaderMenuOnly({ headerTitle }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
-  const { headerTitle } = props;
   return (
     <Header
       backgroundColor=""
@@ -37,9 +40,8 @@ export function HeaderMenuOnly(props: { headerTitle: string }) {
   );
 }
 
-export function HeaderBackOnly(props: { headerTitle: string }) {
+export function HeaderBackOnly({ headerTitle }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
-  const { headerTitle } = props;
   return (
     <Header
       backgroundColor=""
@@ -66,9 +68,8 @@ export function HeaderBackOnly(props: { headerTitle: string }) {
   );
 }
 
-export function HeaderBackAndMenu(props: { headerTitle: string }) {
+export function HeaderBackAndMenu({ headerTitle }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
-  const { headerTitle } = props;
   return (
     <Header
       backgroundColor=""

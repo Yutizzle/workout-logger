@@ -17,11 +17,10 @@ const initialState = { session: null, user: null };
 export const AuthContext = createContext<AuthUser>(initialState);
 
 // AuthProvider component
-export function AuthProvider(props: Props) {
+export function AuthProvider({ children }: Props) {
   // user null = loading
   const [state, setState] = useState<AuthUser>(initialState);
   const client = useClient();
-  const { children } = props;
 
   // get and set user session with supabase auth
   useEffect(() => {

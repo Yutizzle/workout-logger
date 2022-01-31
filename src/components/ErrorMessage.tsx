@@ -9,8 +9,7 @@ type Error = {
 };
 
 // Error message component
-function ErrorMessage(props: Error) {
-  const { error, visible } = props;
+function ErrorMessage({ error, visible }: Error) {
   if (!error || !visible) return null;
   return <Text style={CommonStyles.errorText}>{error}</Text>;
 }

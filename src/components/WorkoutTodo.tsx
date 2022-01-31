@@ -8,11 +8,17 @@ import CommonStyles from '../styles/Common';
 import { WorkoutExecutionData } from '../types';
 import useAuth from '../hooks/useAuth';
 
-function SetTodo(props: {
+type SetTodoProps = {
   data: WorkoutExecutionData;
   setWorkoutDataHandler: React.Dispatch<React.SetStateAction<WorkoutExecutionData[]>>;
-}) {
-  const { data, setWorkoutDataHandler } = props;
+};
+
+type WorkoutTodoProps = {
+  data: WorkoutExecutionData[];
+  setWorkoutDataHandler: React.Dispatch<React.SetStateAction<WorkoutExecutionData[]>>;
+};
+
+function SetTodo({ data, setWorkoutDataHandler }: SetTodoProps) {
   const session = useAuth();
   const [, insertSet] = useInsert('user_exercise_history');
   const [exerciseData, setExerciseData] = useState<WorkoutExecutionData>(data);
@@ -196,11 +202,7 @@ function SetTodo(props: {
   );
 }
 
-export default function WorkoutTodo(props: {
-  data: WorkoutExecutionData[];
-  setWorkoutDataHandler: React.Dispatch<React.SetStateAction<WorkoutExecutionData[]>>;
-}) {
-  const { data, setWorkoutDataHandler } = props;
+export default function WorkoutTodo({ data, setWorkoutDataHandler }: WorkoutTodoProps) {
   let prevExercise = '';
   const todo = data.map((set) => {
     const prev = prevExercise;
