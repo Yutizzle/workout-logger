@@ -13,9 +13,8 @@ type ProgramList = {
   users: string[];
 };
 
-type UserProgram = {
+type UserProgramId = {
   program_id: number;
-  program_run: number;
 };
 
 type FirstWorkoutId = {
@@ -47,8 +46,8 @@ function ProgramsScreen() {
   });
 
   // get user's current program
-  const [userProgram] = useSelect<UserProgram>('user_program', {
-    columns: 'program_id, program_run',
+  const [userProgram] = useSelect<UserProgramId>('user_program', {
+    columns: 'program_id',
     filter: userIdFilter,
     pause: user?.id === null,
     options: { count: 'exact' },
