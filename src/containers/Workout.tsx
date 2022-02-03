@@ -132,7 +132,7 @@ function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
     >
       <StatusBar />
       <HeaderBackAndMenu headerTitle={route.params.workout_name} />
-      <ScrollView contentContainerStyle={[CommonStyles.flexGrow, CommonStyles.todoContainer]}>
+      <ScrollView contentContainerStyle={[CommonStyles.flexGrow, CommonStyles.padding10]}>
         <WorkoutTodo data={workoutData} setWorkoutDataHandler={setWorkoutData} />
         {/* Complete Workout Button */}
         <TouchableOpacity

@@ -1,28 +1,257 @@
-import React from 'react';
-import { ScrollView, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useSelect } from 'react-supabase';
+import { useFilter, useSelect, useUpsert } from 'react-supabase';
+import { Picker } from '@react-native-picker/picker';
 import CommonStyles from '../styles/Common';
-import { ProgramsScreenNavigationProp } from '../types';
 import { HeaderBackOnly } from '../components/Header';
+import useAuth from '../hooks/useAuth';
 
-function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
-  const [result] = useSelect('program', {
+type ProgramList = {
+  program_id: number;
+  program_name: string;
+  users: string[];
+};
+
+type UserProgramId = {
+  program_id: number;
+};
+
+type FirstWorkoutId = {
+  workout_id: number;
+};
+
+function ProgramsScreen() {
+  const { user } = useAuth();
+  const [programList, setProgramList] = useState<ProgramList[]>([]);
+  const [selectedProgramId, setSelectedProgramId] = useState(0);
+  const [currUserProgramId, setCurrUserProgramId] = useState(0);
+  const [firstWorkoutId, setFirstWorkoutId] = useState(0);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const userIdFilter = useFilter((query) => query.eq('user_id', user?.id), [user?.id]);
+
+  // get all programs
+  const [programs] = useSelect<ProgramList>('program', {
     columns: `
             program_id:id,
             program_name,
-            user_program_id:user_program(id)
+            users:user_program(user_id)
         `,
+    options: { count: 'exact' },
   });
 
-  console.log(result.data);
+  // get user's current program
+  const [userProgram] = useSelect<UserProgramId>('user_program', {
+    columns: 'program_id',
+    filter: userIdFilter,
+    pause: user?.id === null,
+    options: { count: 'exact' },
+  });
+
+  // get first workout in current program
+  const firstWorkoutFilter = useFilter(
+    (query) => query.eq('sequence_num', 0).eq('program_id', selectedProgramId),
+    [selectedProgramId]
+  );
+  const [firstWorkout] = useSelect<FirstWorkoutId>('program_detail', {
+    columns: 'workout_id',
+    filter: firstWorkoutFilter,
+    pause: selectedProgramId === 0,
+    options: { count: 'exact' },
+  });
+
+  // update or insert user's current program
+  const [upsertState, upsertUserProgram] = useUpsert('user_program', {
+    options: { onConflict: 'user_id' },
+  });
+
+  // init program list and user's current program
+  useEffect(() => {
+    if (!programs.fetching && programs.count && programs.data) {
+      if (programs.count > 0) {
+        setProgramList(programs.data);
+      }
+    }
+    if (!userProgram.fetching && userProgram.count && userProgram.data) {
+      if (userProgram.count > 0) {
+        setCurrUserProgramId(userProgram.data[0].program_id);
+      }
+    }
+
+    return () => {};
+  }, [
+    programs.fetching,
+    programs.count,
+    programs.data,
+    userProgram.fetching,
+    userProgram.count,
+    userProgram.data,
+  ]);
+
+  // init selected program
+  useEffect(() => {
+    setSelectedProgramId(currUserProgramId);
+  }, [currUserProgramId]);
+
+  // init first workout in selected program
+  useEffect(() => {
+    if (!firstWorkout.fetching && firstWorkout.count && firstWorkout.data) {
+      if (firstWorkout.count > 0) {
+        setFirstWorkoutId(firstWorkout.data[0].workout_id);
+      }
+    }
+  }, [firstWorkout.fetching, firstWorkout.count, firstWorkout.data]);
+
+  // save current program
+  const onSave = async (programId: number, workoutId: number) => {
+    // disable all buttons
+    setButtonDisabled(true);
+
+    if (programId > 0 && programId !== currUserProgramId) {
+      // upsert selected program id into user_program
+      const res = await upsertUserProgram({
+        user_id: user?.id,
+        program_id: programId,
+        current_workout_id: workoutId,
+        current_program_cycle: 1,
+        created_by: user?.id,
+        updated_by: user?.id,
+        updated_at: new Date(),
+      });
+
+      // update current program state
+      setCurrUserProgramId(res.data[0].program_id);
+
+      // log errors
+      if (upsertState.error) {
+        // console.log(upsertState.error);
+      }
+    }
+
+    // enable all buttons
+    setButtonDisabled(false);
+  };
+
+  // reset current program cycle
+  const resetProgramCycle = async (programId: number, workoutId: number) => {
+    // disable all buttons
+    setButtonDisabled(true);
+
+    if (programId > 0 && programId === currUserProgramId) {
+      // upsert current_program_cycle = 1 into user_program
+      await upsertUserProgram({
+        user_id: user?.id,
+        program_id: programId,
+        current_workout_id: workoutId,
+        current_program_cycle: 1,
+        created_by: user?.id,
+        updated_by: user?.id,
+        updated_at: new Date(),
+      });
+
+      // log errors
+      if (upsertState.error) {
+        // console.log(upsertState.error);
+      }
+    }
+
+    // enable all buttons
+    setButtonDisabled(false);
+  };
+
+  // confirmation alert before reset
+  const onReset = (programId: number, workoutId: number) => {
+    // disable all buttons
+    setButtonDisabled(true);
+
+    // get program name
+    const program = programList.find((data) => data.program_id === programId);
+
+    Alert.alert(
+      'Reset Program Cycle',
+      `Are you sure you want to reset the current program cycle for ${program?.program_name}?`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {
+            // enable all buttons
+            setButtonDisabled(false);
+          },
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            await resetProgramCycle(programId, workoutId);
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={CommonStyles.viewContainer}>
       <StatusBar />
       <HeaderBackOnly headerTitle="My Programs" />
       {/* Workout */}
-      <ScrollView contentContainerStyle={CommonStyles.flexGrow} />
+      <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
+        <View style={[CommonStyles.viewContainer, CommonStyles.padding10]}>
+          <Text style={[CommonStyles.headerTitle, CommonStyles.flexShrink]}>Current Program:</Text>
+          <Picker
+            style={CommonStyles.flexShrink}
+            selectedValue={selectedProgramId}
+            onValueChange={(id) => {
+              setSelectedProgramId(id);
+            }}
+          >
+            {programList.map((program) => (
+              <Picker.Item
+                key={program.program_name}
+                label={program.program_name}
+                value={program.program_id}
+              />
+            ))}
+          </Picker>
+          <View
+            style={[CommonStyles.flexDirectionColumn, CommonStyles.flexGrow, CommonStyles.flexEnd]}
+          >
+            {userProgram.data && (
+              <TouchableOpacity
+                style={[
+                  CommonStyles.buttons,
+                  CommonStyles.buttonsSecondary,
+                  CommonStyles.flexShrink,
+                ]}
+                disabled={buttonDisabled}
+                onPress={async () => {
+                  await onReset(currUserProgramId, firstWorkoutId);
+                }}
+              >
+                {upsertState.fetching ? (
+                  <ActivityIndicator size="small" color="#284b63" />
+                ) : (
+                  <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>
+                    Reset Current Program Cycle
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              style={[CommonStyles.buttons, CommonStyles.buttonsPrimary, CommonStyles.flexShrink]}
+              disabled={buttonDisabled}
+              onPress={async () => {
+                await onSave(selectedProgramId, firstWorkoutId);
+              }}
+            >
+              {upsertState.fetching ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Save</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }

@@ -67,7 +67,7 @@ export default StyleSheet.create({
     borderBottomWidth: 1,
     padding: 10,
   },
-  todoContainer: {
+  padding10: {
     padding: 10,
   },
   todoTextHead: {
@@ -159,8 +159,11 @@ export default StyleSheet.create({
   flexStart: {
     alignSelf: 'flex-start',
   },
-  flexEnd: {
+  flexEndSelf: {
     alignSelf: 'flex-end',
+  },
+  flexEnd: {
+    justifyContent: 'flex-end',
   },
   flexDirectionColumn: {
     flexDirection: 'column',

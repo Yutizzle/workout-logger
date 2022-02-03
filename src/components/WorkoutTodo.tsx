@@ -23,7 +23,7 @@ function SetTodo({ data, setWorkoutDataHandler }: SetTodoProps) {
   const [, insertSet] = useInsert('user_exercise_history');
   const [exerciseData, setExerciseData] = useState<WorkoutExecutionData>(data);
   const [userInputData, setUserInputData] = useState({ reps: '', weight: '', set_duration: '' });
-  const [buttonState, setButtonState] = useState({ disabled: false });
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
     const reps = data.reps_completed ?? data.reps;
@@ -38,7 +38,7 @@ function SetTodo({ data, setWorkoutDataHandler }: SetTodoProps) {
   }, [data]);
 
   const completeSet = async () => {
-    setButtonState({ disabled: true });
+    setButtonDisabled(true);
     const repsCompleted = parseInt(userInputData.reps, 10);
     const weightCompleted = parseInt(userInputData.weight, 10);
     const setDurationCompleted = parseInt(userInputData.set_duration, 10);
@@ -98,14 +98,14 @@ function SetTodo({ data, setWorkoutDataHandler }: SetTodoProps) {
         );
       }
     }
-    setButtonState({ disabled: false });
+    setButtonDisabled(false);
   };
 
   return (
     <View style={CommonStyles.setTodoContainer}>
       <TouchableOpacity
         style={CommonStyles.setTodoGradientContainer}
-        disabled={exerciseData.completed || buttonState.disabled}
+        disabled={exerciseData.completed || buttonDisabled}
         onPress={async () => completeSet()}
       >
         <LinearGradient
