@@ -1,25 +1,21 @@
 import React, { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
-import CommonStyles from '../styles/Common';
 import { StatusBar } from 'expo-status-bar';
-import { useSelect, useFilter, useSignOut } from 'react-supabase';
-import { useAuth } from '../hooks/useAuth';
-import { WorkoutCard } from '../components/WorkoutCard';
-import { WorkoutExecutionData } from '../common/types';
-import { WelcomeScreenNavigationProp } from '../common/types';
-import { MainHeader } from '../components/Header';
+import { useSelect, useFilter } from 'react-supabase';
+import CommonStyles from '../styles/Common';
+import useAuth from '../hooks/useAuth';
+import WorkoutCard from '../components/WorkoutCard';
+import { WorkoutExecutionData, WelcomeScreenNavigationProp } from '../types';
+import { HeaderMenuOnly } from '../components/Header';
 
-const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
-    //get AuthContext
-    const { session, user } = useAuth();
-    
-    const filter = useFilter(
-        (query) => query.eq('user_id', user?.id),
-        [user?.id],
-      );
-    
-    const [ result, getUserData ] = useSelect<WorkoutExecutionData>('user_workout_exercise', {
-        columns: `
+function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
+  // get AuthContext
+  const { user } = useAuth();
+
+  const filter = useFilter((query) => query.eq('user_id', user?.id), [user?.id]);
+
+  const [result, getUserData] = useSelect<WorkoutExecutionData>('user_workout_exercise', {
+    columns: `
             program_id,
             program_run,
             current_program_cycle,
@@ -39,26 +35,25 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenNavigationProp) => {
             weight_completed,
             set_duration_completed
         `,
-        filter
-    });
+    filter,
+  });
 
-    const data: WorkoutExecutionData[] = result.data ?? [];
-    
-    useEffect(() => {
-        navigation.addListener('focus', () => getUserData());
-    }, [navigation]);
+  const data: WorkoutExecutionData[] = result.data ?? [];
 
-    return (
-        <View style={CommonStyles.viewContainer}>
-            <StatusBar style="dark"/>
-            <MainHeader />
-            {/* Workout */}
-            <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
-                <WorkoutCard workouts={data} />
-            </ScrollView>
-        </View>
+  useEffect(() => {
+    navigation.addListener('focus', () => getUserData());
+  }, [result.fetching, getUserData, navigation]);
 
-    );
+  return (
+    <View style={CommonStyles.viewContainer}>
+      <StatusBar />
+      <HeaderMenuOnly headerTitle="Today's Workout" />
+      {/* Workout */}
+      <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
+        <WorkoutCard workoutSets={data} />
+      </ScrollView>
+    </View>
+  );
 }
 
 export default WelcomeScreen;

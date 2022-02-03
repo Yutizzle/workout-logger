@@ -1,19 +1,17 @@
-import React from "react";
-import { Text } from "react-native";
-import CommonStyles from "../styles/Common";
+import React from 'react';
+import { Text } from 'react-native';
+import CommonStyles from '../styles/Common';
 
 // init functional component prop types
 type Error = {
-    error: String | null;
-    visible: Boolean;
-}
+  error: string | null;
+  visible: boolean;
+};
 
 // Error message component
-const ErrorMessage = (props: Error) => {
-    if(!props.error || !props.visible)
-        return null;
-    else
-        return <Text style={CommonStyles.errorText}>{props.error}</Text>;
+function ErrorMessage({ error, visible }: Error) {
+  if (!error || !visible) return null;
+  return <Text style={CommonStyles.errorText}>{error}</Text>;
 }
 
 export default ErrorMessage;
