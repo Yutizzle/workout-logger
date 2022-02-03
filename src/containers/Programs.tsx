@@ -21,12 +21,17 @@ type FirstWorkoutId = {
   workout_id: number;
 };
 
+type ProgramRun = {
+  program_run: number;
+};
+
 function ProgramsScreen() {
   const { user } = useAuth();
   const [programList, setProgramList] = useState<ProgramList[]>([]);
   const [selectedProgramId, setSelectedProgramId] = useState(0);
   const [currUserProgramId, setCurrUserProgramId] = useState(0);
   const [firstWorkoutId, setFirstWorkoutId] = useState(0);
+  const [lastProgramRun, setLastProgramRun] = useState(0);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const userIdFilter = useFilter((query) => query.eq('user_id', user?.id), [user?.id]);
 
@@ -60,6 +65,19 @@ function ProgramsScreen() {
     options: { count: 'exact' },
   });
 
+  // get last program run for selected program
+  const programRunFilter = useFilter(
+    (query) =>
+      query.eq('program_id', selectedProgramId).order('created_at', { ascending: false }).limit(1),
+    [selectedProgramId]
+  );
+  const [programRun] = useSelect<ProgramRun>('user_workout_history', {
+    columns: 'program_run',
+    filter: programRunFilter,
+    pause: selectedProgramId === 0,
+    options: { count: 'exact' },
+  });
+
   // update or insert user's current program
   const [upsertState, upsertUserProgram] = useUpsert('user_program', {
     options: { onConflict: 'user_id' },
@@ -74,7 +92,8 @@ function ProgramsScreen() {
     }
     if (!userProgram.fetching && userProgram.count && userProgram.data) {
       if (userProgram.count > 0) {
-        setCurrUserProgramId(userProgram.data[0].program_id);
+        const data = userProgram.data[0];
+        setCurrUserProgramId(data.program_id);
       }
     }
 
@@ -102,8 +121,20 @@ function ProgramsScreen() {
     }
   }, [firstWorkout.fetching, firstWorkout.count, firstWorkout.data]);
 
+  // init last program run in selected program
+  useEffect(() => {
+    // console.log(programRun);
+    if (!programRun.fetching && programRun.count && programRun.data) {
+      if (programRun.count > 0) {
+        setLastProgramRun(programRun.data[0].program_run);
+      } else {
+        setLastProgramRun(0);
+      }
+    }
+  }, [programRun.fetching, programRun.count, programRun.data]);
+
   // save current program
-  const onSave = async (programId: number, workoutId: number) => {
+  const onSave = async (programId: number, programRunId: number, workoutId: number) => {
     // disable all buttons
     setButtonDisabled(true);
 
@@ -114,17 +145,18 @@ function ProgramsScreen() {
         program_id: programId,
         current_workout_id: workoutId,
         current_program_cycle: 1,
+        program_run: programRunId + 1,
         created_by: user?.id,
         updated_by: user?.id,
         updated_at: new Date(),
       });
 
-      // update current program state
-      setCurrUserProgramId(res.data[0].program_id);
-
       // log errors
       if (upsertState.error) {
         // console.log(upsertState.error);
+      } else {
+        // update current program id state
+        setCurrUserProgramId(res.data[0].program_id);
       }
     }
 
@@ -133,17 +165,18 @@ function ProgramsScreen() {
   };
 
   // reset current program cycle
-  const resetProgramCycle = async (programId: number, workoutId: number) => {
+  const resetProgramCycle = async (programId: number, programRunId: number, workoutId: number) => {
     // disable all buttons
     setButtonDisabled(true);
 
-    if (programId > 0 && programId === currUserProgramId) {
+    if (programId > 0) {
       // upsert current_program_cycle = 1 into user_program
       await upsertUserProgram({
         user_id: user?.id,
         program_id: programId,
         current_workout_id: workoutId,
         current_program_cycle: 1,
+        current_program_run: programRunId + 1,
         created_by: user?.id,
         updated_by: user?.id,
         updated_at: new Date(),
@@ -160,7 +193,7 @@ function ProgramsScreen() {
   };
 
   // confirmation alert before reset
-  const onReset = (programId: number, workoutId: number) => {
+  const onReset = (programId: number, programRunId: number, workoutId: number) => {
     // disable all buttons
     setButtonDisabled(true);
 
@@ -181,7 +214,7 @@ function ProgramsScreen() {
         {
           text: 'OK',
           onPress: async () => {
-            await resetProgramCycle(programId, workoutId);
+            await resetProgramCycle(programId, programRunId, workoutId);
           },
         },
       ]
@@ -223,7 +256,7 @@ function ProgramsScreen() {
                 ]}
                 disabled={buttonDisabled}
                 onPress={async () => {
-                  await onReset(currUserProgramId, firstWorkoutId);
+                  await onReset(currUserProgramId, lastProgramRun, firstWorkoutId);
                 }}
               >
                 {upsertState.fetching ? (
@@ -240,7 +273,7 @@ function ProgramsScreen() {
               style={[CommonStyles.buttons, CommonStyles.buttonsPrimary, CommonStyles.flexShrink]}
               disabled={buttonDisabled}
               onPress={async () => {
-                await onSave(selectedProgramId, firstWorkoutId);
+                await onSave(selectedProgramId, lastProgramRun, firstWorkoutId);
               }}
             >
               {upsertState.fetching ? (
