@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { LoginScreen, RegisterScreen } from '../containers';
+import { LoginScreen, RegisterScreen } from '../screens';
 import { AuthStackParamList } from '../types';
 
 // create navigation stack

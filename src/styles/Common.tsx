@@ -174,6 +174,9 @@ export default StyleSheet.create({
   justifyCenter: {
     justifyContent: 'center',
   },
+  alignCenter: {
+    alignItems: 'center',
+  },
   halfBasis: {
     flexBasis: '50%',
   },

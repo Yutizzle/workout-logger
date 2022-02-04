@@ -158,6 +158,12 @@ function ProgramsScreen() {
         // update current program id state
         setCurrUserProgramId(res.data[0].program_id);
       }
+    } else if (programId === 0) {
+      Alert.alert('No Program Selected', `Please select a program before saving.`, [
+        {
+          text: 'OK',
+        },
+      ]);
     }
 
     // enable all buttons
@@ -236,6 +242,7 @@ function ProgramsScreen() {
               setSelectedProgramId(id);
             }}
           >
+            <Picker.Item key="--" label="--" value={0} />
             {programList.map((program) => (
               <Picker.Item
                 key={program.program_name}
@@ -247,7 +254,7 @@ function ProgramsScreen() {
           <View
             style={[CommonStyles.flexDirectionColumn, CommonStyles.flexGrow, CommonStyles.flexEnd]}
           >
-            {userProgram.data && (
+            {currUserProgramId > 0 && (
               <TouchableOpacity
                 style={[
                   CommonStyles.buttons,
