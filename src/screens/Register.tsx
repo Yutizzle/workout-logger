@@ -12,13 +12,14 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { format, isExists, getYear, subYears } from 'date-fns';
-import { useInsert, useSignUp } from 'react-supabase';
+import { useClient } from 'react-supabase';
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
 import ErrorMessages from '../api/constants';
 import { RegisterData, RegisterScreenNavigationProp } from '../types';
 
 function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
+  const supabase = useClient();
   const [passHide, togglePassHide] = useState(true);
   const [confirmPassHide, toggleConfirmPassHide] = useState(true);
   const [signUpError, setSignUpError] = useState('');
@@ -41,8 +42,6 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
   };
 
   const [registerData, setRegisterData] = useState<RegisterData>(initRegisterData);
-  const [, signUp] = useSignUp();
-  const [, insertUserData] = useInsert('user');
 
   const validateDateOfBirth = async (y: string, m: string, d: string) => {
     const numYear = parseInt(y, 10);
@@ -115,29 +114,25 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
       registerData.yearValid &&
       registerData.emailValid &&
       registerData.password !== '' &&
+      registerData.confirmPassword !== '' &&
       registerData.passwordMatch
     ) {
-      const { error, user } = await signUp({
-        email: registerData.email,
-        password: registerData.password,
-      });
-
+      const { error } = await supabase.auth.signUp(
+        {
+          email: registerData.email,
+          password: registerData.password,
+        },
+        {
+          data: {
+            first_name: registerData.firstName,
+            last_name: registerData.lastName,
+            date_of_birth: registerData.dateOfBirth,
+          },
+        }
+      );
       if (error) {
         setSignUpError(error.message);
-        // console.log('error:', error);
-      } else if (!error && user) {
-        const insertState = await insertUserData({
-          id: user.id,
-          first_name: registerData.firstName,
-          last_name: registerData.lastName,
-          email: registerData.email,
-          date_of_birth: registerData.dateOfBirth,
-          created_by: user.id,
-        });
-
-        if (insertState.error) {
-          // console.log('error:', insertState.error);
-        }
+        // console.log(error);
       }
     } else if (registerData.firstName === '' && registerData.lastName === '') {
       setSignUpError(ErrorMessages.EMPTY_NAME);
@@ -145,7 +140,7 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
       setSignUpError(ErrorMessages.DOB_INVALID);
     } else if (!registerData.emailValid) {
       setSignUpError(ErrorMessages.EMAIL_INVALID);
-    } else if (!registerData.passwordMatch) {
+    } else if (!registerData.passwordMatch || registerData.confirmPassword === '') {
       setSignUpError(ErrorMessages.PASSWORDS_NOT_MATCH);
     } else {
       setSignUpError(ErrorMessages.EMPTY_LOGIN_FIELD);
@@ -157,7 +152,7 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={CommonStyles.viewContainer}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback style={CommonStyles.viewContainer} onPress={Keyboard.dismiss}>
         <View style={CommonStyles.viewContainer}>
           {/* Status Bar */}
           <StatusBar />
@@ -376,7 +371,9 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
             {/* Login Button */}
             <TouchableOpacity
               style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-              onPress={onRegister}
+              onPress={async () => {
+                await onRegister();
+              }}
             >
               <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Register</Text>
             </TouchableOpacity>

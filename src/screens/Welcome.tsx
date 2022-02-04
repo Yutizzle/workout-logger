@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSelect, useFilter } from 'react-supabase';
 import CommonStyles from '../styles/Common';
@@ -50,7 +50,18 @@ function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
       <HeaderMenuOnly headerTitle="Today's Workout" />
       {/* Workout */}
       <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
-        <WorkoutCard workoutSets={data} />
+        {data.length > 0 && <WorkoutCard workoutSets={data} />}
+        {data.length === 0 && (
+          <View
+            style={[
+              CommonStyles.viewContainer,
+              CommonStyles.justifyCenter,
+              CommonStyles.alignCenter,
+            ]}
+          >
+            <Text style={CommonStyles.cardTextHead}>Please select a program in My Programs.</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
