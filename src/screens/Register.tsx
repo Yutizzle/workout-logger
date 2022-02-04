@@ -42,8 +42,6 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
   };
 
   const [registerData, setRegisterData] = useState<RegisterData>(initRegisterData);
-  // const [, signUp] = useSignUp();
-  // const [, insertUserData] = useInsert('user');
 
   const validateDateOfBirth = async (y: string, m: string, d: string) => {
     const numYear = parseInt(y, 10);
