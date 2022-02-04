@@ -119,10 +119,6 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
       registerData.confirmPassword !== '' &&
       registerData.passwordMatch
     ) {
-      // const { error, user } = await signUp({
-      //   email: registerData.email,
-      //   password: registerData.password
-      // }, {  });
       const { error } = await supabase.auth.signUp(
         {
           email: registerData.email,
@@ -138,21 +134,7 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
       );
       if (error) {
         setSignUpError(error.message);
-        console.log(error);
-        // console.log('error:', error);
-        // } else if (!error && user) {
-        //   const insertState = await insertUserData({
-        //     id: user.id,
-        //     first_name: registerData.firstName,
-        //     last_name: registerData.lastName,
-        //     email: registerData.email,
-        //     date_of_birth: registerData.dateOfBirth,
-        //     created_by: user.id,
-        //   });
-
-        //   if (insertState.error) {
-        //     // console.log('error:', insertState.error);
-        //   }
+        // console.log(error);
       }
     } else if (registerData.firstName === '' && registerData.lastName === '') {
       setSignUpError(ErrorMessages.EMPTY_NAME);
