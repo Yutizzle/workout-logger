@@ -1,8 +1,9 @@
-import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+
+import useAuth from '../hooks/useAuth';
 import AppStack from './AppStack';
 import AuthStack from './AuthStack';
-import useAuth from '../hooks/useAuth';
 
 function MainNav() {
   // get AuthContext

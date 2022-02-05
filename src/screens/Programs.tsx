@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
 import { Picker } from '@react-native-picker/picker';
-import CommonStyles from '../styles/Common';
+import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
+
 import { HeaderBackOnly } from '../components/Header';
 import useAuth from '../hooks/useAuth';
+import CommonStyles from '../styles/Common';
 
 type ProgramList = {
   program_id: number;
@@ -84,7 +85,7 @@ function ProgramsScreen() {
   });
 
   const openWorkoutFilter = useFilter(
-    (query) => query.eq('user_id', user?.id).eq('end_time', null),
+    (query) => query.eq('user_id', user?.id).is('end_time', null),
     [user?.id]
   );
   const [openWorkout] = useSelect<OpenWorkout>('user_workout_history', {
@@ -221,16 +222,20 @@ function ProgramsScreen() {
       // check if there is an open/started workout and close it
       if (openWorkoutIds.length > 0) {
         openWorkoutIds.forEach(async (workout) => {
-          await closeOpenWorkouts({ end_time: new Date() }, (query) => query.eq('id', workout.id));
+          await closeOpenWorkouts(
+            { end_time: new Date(), updated_at: new Date(), updated_by: user?.id },
+            (query) => query.eq('id', workout.id)
+          );
         });
       }
+
       // upsert current_program_cycle = 1 into user_program
       await upsertUserProgram({
         user_id: user?.id,
         program_id: programId,
         current_workout_id: workoutId,
         current_program_cycle: 1,
-        current_program_run: programRunId + 1,
+        program_run: programRunId + 1,
         created_by: user?.id,
         updated_by: user?.id,
         updated_at: new Date(),

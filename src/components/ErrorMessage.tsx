@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
+
 import CommonStyles from '../styles/Common';
 
 // init functional component prop types

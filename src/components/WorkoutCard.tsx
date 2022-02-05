@@ -1,12 +1,13 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { Card } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useInsert } from 'react-supabase';
-import { useNavigation } from '@react-navigation/native';
+
+import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
 import { WelcomeScreenUseNavigationProp, WorkoutExecutionData, Workouts } from '../types';
-import useAuth from '../hooks/useAuth';
 
 type ExerciseProps = {
   exercise: string;

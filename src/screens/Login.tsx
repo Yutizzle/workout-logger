@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import {
-  View,
-  ImageBackground,
-  Text,
-  TextInput,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Platform,
-  Keyboard,
-  ActivityIndicator,
-} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSignIn } from 'react-supabase';
+
 import ErrorMessages from '../api/constants';
+import plateLogo from '../assets/images/plate-weight.jpg';
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
 import { LoginScreenNavigationProp } from '../types';
-import plateLogo from '../assets/images/plate-weight.jpg';
 
 function LoginScreen({ navigation }: LoginScreenNavigationProp) {
   const [signInState, signIn] = useSignIn();

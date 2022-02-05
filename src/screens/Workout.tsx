@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Text, Platform, TouchableOpacity, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useSelect, useFilter, useUpdate } from 'react-supabase';
+import React, { useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import useAuth from '../hooks/useAuth';
-import { CompletedSets, WorkoutExecutionData, WorkoutScreenNavigationProp } from '../types';
-import CommonStyles from '../styles/Common';
+import { useFilter, useSelect, useUpdate } from 'react-supabase';
+
 import { HeaderBackAndMenu, WorkoutTodo } from '../components';
+import useAuth from '../hooks/useAuth';
+import CommonStyles from '../styles/Common';
+import { CompletedSets, WorkoutExecutionData, WorkoutScreenNavigationProp } from '../types';
 
 function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
   // get AuthContext

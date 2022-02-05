@@ -1,8 +1,9 @@
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Header } from 'react-native-elements';
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+
 import CommonStyles from '../styles/Common';
 import { MenuScreenUseNavigationProp } from '../types';
 

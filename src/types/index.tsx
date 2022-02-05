@@ -1,17 +1,17 @@
 import {
-  WorkoutExecutionData,
   AppStackParamList,
   AuthStackParamList,
+  CompletedSets,
   LoginScreenNavigationProp,
+  MenuScreenUseNavigationProp,
+  ProgramsScreenNavigationProp,
+  RegisterData,
   RegisterScreenNavigationProp,
   WelcomeScreenNavigationProp,
   WelcomeScreenUseNavigationProp,
-  MenuScreenUseNavigationProp,
-  ProgramsScreenNavigationProp,
+  WorkoutExecutionData,
   WorkoutScreenNavigationProp,
-  RegisterData,
   Workouts,
-  CompletedSets,
 } from './types';
 
 export {
