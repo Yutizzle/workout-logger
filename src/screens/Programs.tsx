@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { useFilter, useSelect, useUpsert } from 'react-supabase';
 import { Picker } from '@react-native-picker/picker';
-import CommonStyles from '../styles/Common';
+import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
+
 import { HeaderBackOnly } from '../components/Header';
 import useAuth from '../hooks/useAuth';
+import CommonStyles from '../styles/Common';
 
 type ProgramList = {
   program_id: number;
@@ -25,6 +26,10 @@ type ProgramRun = {
   program_run: number;
 };
 
+type OpenWorkout = {
+  id: number;
+};
+
 function ProgramsScreen() {
   const { user } = useAuth();
   const [programList, setProgramList] = useState<ProgramList[]>([]);
@@ -32,6 +37,7 @@ function ProgramsScreen() {
   const [currUserProgramId, setCurrUserProgramId] = useState(0);
   const [firstWorkoutId, setFirstWorkoutId] = useState(0);
   const [lastProgramRun, setLastProgramRun] = useState(0);
+  const [openWorkoutIdList, setOpenWorkoutIdList] = useState<OpenWorkout[]>([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const userIdFilter = useFilter((query) => query.eq('user_id', user?.id), [user?.id]);
 
@@ -77,6 +83,17 @@ function ProgramsScreen() {
     pause: selectedProgramId === 0,
     options: { count: 'exact' },
   });
+
+  const openWorkoutFilter = useFilter(
+    (query) => query.eq('user_id', user?.id).is('end_time', null),
+    [user?.id]
+  );
+  const [openWorkout] = useSelect<OpenWorkout>('user_workout_history', {
+    columns: 'id',
+    filter: openWorkoutFilter,
+    options: { count: 'exact' },
+  });
+  const [, closeOpenWorkouts] = useUpdate('user_workout_history');
 
   // update or insert user's current program
   const [upsertState, upsertUserProgram] = useUpsert('user_program', {
@@ -133,12 +150,33 @@ function ProgramsScreen() {
     }
   }, [programRun.fetching, programRun.count, programRun.data]);
 
+  // init open workout id list for current user
+  useEffect(() => {
+    if (!openWorkout.fetching && openWorkout.count && openWorkout.data) {
+      if (openWorkout.count > 0) {
+        setOpenWorkoutIdList(openWorkout.data);
+      }
+    }
+  }, [openWorkout.fetching, openWorkout.count, openWorkout.data]);
+
   // save current program
-  const onSave = async (programId: number, programRunId: number, workoutId: number) => {
+  const onSave = async (
+    programId: number,
+    programRunId: number,
+    workoutId: number,
+    openWorkoutIds: OpenWorkout[]
+  ) => {
     // disable all buttons
     setButtonDisabled(true);
 
     if (programId > 0 && programId !== currUserProgramId) {
+      // check if there is an open/started workout and close it
+      if (openWorkoutIds.length > 0) {
+        openWorkoutIds.forEach(async (workout) => {
+          await closeOpenWorkouts({ end_time: new Date() }, (query) => query.eq('id', workout.id));
+        });
+      }
+
       // upsert selected program id into user_program
       const res = await upsertUserProgram({
         user_id: user?.id,
@@ -171,18 +209,33 @@ function ProgramsScreen() {
   };
 
   // reset current program cycle
-  const resetProgramCycle = async (programId: number, programRunId: number, workoutId: number) => {
+  const resetProgramCycle = async (
+    programId: number,
+    programRunId: number,
+    workoutId: number,
+    openWorkoutIds: OpenWorkout[]
+  ) => {
     // disable all buttons
     setButtonDisabled(true);
 
     if (programId > 0) {
+      // check if there is an open/started workout and close it
+      if (openWorkoutIds.length > 0) {
+        openWorkoutIds.forEach(async (workout) => {
+          await closeOpenWorkouts(
+            { end_time: new Date(), updated_at: new Date(), updated_by: user?.id },
+            (query) => query.eq('id', workout.id)
+          );
+        });
+      }
+
       // upsert current_program_cycle = 1 into user_program
       await upsertUserProgram({
         user_id: user?.id,
         program_id: programId,
         current_workout_id: workoutId,
         current_program_cycle: 1,
-        current_program_run: programRunId + 1,
+        program_run: programRunId + 1,
         created_by: user?.id,
         updated_by: user?.id,
         updated_at: new Date(),
@@ -199,7 +252,12 @@ function ProgramsScreen() {
   };
 
   // confirmation alert before reset
-  const onReset = (programId: number, programRunId: number, workoutId: number) => {
+  const onReset = (
+    programId: number,
+    programRunId: number,
+    workoutId: number,
+    openWorkoutIds: OpenWorkout[]
+  ) => {
     // disable all buttons
     setButtonDisabled(true);
 
@@ -220,7 +278,7 @@ function ProgramsScreen() {
         {
           text: 'OK',
           onPress: async () => {
-            await resetProgramCycle(programId, programRunId, workoutId);
+            await resetProgramCycle(programId, programRunId, workoutId, openWorkoutIds);
           },
         },
       ]
@@ -263,7 +321,12 @@ function ProgramsScreen() {
                 ]}
                 disabled={buttonDisabled}
                 onPress={async () => {
-                  await onReset(currUserProgramId, lastProgramRun, firstWorkoutId);
+                  await onReset(
+                    currUserProgramId,
+                    lastProgramRun,
+                    firstWorkoutId,
+                    openWorkoutIdList
+                  );
                 }}
               >
                 {upsertState.fetching ? (
@@ -280,7 +343,7 @@ function ProgramsScreen() {
               style={[CommonStyles.buttons, CommonStyles.buttonsPrimary, CommonStyles.flexShrink]}
               disabled={buttonDisabled}
               onPress={async () => {
-                await onSave(selectedProgramId, lastProgramRun, firstWorkoutId);
+                await onSave(selectedProgramId, lastProgramRun, firstWorkoutId, openWorkoutIdList);
               }}
             >
               {upsertState.fetching ? (

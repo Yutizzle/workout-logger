@@ -1,10 +1,11 @@
-import React from 'react';
-import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { useSignOut } from 'react-supabase';
 import { useNavigation } from '@react-navigation/native';
-import CommonStyles from '../styles/Common';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useSignOut } from 'react-supabase';
+
 import { HeaderBackOnly } from '../components/Header';
+import CommonStyles from '../styles/Common';
 import { MenuScreenUseNavigationProp } from '../types';
 
 type MenuItemProps = {

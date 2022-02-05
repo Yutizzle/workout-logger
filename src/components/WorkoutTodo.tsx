@@ -1,12 +1,13 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { TextInput } from 'react-native-gesture-handler';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useInsert } from 'react-supabase';
+
+import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
 import { WorkoutExecutionData } from '../types';
-import useAuth from '../hooks/useAuth';
 
 type SetTodoProps = {
   data: WorkoutExecutionData;

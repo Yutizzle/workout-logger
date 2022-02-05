@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
-import { ScrollView, View, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useSelect, useFilter } from 'react-supabase';
-import CommonStyles from '../styles/Common';
-import useAuth from '../hooks/useAuth';
-import WorkoutCard from '../components/WorkoutCard';
-import { WorkoutExecutionData, WelcomeScreenNavigationProp } from '../types';
+import React, { useEffect } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import { useFilter, useSelect } from 'react-supabase';
+
 import { HeaderMenuOnly } from '../components/Header';
+import WorkoutCard from '../components/WorkoutCard';
+import useAuth from '../hooks/useAuth';
+import CommonStyles from '../styles/Common';
+import { WelcomeScreenNavigationProp, WorkoutExecutionData } from '../types';
 
 function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
   // get AuthContext

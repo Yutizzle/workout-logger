@@ -1,4 +1,4 @@
-import { StyleSheet, StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 
 // LoginScreen styles
 // TODO: create variables for colors and fonts to make it easier to change everywhere

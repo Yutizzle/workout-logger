@@ -1,6 +1,6 @@
-import React, { useState, createContext, useEffect, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { useClient, useAuthStateChange } from 'react-supabase';
+import React, { ReactNode, createContext, useEffect, useState } from 'react';
+import { useAuthStateChange, useClient } from 'react-supabase';
 
 // init AuthContext prop types
 type AuthUser = {

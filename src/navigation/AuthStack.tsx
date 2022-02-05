@@ -1,5 +1,6 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
+
 import { LoginScreen, RegisterScreen } from '../screens';
 import { AuthStackParamList } from '../types';
 

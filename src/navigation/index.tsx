@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { AuthProvider } from '../components/AuthProvider';
 import MainNav from './MainNavigation';
 

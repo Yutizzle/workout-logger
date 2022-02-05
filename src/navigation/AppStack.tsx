@@ -1,6 +1,7 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { WelcomeScreen, WorkoutScreen, MenuScreen, ProgramsScreen } from '../screens';
+import React from 'react';
+
+import { MenuScreen, ProgramsScreen, WelcomeScreen, WorkoutScreen } from '../screens';
 import { AppStackParamList } from '../types';
 
 const { Navigator, Screen } = createStackNavigator<AppStackParamList>();

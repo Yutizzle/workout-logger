@@ -1,21 +1,22 @@
+import { Ionicons } from '@expo/vector-icons';
+import { format, getYear, isExists, subYears } from 'date-fns';
+import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-  View,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   Text,
   TextInput,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
-  Platform,
-  Keyboard,
+  View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
-import { format, isExists, getYear, subYears } from 'date-fns';
 import { useClient } from 'react-supabase';
+
+import ErrorMessages from '../api/constants';
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
-import ErrorMessages from '../api/constants';
 import { RegisterData, RegisterScreenNavigationProp } from '../types';
 
 function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
