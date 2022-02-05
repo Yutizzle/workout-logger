@@ -12,6 +12,7 @@ function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
   // get AuthContext
   const { user } = useAuth();
   const [workoutData, setWorkoutData] = useState<WorkoutExecutionData[]>(route.params.workout_data);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   // hook for updating user_workout_history
   const [, executeUpdateWorkout] = useUpdate('user_workout_history', {
@@ -66,6 +67,8 @@ function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
   };
 
   const completeWorkout = async () => {
+    setButtonDisabled(true);
+
     // validate completed sets with database
     const completedSets = await getCompletedSets();
     let workoutSetData: WorkoutExecutionData[] = [];
@@ -123,6 +126,8 @@ function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
         ]
       );
     }
+
+    setButtonDisabled(true);
   };
 
   return (
@@ -137,6 +142,7 @@ function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
         {/* Complete Workout Button */}
         <TouchableOpacity
           style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
+          disabled={buttonDisabled}
           onPress={async () => {
             await completeWorkout();
           }}
