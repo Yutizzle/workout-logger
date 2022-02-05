@@ -44,8 +44,11 @@ export default function WorkoutCard({ workoutSets }: WorkoutCardProps) {
   const [workouts, setWorkouts] = useState<Workouts[]>([]);
   const [exerciseData, setExerciseData] = useState<WorkoutExecutionData[]>([]);
   const cards: ReactElement[] = [];
+  const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const startWorkout = async (data: Workouts, idx: number) => {
+    setButtonDisabled(true);
+
     if (session && user?.id) {
       let workoutHistoryId = data.workout_history_id ?? 0;
 
@@ -90,6 +93,8 @@ export default function WorkoutCard({ workoutSets }: WorkoutCardProps) {
         });
       }
     }
+
+    setButtonDisabled(false);
   };
 
   useEffect(() => {
@@ -161,6 +166,7 @@ export default function WorkoutCard({ workoutSets }: WorkoutCardProps) {
           {/* Start Workout Button */}
           <TouchableOpacity
             style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
+            disabled={buttonDisabled}
             onPress={async () => {
               await startWorkout(
                 {
