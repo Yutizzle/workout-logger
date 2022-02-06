@@ -128,7 +128,7 @@ function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
       );
     }
 
-    setButtonDisabled(true);
+    setButtonDisabled(false);
   };
 
   return (
