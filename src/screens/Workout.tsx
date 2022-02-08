@@ -1,6 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Text, TouchableOpacity } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useFilter, useSelect, useUpdate } from 'react-supabase';
 
@@ -148,7 +155,11 @@ function WorkoutScreen({ navigation, route }: WorkoutScreenNavigationProp) {
             await completeWorkout();
           }}
         >
-          <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Complete Workout</Text>
+          {buttonDisabled ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Complete Workout</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

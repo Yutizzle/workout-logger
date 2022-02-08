@@ -22,14 +22,16 @@ import CommonStyles from '../styles/Common';
 import { LoginScreenNavigationProp } from '../types';
 
 function LoginScreen({ navigation }: LoginScreenNavigationProp) {
-  const [signInState, signIn] = useSignIn();
-
+  const [, signIn] = useSignIn();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passHide, togglePassHide] = useState(true);
   const [loginError, setLoginError] = useState('');
 
   const onLogin = async () => {
+    setButtonDisabled(true);
+
     if (email !== '' && password !== '') {
       const state = await signIn({
         email,
@@ -44,6 +46,8 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
     } else {
       setLoginError(ErrorMessages.EMPTY_LOGIN_FIELD);
     }
+
+    setButtonDisabled(false);
   };
 
   return (
@@ -54,7 +58,7 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={CommonStyles.viewContainer}>
           {/* Status Bar */}
-          <StatusBar style="light" />
+          <StatusBar />
 
           {/* Background Image */}
           <ImageBackground style={CommonStyles.backgroundImage} source={plateLogo}>
@@ -99,9 +103,11 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
               {/* Login Button */}
               <TouchableOpacity
                 style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-                onPress={onLogin}
+                onPress={async () => {
+                  await onLogin();
+                }}
               >
-                {signInState.fetching ? (
+                {buttonDisabled ? (
                   <ActivityIndicator size="small" color="#fff" />
                 ) : (
                   <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Login</Text>

@@ -184,7 +184,7 @@ export default function WorkoutCard({ workoutSets }: WorkoutCardProps) {
               );
             }}
           >
-            {insertState.fetching ? (
+            {buttonDisabled ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>

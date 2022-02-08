@@ -346,7 +346,7 @@ function ProgramsScreen() {
                 await onSave(selectedProgramId, lastProgramRun, firstWorkoutId, openWorkoutIdList);
               }}
             >
-              {upsertState.fetching ? (
+              {buttonDisabled ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
                 <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Save</Text>

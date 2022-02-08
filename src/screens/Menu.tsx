@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSignOut } from 'react-supabase';
 
 import { HeaderBackOnly } from '../components/Header';
@@ -23,13 +23,18 @@ function MenuItem({ name, onPress }: MenuItemProps) {
 
 function MenuScreen() {
   const [signOutState, signOut] = useSignOut();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
 
   const signout = async () => {
+    setButtonDisabled(true);
+
     await signOut();
     if (signOutState.error) {
       // console.log('error:', signOutState.error);
     }
+
+    setButtonDisabled(false);
   };
 
   return (
@@ -53,7 +58,11 @@ function MenuScreen() {
                 await signout();
               }}
             >
-              <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>Logout</Text>
+              {buttonDisabled ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>Logout</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
