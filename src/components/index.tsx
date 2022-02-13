@@ -1,6 +1,7 @@
 import { AuthProvider } from './AuthProvider';
 import ErrorMessage from './ErrorMessage';
 import { HeaderBackAndMenu, HeaderBackOnly, HeaderMenuOnly } from './Header';
+import SectionHeader from './SectionHeader';
 import WorkoutCard from './WorkoutCard';
 import WorkoutTodo from './WorkoutTodo';
 
@@ -12,4 +13,5 @@ export {
   HeaderBackAndMenu,
   WorkoutCard,
   WorkoutTodo,
+  SectionHeader,
 };

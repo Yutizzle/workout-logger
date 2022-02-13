@@ -26,7 +26,7 @@
     "expo-asset": "~8.4.6",
     "expo-constants": "~13.0.1",
     "expo-font": "~10.0.4",
-    "expo-linear-gradient": "~11.0.1",
+    "expo-linear-gradient": "~11.0.3",
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
     "expo-updates": "~0.11.6",
@@ -35,9 +35,10 @@
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
     "react-native-async-storage": "^0.0.1",
+    "react-native-draggable-flatlist": "^3.0.5",
     "react-native-elements": "^3.4.2",
     "react-native-gesture-handler": "~2.1.0",
-    "react-native-reanimated": "~2.3.1",
+    "react-native-reanimated": "^2.4.1",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
     "react-native-url-polyfill": "^1.3.0",
@@ -67,9 +68,6 @@
     "typescript": "~4.3.5"
   },
   "private": true,
-  "resolutions": {
-    "react-devtools-core": "4.12.4"
-  },
   "name": "WorkoutLogger",
   "version": "1.0.0"
 }

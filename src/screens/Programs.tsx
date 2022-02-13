@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
@@ -7,6 +8,7 @@ import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
 import { HeaderBackOnly } from '../components/Header';
 import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
+import { ProgramsScreenNavigationProp } from '../types';
 
 type ProgramList = {
   program_id: number;
@@ -30,7 +32,7 @@ type OpenWorkout = {
   id: number;
 };
 
-function ProgramsScreen() {
+function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   const { user } = useAuth();
   const [programList, setProgramList] = useState<ProgramList[]>([]);
   const [selectedProgramId, setSelectedProgramId] = useState(0);
@@ -276,7 +278,8 @@ function ProgramsScreen() {
           },
         },
         {
-          text: 'OK',
+          text: 'Reset',
+          style: 'destructive',
           onPress: async () => {
             await resetProgramCycle(programId, programRunId, workoutId, openWorkoutIds);
           },
@@ -292,7 +295,37 @@ function ProgramsScreen() {
       {/* Workout */}
       <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
         <View style={[CommonStyles.viewContainer, CommonStyles.padding10]}>
-          <Text style={[CommonStyles.headerTitle, CommonStyles.flexShrink]}>Current Program:</Text>
+          <View
+            style={[
+              CommonStyles.flexDirectionRow,
+              CommonStyles.alignCenter,
+              CommonStyles.flexShrink,
+            ]}
+          >
+            <Text style={[CommonStyles.headerTitle, CommonStyles.flexShrink]}>
+              Current Program:
+            </Text>
+            <View
+              style={[CommonStyles.flexDirectionRow, CommonStyles.flexGrow, CommonStyles.flexEnd]}
+            >
+              <TouchableOpacity
+                style={[CommonStyles.flexEndSelf, CommonStyles.padding6]}
+                disabled={buttonDisabled}
+                onPress={async () => {
+                  navigation.navigate('NewProgramScreen');
+                }}
+              >
+                <MaterialCommunityIcons name="plus" style={CommonStyles.headerIcons} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[CommonStyles.flexEndSelf, CommonStyles.padding6]}
+                disabled={buttonDisabled}
+                onPress={async () => {}}
+              >
+                <MaterialCommunityIcons name="pencil" style={CommonStyles.headerIcons} />
+              </TouchableOpacity>
+            </View>
+          </View>
           <Picker
             style={CommonStyles.flexShrink}
             selectedValue={selectedProgramId}
@@ -309,6 +342,7 @@ function ProgramsScreen() {
               />
             ))}
           </Picker>
+
           <View
             style={[CommonStyles.flexDirectionColumn, CommonStyles.flexGrow, CommonStyles.flexEnd]}
           >

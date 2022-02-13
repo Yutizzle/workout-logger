@@ -8,6 +8,7 @@ import { useInsert } from 'react-supabase';
 import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
 import { WorkoutExecutionData } from '../types';
+import SectionHeader from './SectionHeader';
 
 type SetTodoProps = {
   data: WorkoutExecutionData;
@@ -213,19 +214,7 @@ export default function WorkoutTodo({ data, setWorkoutDataHandler }: WorkoutTodo
 
     return (
       <React.Fragment key={`${set.workout_id}-${set.exercise}-${set.set}`}>
-        {set.exercise !== prev && (
-          <>
-            <Text key={`${set.exercise}`} style={CommonStyles.todoTextHead}>
-              {set.exercise}
-            </Text>
-            <LinearGradient
-              colors={['#284b63', '#fff']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={CommonStyles.dividerGradient}
-            />
-          </>
-        )}
+        {set.exercise !== prev && <SectionHeader key={`${set.exercise}`} title={set.exercise} />}
         <SetTodo
           key={`${set.exercise}-${set.set}`}
           data={set}

@@ -5,10 +5,9 @@ import { StatusBar, StyleSheet } from 'react-native';
 export default StyleSheet.create({
   viewContainer: {
     flexDirection: 'column',
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
     backgroundColor: '#f9f9f9',
-    width: '100%',
-    height: '100%',
   },
   headerContainer: {
     paddingTop: StatusBar.currentHeight,
@@ -69,6 +68,19 @@ export default StyleSheet.create({
   },
   padding10: {
     padding: 10,
+  },
+  padding6: {
+    padding: 6,
+  },
+  paddingTop6: {
+    paddingTop: 6,
+  },
+  paddingBottom6: {
+    paddingBottom: 6,
+  },
+  paddingLefRight10: {
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   todoTextHead: {
     fontFamily: 'OpenSans_700Bold',
@@ -150,11 +162,14 @@ export default StyleSheet.create({
   },
   flexGrow: {
     flexGrow: 1,
-    flexShrink: 0,
+    flexShrink: 1,
   },
   flexShrink: {
     flexGrow: 0,
     flexShrink: 1,
+  },
+  flexBasis0: {
+    flexBasis: 0,
   },
   flexStart: {
     alignSelf: 'flex-start',
@@ -167,6 +182,9 @@ export default StyleSheet.create({
   },
   flexDirectionColumn: {
     flexDirection: 'column',
+  },
+  flexDirectionRow: {
+    flexDirection: 'row',
   },
   justifySpaceBetween: {
     justifyContent: 'space-between',
@@ -182,6 +200,12 @@ export default StyleSheet.create({
   },
   thirdBasis: {
     flexBasis: '33.3%',
+  },
+  fullHeight: {
+    height: '100%',
+  },
+  fullWidth: {
+    width: '100%',
   },
   marginRightSm: {
     marginRight: 2.5,
@@ -274,6 +298,16 @@ export default StyleSheet.create({
     shadowRadius: 3,
     shadowOpacity: 0.3,
   },
+  inlineButtons: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { height: 3, width: 3 },
+    shadowRadius: 3,
+    shadowOpacity: 0.3,
+  },
   buttonText: {
     fontFamily: 'OpenSans_400Regular',
     fontSize: 16,
@@ -285,6 +319,9 @@ export default StyleSheet.create({
     borderColor: '#284b63',
     borderWidth: 1,
     backgroundColor: '#f9f9f9',
+  },
+  buttonsDelete: {
+    backgroundColor: '#aa1945',
   },
   linkContainer: {
     flexDirection: 'row',
@@ -300,6 +337,10 @@ export default StyleSheet.create({
   },
   textDark: {
     color: '#284b63',
+  },
+  placeholderText: {
+    color: '#8f8f8f',
+    fontFamily: 'OpenSans_400Regular',
   },
   inputLabel: {
     fontFamily: 'OpenSans_400Regular',
@@ -321,10 +362,14 @@ export default StyleSheet.create({
     fontFamily: 'OpenSans_400Regular',
     color: '#AB47BC',
   },
+  flatListItem: {
+    borderColor: '#d9d9d9',
+    borderTopWidth: 1,
+  },
   errorText: {
     fontFamily: 'OpenSans_400Regular',
     fontSize: 14,
-    color: 'red',
+    color: '#aa1945',
     alignSelf: 'center',
   },
   rotate90: {

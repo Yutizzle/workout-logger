@@ -34,6 +34,7 @@ export type AppStackParamList = {
     next_program_cycle: number;
     next_workout_id: number;
   };
+  NewProgramScreen: undefined;
 };
 
 export type AuthStackParamList = {
@@ -58,6 +59,10 @@ export type MenuScreenUseNavigationProp = StackNavigationProp<AppStackParamList,
 export type ProgramsScreenNavigationProp = NativeStackScreenProps<
   AppStackParamList,
   'ProgramsScreen'
+>;
+export type NewProgramsScreenNavigationProp = NativeStackScreenProps<
+  AppStackParamList,
+  'NewProgramScreen'
 >;
 export type WorkoutScreenNavigationProp = NativeStackScreenProps<
   AppStackParamList,
