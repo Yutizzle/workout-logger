@@ -160,6 +160,9 @@ export default StyleSheet.create({
   opacityNone: {
     opacity: 0,
   },
+  flex: {
+    flex: 1,
+  },
   flexGrow: {
     flexGrow: 1,
     flexShrink: 1,
@@ -278,7 +281,7 @@ export default StyleSheet.create({
     marginBottom: 5,
   },
   inputs: {
-    flex: 1,
+    // flex: 1,
     fontFamily: 'OpenSans_400Regular',
     color: '#4e5d5c',
   },

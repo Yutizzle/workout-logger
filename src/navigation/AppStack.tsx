@@ -2,6 +2,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
 import {
+  EditExerciseScreen,
+  EditWorkoutScreen,
   MenuScreen,
   NewProgramScreen,
   ProgramsScreen,
@@ -20,6 +22,8 @@ function AppStack() {
       <Screen name="WorkoutScreen" component={WorkoutScreen} />
       <Screen name="ProgramsScreen" component={ProgramsScreen} />
       <Screen name="NewProgramScreen" component={NewProgramScreen} />
+      <Screen name="EditWorkoutScreen" component={EditWorkoutScreen} />
+      <Screen name="EditExerciseScreen" component={EditExerciseScreen} />
     </Navigator>
   );
 }

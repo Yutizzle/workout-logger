@@ -1,4 +1,5 @@
 import { AuthProvider } from './AuthProvider';
+import DraggableConfigList from './DraggableConfigList';
 import ErrorMessage from './ErrorMessage';
 import { HeaderBackAndMenu, HeaderBackOnly, HeaderMenuOnly } from './Header';
 import SectionHeader from './SectionHeader';
@@ -14,4 +15,5 @@ export {
   WorkoutCard,
   WorkoutTodo,
   SectionHeader,
+  DraggableConfigList,
 };

@@ -35,6 +35,8 @@ export type AppStackParamList = {
     next_workout_id: number;
   };
   NewProgramScreen: undefined;
+  EditWorkoutScreen: undefined;
+  EditExerciseScreen: undefined;
 };
 
 export type AuthStackParamList = {
@@ -60,9 +62,17 @@ export type ProgramsScreenNavigationProp = NativeStackScreenProps<
   AppStackParamList,
   'ProgramsScreen'
 >;
-export type NewProgramsScreenNavigationProp = NativeStackScreenProps<
+export type NewProgramScreenNavigationProp = NativeStackScreenProps<
   AppStackParamList,
   'NewProgramScreen'
+>;
+export type EditWorkoutScreenNavigationProp = NativeStackScreenProps<
+  AppStackParamList,
+  'EditWorkoutScreen'
+>;
+export type EditExerciseScreenNavigationProp = NativeStackScreenProps<
+  AppStackParamList,
+  'EditExerciseScreen'
 >;
 export type WorkoutScreenNavigationProp = NativeStackScreenProps<
   AppStackParamList,
