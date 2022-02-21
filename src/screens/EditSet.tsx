@@ -60,6 +60,13 @@ function ConfigInput({ headerTitle, inputValue, setValue }: InputProps) {
 }
 
 export default function EditSetScreen({ navigation, route }: EditSetScreenNavigationProp) {
+  const { workoutIndex, exerciseIndex } = route.params;
+  const workoutName = useSelector(
+    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].label || ''
+  );
+  const exerciseData = useSelector(
+    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].exercises || []
+  );
   const initState = {
     weight: '',
     reps: '',

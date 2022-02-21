@@ -1,5 +1,5 @@
 import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Keyboard,
@@ -12,63 +12,64 @@ import {
 } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { DraggableConfigList, HeaderBackOnly, SectionHeader } from '../components';
+import { addSet, removeSet, updateExerciseName, updateSets } from '../slices/NewProgramSlice';
+import { RootState } from '../store';
 import CommonStyles from '../styles/Common';
-import { EditExerciseScreenNavigationProp } from '../types';
-
-type Item = {
-  key: string;
-  index: number;
-  label: string;
-};
+import { EditExerciseScreenNavigationProp, NewProgramSets } from '../types';
 
 export default function EditExerciseScreen({
   navigation,
   route,
 }: EditExerciseScreenNavigationProp) {
-  const [setsData, setSetsData] = useState<Item[]>([]);
-  const [exerciseName, setexerciseName] = useState(route.params.exercise.label);
+  const { workoutIndex, exerciseIndex } = route.params;
+  const workout = useSelector(
+    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex]
+  );
+  const exercises = workout.exercises ?? [];
+  const selectedExercise = exercises[exerciseIndex] ?? [];
+  const exerciseName = selectedExercise.label;
+  const exerciseSets = selectedExercise.sets ?? [];
+  const dispatch = useDispatch();
   const [uniqueId, setUniqueId] = useState(2);
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
-  useEffect(() => {
-    const initialData: Item[] = [...Array(1)].map((_, index) => ({
-      key: `item-${index}`,
-      index,
-      label: `New Set #${index + 1}`,
-    }));
-    setSetsData(initialData);
-  }, [navigation]);
-
   const saveWorkout = () => {};
 
-  const addSet = (idx: number) => {
+  const addNewSet = (idx: number) => {
+    //disable all buttons
     setButtonDisabled(true);
+
+    // generate unique id
     setUniqueId((prev) => prev + 1);
-    setSetsData((prev) => {
-      // create data for new row
-      const index = prev.length;
-      const newData: Item = {
-        key: `item-${uniqueId}`,
-        index,
-        label: `New Set #${uniqueId}`,
-      };
 
-      // insert after row
-      prev.splice(idx + 1, 0, newData);
+    // create data for new row
+    const index = exerciseSets.length;
+    const newData = {
+      key: `item-${uniqueId}`,
+      index,
+      label: `Set #${uniqueId}`,
+    };
 
-      // update all indexes
-      return prev.map((data, i) => ({ ...data, index: i }));
-    });
+    // update store
+    dispatch(addSet({ workoutIndex, exerciseIndex, setIndex: idx, set: newData }));
+
+    // refresh flatlist
     toggleRefresh((prev) => !prev);
+
+    //enable all buttons
     setButtonDisabled(false);
   };
 
-  const removeSet = (idx: number) => {
+  const removeNewSet = (idx: number) => {
+    // disable all buttons
     setButtonDisabled(true);
-    if (setsData.length === 1) {
+
+    // must have at least one set, cannot remove last set
+    if (exerciseSets.length === 1) {
       Alert.alert('Remove Exercise', `Your workout must contain at least one exercise.`, [
         {
           text: 'OK',
@@ -80,7 +81,7 @@ export default function EditExerciseScreen({
     } else {
       Alert.alert(
         'Remove Exercise',
-        `Are you sure you want to remove ${setsData[idx].label} from this workout?`,
+        `Are you sure you want to remove ${exerciseSets[idx].label} from this workout?`,
         [
           {
             text: 'Cancel',
@@ -93,14 +94,13 @@ export default function EditExerciseScreen({
             text: 'Remove',
             style: 'destructive',
             onPress: () => {
-              setSetsData((prev) => {
-                // insert after row
-                prev.splice(idx, 1);
+              // update store
+              dispatch(removeSet({ workoutIndex, exerciseIndex, setIndex: idx }));
 
-                // update all indexes
-                return prev.map((data, i) => ({ ...data, index: i }));
-              });
+              // refresh flatlist
               toggleRefresh((prev) => !prev);
+
+              // enable all buttons
               setButtonDisabled(false);
             },
           },
@@ -109,7 +109,7 @@ export default function EditExerciseScreen({
     }
   };
 
-  const renderItem = ({ item, drag, isActive }: RenderItemParams<Item>) => (
+  const renderItem = ({ item, drag, isActive }: RenderItemParams<NewProgramSets>) => (
     <ScaleDecorator>
       <TouchableOpacity
         onLongPress={drag}
@@ -140,7 +140,11 @@ export default function EditExerciseScreen({
           <TouchableOpacity
             disabled={buttonDisabled}
             onPress={() => {
-              navigation.navigate('EditSetScreen', { set: setsData[item.index] });
+              navigation.navigate('EditSetScreen', {
+                workoutIndex,
+                exerciseIndex,
+                setIndex: item.index,
+              });
             }}
           >
             <MaterialIcons name="settings" size={26} style={CommonStyles.textDark} />
@@ -151,7 +155,7 @@ export default function EditExerciseScreen({
             style={[CommonStyles.inlineButtons, CommonStyles.buttonsPrimary]}
             disabled={buttonDisabled}
             onPress={() => {
-              addSet(item.index);
+              addNewSet(item.index);
             }}
           >
             <MaterialCommunityIcons name="plus" size={26} style={CommonStyles.textLight} />
@@ -162,7 +166,7 @@ export default function EditExerciseScreen({
             style={[CommonStyles.inlineButtons, CommonStyles.buttonsDelete]}
             disabled={buttonDisabled}
             onPress={() => {
-              removeSet(item.index);
+              removeNewSet(item.index);
             }}
           >
             <Entypo name="cross" size={26} style={CommonStyles.textLight} />
@@ -193,7 +197,9 @@ export default function EditExerciseScreen({
                 style={CommonStyles.inputs}
                 placeholder="Exercise Name"
                 value={exerciseName}
-                onChangeText={(name) => setexerciseName(name)}
+                onChangeText={(name) =>
+                  dispatch(updateExerciseName({ workoutIndex, exerciseIndex, exerciseName: name }))
+                }
               />
             </View>
           </View>
@@ -204,24 +210,15 @@ export default function EditExerciseScreen({
         </View>
         <View style={[CommonStyles.flexGrow, CommonStyles.flexBasis0]}>
           <DraggableConfigList
-            flatListData={setsData}
+            flatListData={exerciseSets}
             refresh={refresh}
-            setData={setSetsData}
-            addItem={addSet}
-            removeItem={removeSet}
+            setData={(data) => {
+              dispatch(updateSets({ workoutIndex, exerciseIndex, sets: data }));
+            }}
+            addItem={() => {}}
+            removeItem={() => {}}
             renderItem={renderItem}
           />
-        </View>
-        <View style={[CommonStyles.flexShrink]}>
-          <TouchableOpacity
-            style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-            disabled={buttonDisabled}
-            onPress={async () => {
-              await saveWorkout();
-            }}
-          >
-            <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Save</Text>
-          </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

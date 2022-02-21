@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Keyboard,
@@ -6,7 +6,6 @@ import {
   Platform,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -24,11 +23,11 @@ import CommonStyles from '../styles/Common';
 import { EditWorkoutScreenNavigationProp } from '../types';
 
 export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScreenNavigationProp) {
-  const workoutIndex = route.params.workoutIndex;
+  const { workoutIndex } = route.params;
   const workoutName = useSelector(
     (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].label || ''
   );
-  const exerciseData = useSelector(
+  const exercises = useSelector(
     (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].exercises || []
   );
   const dispatch = useDispatch();
@@ -46,7 +45,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
     setUniqueId((prev) => prev + 1);
 
     // create data for new row
-    const index = exerciseData?.length ?? 0;
+    const index = exercises?.length ?? 0;
     const newData = {
       key: `item-${uniqueId}`,
       index,
@@ -55,7 +54,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
         {
           key: 'item-0',
           index: 0,
-          label: 'New Set #1',
+          label: 'Set #1',
         },
       ],
     };
@@ -75,7 +74,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
     setButtonDisabled(true);
 
     // must have at least one exercise, cannot remove last exercise
-    if (exerciseData?.length === 1) {
+    if (exercises?.length === 1) {
       Alert.alert('Remove Exercise', `Your workout must contain at least one exercise.`, [
         {
           text: 'OK',
@@ -88,7 +87,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
     } else {
       Alert.alert(
         'Remove Exercise',
-        `Are you sure you want to remove ${exerciseData[idx].label} from this workout?`,
+        `Are you sure you want to remove ${exercises[idx].label} from this workout?`,
         [
           {
             text: 'Cancel',
@@ -150,7 +149,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
         </View>
         <View style={[CommonStyles.flexGrow, CommonStyles.flexBasis0]}>
           <DraggableConfigList
-            flatListData={exerciseData}
+            flatListData={exercises}
             refresh={refresh}
             setData={(data) => {
               dispatch(updateExercises({ workoutIndex, exercises: data }));
@@ -164,17 +163,6 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
               });
             }}
           />
-        </View>
-        <View style={[CommonStyles.flexShrink]}>
-          <TouchableOpacity
-            style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-            disabled={buttonDisabled}
-            onPress={async () => {
-              await saveWorkout();
-            }}
-          >
-            <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Save</Text>
-          </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

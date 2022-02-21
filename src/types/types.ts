@@ -28,6 +28,10 @@ export type ListItem = {
   label: string;
 };
 
+export type NewProgramSets = ListItem & {
+  
+};
+
 export type NewProgramExercises = ListItem & {
   sets?: ListItem[];
 };
@@ -57,7 +61,9 @@ export type AppStackParamList = {
     exerciseIndex: number;
   };
   EditSetScreen: {
-    set: ListItem;
+    workoutIndex: number;
+    exerciseIndex: number;
+    setIndex: number;
   };
 };
 

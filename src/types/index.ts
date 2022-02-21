@@ -11,6 +11,7 @@ import {
   NewProgramExercises,
   NewProgramScreenNavigationProp,
   NewProgramWorkouts,
+  NewProgramSets,
   ProgramsScreenNavigationProp,
   RegisterData,
   RegisterScreenNavigationProp,
@@ -41,5 +42,6 @@ export {
   CompletedSets,
   NewProgramWorkouts,
   NewProgramExercises,
+  NewProgramSets,
   ListItem,
 };
