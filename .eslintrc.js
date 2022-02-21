@@ -7,6 +7,9 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: ["./tsconfig.json"]
   },
+  rules: {
+    "no-param-reassign": ["error", {props: false}]
+  },
   env: {
     browser: true,
     es2021: true

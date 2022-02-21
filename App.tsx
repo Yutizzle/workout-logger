@@ -1,9 +1,12 @@
-import React from 'react';
+import { OpenSans_400Regular, OpenSans_700Bold, useFonts } from '@expo-google-fonts/open-sans';
 import AppLoading from 'expo-app-loading';
-import { useFonts, OpenSans_400Regular, OpenSans_700Bold } from '@expo-google-fonts/open-sans';
-import { Provider } from 'react-supabase';
-import Routes from './src/navigation';
+import React from 'react';
+import { Provider as ReduxProvider } from 'react-redux';
+import { Provider as SupabaseProvider } from 'react-supabase';
+
 import { supabase } from './src/api/supabase';
+import Routes from './src/navigation';
+import { store } from './src/store';
 
 function App() {
   // load google fonts with useFonts
@@ -18,9 +21,11 @@ function App() {
   }
   // show Routes component
   return (
-    <Provider value={supabase}>
-      <Routes />
-    </Provider>
+    <ReduxProvider store={store}>
+      <SupabaseProvider value={supabase}>
+        <Routes />
+      </SupabaseProvider>
+    </ReduxProvider>
   );
 }
 

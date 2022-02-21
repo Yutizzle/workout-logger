@@ -9,6 +9,7 @@ import { MenuScreenUseNavigationProp } from '../types';
 
 type HeaderProps = {
   headerTitle: string;
+  onGoBack?: () => void;
 };
 
 export function HeaderMenuOnly({ headerTitle }: HeaderProps) {
@@ -41,7 +42,7 @@ export function HeaderMenuOnly({ headerTitle }: HeaderProps) {
   );
 }
 
-export function HeaderBackOnly({ headerTitle }: HeaderProps) {
+export function HeaderBackOnly({ headerTitle, onGoBack }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
   return (
     <Header
@@ -54,7 +55,8 @@ export function HeaderBackOnly({ headerTitle }: HeaderProps) {
       leftComponent={
         <TouchableOpacity
           onPress={() => {
-            navigation.goBack();
+            if (onGoBack) onGoBack();
+            else navigation.goBack();
           }}
         >
           <AntDesign name="arrowleft" style={CommonStyles.headerIcons} />
@@ -69,7 +71,7 @@ export function HeaderBackOnly({ headerTitle }: HeaderProps) {
   );
 }
 
-export function HeaderBackAndMenu({ headerTitle }: HeaderProps) {
+export function HeaderBackAndMenu({ headerTitle, onGoBack }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
   return (
     <Header
@@ -82,7 +84,8 @@ export function HeaderBackAndMenu({ headerTitle }: HeaderProps) {
       leftComponent={
         <TouchableOpacity
           onPress={() => {
-            navigation.goBack();
+            if (onGoBack) onGoBack();
+            else navigation.goBack();
           }}
         >
           <AntDesign name="arrowleft" style={CommonStyles.headerIcons} />
@@ -106,3 +109,15 @@ export function HeaderBackAndMenu({ headerTitle }: HeaderProps) {
     />
   );
 }
+
+HeaderMenuOnly.defaultProps = {
+  onGoBack: null,
+};
+
+HeaderBackOnly.defaultProps = {
+  onGoBack: null,
+};
+
+HeaderBackAndMenu.defaultProps = {
+  onGoBack: null,
+};

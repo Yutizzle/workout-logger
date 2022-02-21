@@ -171,6 +171,9 @@ export default StyleSheet.create({
     flexGrow: 0,
     flexShrink: 1,
   },
+  flexNoShrink: {
+    flex: 0,
+  },
   flexBasis0: {
     flexBasis: 0,
   },

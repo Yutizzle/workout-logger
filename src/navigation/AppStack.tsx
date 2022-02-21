@@ -3,6 +3,7 @@ import React from 'react';
 
 import {
   EditExerciseScreen,
+  EditSetScreen,
   EditWorkoutScreen,
   MenuScreen,
   NewProgramScreen,
@@ -24,6 +25,7 @@ function AppStack() {
       <Screen name="NewProgramScreen" component={NewProgramScreen} />
       <Screen name="EditWorkoutScreen" component={EditWorkoutScreen} />
       <Screen name="EditExerciseScreen" component={EditExerciseScreen} />
+      <Screen name="EditSetScreen" component={EditSetScreen} />
     </Navigator>
   );
 }

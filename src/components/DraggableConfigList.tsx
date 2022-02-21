@@ -7,21 +7,16 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 
 import CommonStyles from '../styles/Common';
-
-type FlatListData = {
-  key: string;
-  index: number;
-  label: string;
-};
+import { ListItem } from '../types';
 
 type Props = {
-  flatListData: FlatListData[];
+  flatListData: ListItem[];
   refresh: boolean;
-  renderItem?: (props: RenderItemParams<FlatListData>) => JSX.Element;
-  setData: React.Dispatch<React.SetStateAction<FlatListData[]>>;
+  renderItem?: (props: RenderItemParams<ListItem>) => JSX.Element;
+  setData: (data: ListItem[]) => void;
   addItem: (index: number) => void;
   removeItem: (index: number) => void;
-  goToSettings?: () => void;
+  goToSettings?: (item: ListItem) => void;
 };
 
 export default function DraggableConfigList({
@@ -34,7 +29,7 @@ export default function DraggableConfigList({
   goToSettings,
 }: Props) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const defaultRenderItem = ({ item, drag, isActive }: RenderItemParams<FlatListData>) => (
+  const defaultRenderItem = ({ item, drag, isActive }: RenderItemParams<ListItem>) => (
     <ScaleDecorator>
       <TouchableOpacity
         onLongPress={drag}
@@ -62,7 +57,12 @@ export default function DraggableConfigList({
           </View>
         </View>
         <View style={CommonStyles.padding6}>
-          <TouchableOpacity disabled={buttonDisabled} onPress={goToSettings}>
+          <TouchableOpacity
+            disabled={buttonDisabled}
+            onPress={() => {
+              if (goToSettings) goToSettings(item);
+            }}
+          >
             <MaterialIcons name="settings" size={26} style={CommonStyles.textDark} />
           </TouchableOpacity>
         </View>
@@ -100,7 +100,11 @@ export default function DraggableConfigList({
     <DraggableFlatList
       data={flatListData}
       extraData={refresh}
-      onDragEnd={({ data }) => setData(data)}
+      onDragEnd={({ data }) => {
+        // update index after moving item
+        const listData = data.map((item, i) => ({ ...item, index: i }));
+        setData(listData);
+      }}
       keyExtractor={(item) => item.key}
       renderItem={renderItem || defaultRenderItem}
       containerStyle={[CommonStyles.paddingLefRight10]}

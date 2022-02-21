@@ -1,4 +1,5 @@
 import EditExerciseScreen from './EditExercise';
+import EditSetScreen from './EditSet';
 import EditWorkoutScreen from './EditWorkout';
 import LoginScreen from './Login';
 import MenuScreen from './Menu';
@@ -18,4 +19,5 @@ export {
   NewProgramScreen,
   EditWorkoutScreen,
   EditExerciseScreen,
+  EditSetScreen,
 };

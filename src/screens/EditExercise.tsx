@@ -28,7 +28,7 @@ export default function EditExerciseScreen({
   route,
 }: EditExerciseScreenNavigationProp) {
   const [setsData, setSetsData] = useState<Item[]>([]);
-  const [exerciseName, setexerciseName] = useState('');
+  const [exerciseName, setexerciseName] = useState(route.params.exercise.label);
   const [uniqueId, setUniqueId] = useState(2);
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -137,7 +137,12 @@ export default function EditExerciseScreen({
           </View>
         </View>
         <View style={CommonStyles.padding6}>
-          <TouchableOpacity disabled={buttonDisabled} onPress={() => {}}>
+          <TouchableOpacity
+            disabled={buttonDisabled}
+            onPress={() => {
+              navigation.navigate('EditSetScreen', { set: setsData[item.index] });
+            }}
+          >
             <MaterialIcons name="settings" size={26} style={CommonStyles.textDark} />
           </TouchableOpacity>
         </View>

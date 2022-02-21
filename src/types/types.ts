@@ -22,6 +22,20 @@ export type WorkoutExecutionData = {
   next_workout_id: number;
 };
 
+export type ListItem = {
+  key: string;
+  index: number;
+  label: string;
+};
+
+export type NewProgramExercises = ListItem & {
+  sets?: ListItem[];
+};
+
+export type NewProgramWorkouts = ListItem & {
+  exercises?: NewProgramExercises[];
+};
+
 export type AppStackParamList = {
   WelcomeScreen: undefined;
   MenuScreen: undefined;
@@ -35,8 +49,16 @@ export type AppStackParamList = {
     next_workout_id: number;
   };
   NewProgramScreen: undefined;
-  EditWorkoutScreen: undefined;
-  EditExerciseScreen: undefined;
+  EditWorkoutScreen: {
+    workoutIndex: number;
+  };
+  EditExerciseScreen: {
+    workoutIndex: number;
+    exerciseIndex: number;
+  };
+  EditSetScreen: {
+    set: ListItem;
+  };
 };
 
 export type AuthStackParamList = {
@@ -73,6 +95,10 @@ export type EditWorkoutScreenNavigationProp = NativeStackScreenProps<
 export type EditExerciseScreenNavigationProp = NativeStackScreenProps<
   AppStackParamList,
   'EditExerciseScreen'
+>;
+export type EditSetScreenNavigationProp = NativeStackScreenProps<
+  AppStackParamList,
+  'EditSetScreen'
 >;
 export type WorkoutScreenNavigationProp = NativeStackScreenProps<
   AppStackParamList,

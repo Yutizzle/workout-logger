@@ -10,64 +10,77 @@ import {
   View,
 } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { DraggableConfigList, HeaderBackOnly, SectionHeader } from '../components';
+import {
+  addExercise,
+  removeExercise,
+  updateExercises,
+  updateWorkoutName,
+} from '../slices/NewProgramSlice';
+import { RootState } from '../store';
 import CommonStyles from '../styles/Common';
 import { EditWorkoutScreenNavigationProp } from '../types';
 
-type Item = {
-  key: string;
-  index: number;
-  label: string;
-};
-
 export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScreenNavigationProp) {
-  const [exerciseData, setExerciseData] = useState<Item[]>([]);
-  const [workoutName, setWorkoutName] = useState('');
+  const workoutIndex = route.params.workoutIndex;
+  const workoutName = useSelector(
+    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].label || ''
+  );
+  const exerciseData = useSelector(
+    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].exercises || []
+  );
+  const dispatch = useDispatch();
   const [uniqueId, setUniqueId] = useState(2);
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
-  useEffect(() => {
-    const initialData: Item[] = [...Array(1)].map((_, index) => ({
-      key: `item-${index}`,
-      index,
-      label: `New Exercise #${index + 1}`,
-    }));
-    setExerciseData(initialData);
-  }, [navigation]);
-
   const saveWorkout = () => {};
 
-  const addExercise = (idx: number) => {
+  const addNewExercise = (idx: number) => {
+    // disable all buttons
     setButtonDisabled(true);
+
+    // generate unique id
     setUniqueId((prev) => prev + 1);
-    setExerciseData((prev) => {
-      // create data for new row
-      const index = prev.length;
-      const newData: Item = {
-        key: `item-${uniqueId}`,
-        index,
-        label: `New Exercise #${uniqueId}`,
-      };
 
-      // insert after row
-      prev.splice(idx + 1, 0, newData);
+    // create data for new row
+    const index = exerciseData?.length ?? 0;
+    const newData = {
+      key: `item-${uniqueId}`,
+      index,
+      label: `New Exercise #${uniqueId}`,
+      sets: [
+        {
+          key: 'item-0',
+          index: 0,
+          label: 'New Set #1',
+        },
+      ],
+    };
 
-      // update all indexes
-      return prev.map((data, i) => ({ ...data, index: i }));
-    });
+    // update store
+    dispatch(addExercise({ workoutIndex, exercise: newData, exerciseIndex: idx }));
+
+    // refresh flatlist
     toggleRefresh((prev) => !prev);
+
+    // enable all buttons
     setButtonDisabled(false);
   };
 
-  const removeExercise = (idx: number) => {
+  const removeNewExercise = (idx: number) => {
+    // disable all buttons
     setButtonDisabled(true);
-    if (exerciseData.length === 1) {
+
+    // must have at least one exercise, cannot remove last exercise
+    if (exerciseData?.length === 1) {
       Alert.alert('Remove Exercise', `Your workout must contain at least one exercise.`, [
         {
           text: 'OK',
           onPress: () => {
+            // enable all buttons
             setButtonDisabled(false);
           },
         },
@@ -88,14 +101,13 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
             text: 'Remove',
             style: 'destructive',
             onPress: () => {
-              setExerciseData((prev) => {
-                // insert after row
-                prev.splice(idx, 1);
+              // remove selected exercise
+              dispatch(removeExercise({ workoutIndex, exerciseIndex: idx }));
 
-                // update all indexes
-                return prev.map((data, i) => ({ ...data, index: i }));
-              });
+              // refresh flatlist
               toggleRefresh((prev) => !prev);
+
+              // enable all buttons
               setButtonDisabled(false);
             },
           },
@@ -125,7 +137,9 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
                 style={CommonStyles.inputs}
                 placeholder="Workout Name"
                 value={workoutName}
-                onChangeText={(name) => setWorkoutName(name)}
+                onChangeText={(name) =>
+                  dispatch(updateWorkoutName({ workoutIndex, workoutName: name }))
+                }
               />
             </View>
           </View>
@@ -138,10 +152,17 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
           <DraggableConfigList
             flatListData={exerciseData}
             refresh={refresh}
-            setData={setExerciseData}
-            addItem={addExercise}
-            removeItem={removeExercise}
-            goToSettings={() => navigation.navigate('EditExerciseScreen')}
+            setData={(data) => {
+              dispatch(updateExercises({ workoutIndex, exercises: data }));
+            }}
+            addItem={addNewExercise}
+            removeItem={removeNewExercise}
+            goToSettings={(item) => {
+              navigation.navigate('EditExerciseScreen', {
+                workoutIndex,
+                exerciseIndex: item.index,
+              });
+            }}
           />
         </View>
         <View style={[CommonStyles.flexShrink]}>
