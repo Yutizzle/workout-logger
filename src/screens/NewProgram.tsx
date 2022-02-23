@@ -55,7 +55,7 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
             {
               key: 'item-0',
               index: 0,
-              label: `New Set #1`,
+              label: `Set #1`,
             },
           ],
         },

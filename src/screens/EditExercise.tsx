@@ -18,7 +18,7 @@ import { DraggableConfigList, HeaderBackOnly, SectionHeader } from '../component
 import { addSet, removeSet, updateExerciseName, updateSets } from '../slices/NewProgramSlice';
 import { RootState } from '../store';
 import CommonStyles from '../styles/Common';
-import { EditExerciseScreenNavigationProp, NewProgramSets } from '../types';
+import { EditExerciseScreenNavigationProp, RenderItem } from '../types';
 
 export default function EditExerciseScreen({
   navigation,
@@ -52,6 +52,19 @@ export default function EditExerciseScreen({
       key: `item-${uniqueId}`,
       index,
       label: `Set #${uniqueId}`,
+      weight: '',
+      reps: '',
+      setDuration: '',
+      restDuration: '',
+      repsIncrFreq: '',
+      repsIncrAmount: '',
+      maxReps: '',
+      weightIncrFreq: '',
+      weightIncrAmount: '',
+      maxWeight: '',
+      setDurationIncrFreq: '',
+      setDurationIncrAmount: '',
+      maxSetDuration: '',
     };
 
     // update store
@@ -109,7 +122,7 @@ export default function EditExerciseScreen({
     }
   };
 
-  const renderItem = ({ item, drag, isActive }: RenderItemParams<NewProgramSets>) => (
+  const renderItem = ({ item, drag, isActive }: RenderItemParams<RenderItem>) => (
     <ScaleDecorator>
       <TouchableOpacity
         onLongPress={drag}

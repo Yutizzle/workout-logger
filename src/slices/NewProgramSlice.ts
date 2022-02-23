@@ -1,56 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { NewProgramWorkouts, NewProgramExercises, NewProgramSets } from '../types';
-
-interface NewWorkout {
-  workout: NewProgramWorkouts,
-  workoutIndex: number
-}
-
-interface WorkoutName {
-  workoutIndex: number,
-  workoutName: string
-}
-
-interface NewExercise {
-  workoutIndex: number,
-  exerciseIndex: number
-  exercise: NewProgramExercises
-}
-
-interface RemoveExercise {
-  workoutIndex: number,
-  exerciseIndex: number
-}
-
-interface UpdateExercise {
-  workoutIndex: number,
-  exercises: NewProgramExercises[]
-}
-
-interface ExerciseName {
-  workoutIndex: number,
-  exerciseIndex: number,
-  exerciseName: string
-}
-
-interface NewSet {
-  workoutIndex: number,
-  exerciseIndex: number,
-  setIndex: number,
-  set: NewProgramSets
-}
-
-interface RemoveSet {
-  workoutIndex: number,
-  exerciseIndex: number,
-  setIndex: number
-}
-
-interface UpdateSet {
-  workoutIndex: number,
-  exerciseIndex: number
-  sets: NewProgramSets[]
-}
+import { 
+  NewProgramWorkouts, 
+  NewWorkout,
+  WorkoutName,
+  NewExercise,
+  RemoveExercise,
+  UpdateExercise,
+  ExerciseName,
+  NewSet,
+  RemoveSet,
+  UpdateSets,
+  UpdateSingleSet
+} from '../types';
 
 const initialWorkouts: NewProgramWorkouts[] = [...Array(1)].map((_, index) => {
     const item = {
@@ -68,7 +29,7 @@ const initialWorkouts: NewProgramWorkouts[] = [...Array(1)].map((_, index) => {
           sets: [
             {
               ...item,
-              label: `New Set #${index + 1}`,
+              label: `Set #${index + 1}`,
             },
           ],
         },
@@ -111,19 +72,19 @@ export const NewProgramSlice = createSlice({
         updateExercises: ({workouts}, action: PayloadAction<UpdateExercise>) => {
           const {workoutIndex, exercises} = action.payload;
           const workout = workouts[workoutIndex];
-          const originalExercises = workout?.exercises ?? [];
+          const originalExercises = workout.exercises ?? [];
           originalExercises.splice(0, originalExercises.length, ...exercises);
         },
         updateExerciseName: ({workouts}, action: PayloadAction<ExerciseName>) => {
           const {workoutIndex, exerciseIndex, exerciseName} = action.payload;
           const workout = workouts[workoutIndex];
-          const exercises = workout?.exercises ?? [];
+          const exercises = workout.exercises ?? [];
           exercises[exerciseIndex].label = exerciseName;
         },
         addSet: ({workouts}, action: PayloadAction<NewSet>) => {
           const {workoutIndex, exerciseIndex, setIndex, set} = action.payload;
           const workout = workouts[workoutIndex];
-          const exercises = workout?.exercises ?? [];
+          const exercises = workout.exercises ?? [];
           const sets = exercises[exerciseIndex].sets ?? [];
           sets.splice(setIndex + 1, 0, set);
           sets.forEach((data, i) => {data.index = i;});
@@ -131,19 +92,26 @@ export const NewProgramSlice = createSlice({
         removeSet: ({workouts}, action: PayloadAction<RemoveSet>) => {
           const {workoutIndex, exerciseIndex, setIndex} = action.payload;
           const workout = workouts[workoutIndex];
-          const exercises = workout?.exercises ?? [];
+          const exercises = workout.exercises ?? [];
           const sets = exercises[exerciseIndex].sets ?? [];
           sets.splice(setIndex, 1);
           sets.forEach((data, i) => {data.index = i;});
         }, 
-        updateSets: ({workouts}, action: PayloadAction<UpdateSet>) => {
+        updateSets: ({workouts}, action: PayloadAction<UpdateSets>) => {
           const {workoutIndex, exerciseIndex, sets} = action.payload;
           const workout = workouts[workoutIndex];
-          const exercises = workout?.exercises ?? [];
+          const exercises = workout.exercises ?? [];
           const originalSets = exercises[exerciseIndex].sets ?? [];
           originalSets.splice(0, originalSets.length, ...sets);
         },
+        updateSelectedSet: ({workouts}, action: PayloadAction<UpdateSingleSet>) => {
+          const {workoutIndex, exerciseIndex, setIndex, prop} = action.payload;
+          const workout = workouts[workoutIndex];
+          const exercises = workout.exercises ?? [];
+          const originalSets = exercises[exerciseIndex].sets ?? [];
+          originalSets[setIndex] = {...originalSets[setIndex], ...prop};
+        }
     }
 });
-export const { addWorkout, removeWorkout, updateWorkouts, resetWorkouts, addExercise, removeExercise, updateExercises, updateWorkoutName, addSet, removeSet, updateSets, updateExerciseName } = NewProgramSlice.actions;
+export const { addWorkout, removeWorkout, updateWorkouts, resetWorkouts, addExercise, removeExercise, updateExercises, updateWorkoutName, addSet, removeSet, updateSets, updateExerciseName, updateSelectedSet } = NewProgramSlice.actions;
 export default NewProgramSlice.reducer;

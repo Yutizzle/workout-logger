@@ -7,12 +7,12 @@ import DraggableFlatList, {
 } from 'react-native-draggable-flatlist';
 
 import CommonStyles from '../styles/Common';
-import { ListItem } from '../types';
+import { ListItem, RenderItem } from '../types';
 
 type Props = {
   flatListData: ListItem[];
   refresh: boolean;
-  renderItem?: (props: RenderItemParams<ListItem>) => JSX.Element;
+  renderItem?: (props: RenderItemParams<RenderItem>) => JSX.Element;
   setData: (data: ListItem[]) => void;
   addItem: (index: number) => void;
   removeItem: (index: number) => void;
@@ -29,7 +29,7 @@ export default function DraggableConfigList({
   goToSettings,
 }: Props) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const defaultRenderItem = ({ item, drag, isActive }: RenderItemParams<ListItem>) => (
+  const defaultRenderItem = ({ item, drag, isActive }: RenderItemParams<RenderItem>) => (
     <ScaleDecorator>
       <TouchableOpacity
         onLongPress={drag}

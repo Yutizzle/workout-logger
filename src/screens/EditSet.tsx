@@ -1,42 +1,25 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import React, { useState } from 'react';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, TextInput, View } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
 
 import { HeaderBackOnly, SectionHeader } from '../components';
+import { updateSelectedSet } from '../slices/NewProgramSlice';
+import { RootState } from '../store';
 import CommonStyles from '../styles/Common';
 import { EditSetScreenNavigationProp } from '../types';
-
-type SetConfig = {
-  weight: string;
-  reps: string;
-  setDuration: string;
-  restDuration: string;
-  repsIncrFreq: string;
-  repsIncrAmount: string;
-  maxReps: string;
-  weightIncrFreq: string;
-  weightIncrAmount: string;
-  maxWeight: string;
-  setDurationIncrFreq: string;
-  setDurationIncrAmount: string;
-  maxSetDuration: string;
-};
 
 type InputProps = {
   headerTitle: string;
   inputValue: string;
   setValue: (val: string) => void;
 };
+
+interface IncrFrequency {
+  frequency: string;
+}
 
 function ConfigInput({ headerTitle, inputValue, setValue }: InputProps) {
   return (
@@ -60,30 +43,16 @@ function ConfigInput({ headerTitle, inputValue, setValue }: InputProps) {
 }
 
 export default function EditSetScreen({ navigation, route }: EditSetScreenNavigationProp) {
-  const { workoutIndex, exerciseIndex } = route.params;
-  const workoutName = useSelector(
-    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].label || ''
+  const { workoutIndex, exerciseIndex, setIndex } = route.params;
+  const workout = useSelector(
+    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex]
   );
-  const exerciseData = useSelector(
-    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].exercises || []
-  );
-  const initState = {
-    weight: '',
-    reps: '',
-    setDuration: '',
-    restDuration: '',
-    repsIncrFreq: '',
-    repsIncrAmount: '',
-    maxReps: '',
-    weightIncrFreq: '',
-    weightIncrAmount: '',
-    maxWeight: '',
-    setDurationIncrFreq: '',
-    setDurationIncrAmount: '',
-    maxSetDuration: '',
-  };
-  const [setConfig, setSetConfig] = useState<SetConfig>(initState);
-  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const exercises = workout.exercises ?? [];
+  const selectedExercise = exercises[exerciseIndex] ?? [];
+  const exerciseSets = selectedExercise.sets ?? [];
+  const selectedSet = exerciseSets[setIndex];
+  const dispatch = useDispatch();
+  const [incrFreqList] = useSelect<IncrFrequency>('increment_frequency', { columns: 'frequency' });
 
   return (
     <KeyboardAvoidingView
@@ -91,7 +60,7 @@ export default function EditSetScreen({ navigation, route }: EditSetScreenNaviga
       style={[CommonStyles.viewContainer]}
     >
       <View style={CommonStyles.flexNoShrink}>
-        <HeaderBackOnly headerTitle={route.params.set.label} />
+        <HeaderBackOnly headerTitle={selectedSet.label} />
       </View>
       <TouchableWithoutFeedback
         containerStyle={CommonStyles.flexGrow}
@@ -101,120 +70,282 @@ export default function EditSetScreen({ navigation, route }: EditSetScreenNaviga
         <ScrollView style={[CommonStyles.padding10, CommonStyles.flexGrow]}>
           <ConfigInput
             headerTitle="Weight"
-            inputValue={setConfig.weight}
+            inputValue={selectedSet.weight ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, weight: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    weight: val,
+                  },
+                })
+              );
             }}
           />
           <ConfigInput
             headerTitle="Reps"
-            inputValue={setConfig.reps}
+            inputValue={selectedSet.reps ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, reps: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    reps: val,
+                  },
+                })
+              );
             }}
           />
           <ConfigInput
             headerTitle="Set Duration"
-            inputValue={setConfig.setDuration}
+            inputValue={selectedSet.setDuration ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, setDuration: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    setDuration: val,
+                  },
+                })
+              );
             }}
           />
           <ConfigInput
             headerTitle="Set Rest Duration"
-            inputValue={setConfig.restDuration}
+            inputValue={selectedSet.restDuration ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, restDuration: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    restDuration: val,
+                  },
+                })
+              );
             }}
           />
           <SectionHeader title="Reps Increment Frequency" />
           <View style={CommonStyles.padding6}>
             <Picker
               style={CommonStyles.flexShrink}
-              selectedValue={setConfig.repsIncrFreq}
+              selectedValue={selectedSet.repsIncrFreq ?? ''}
               onValueChange={(freq) => {
-                setSetConfig((prev) => ({ ...prev, repsIncrFreq: freq }));
+                dispatch(
+                  updateSelectedSet({
+                    workoutIndex,
+                    exerciseIndex,
+                    setIndex,
+                    prop: {
+                      key: selectedSet.key,
+                      index: selectedSet.index,
+                      label: selectedSet.label,
+                      repsIncrFreq: freq,
+                    },
+                  })
+                );
               }}
             >
               <Picker.Item key="--" label="--" value="" />
+              {incrFreqList.data?.map((freq) => {
+                return (
+                  <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
+                );
+              })}
             </Picker>
           </View>
           <ConfigInput
             headerTitle="Reps Increment Amount"
-            inputValue={setConfig.repsIncrAmount}
+            inputValue={selectedSet.repsIncrAmount ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, repsIncrAmount: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    repsIncrAmount: val,
+                  },
+                })
+              );
             }}
           />
           <ConfigInput
             headerTitle="Max Reps Before Reset"
-            inputValue={setConfig.maxReps}
+            inputValue={selectedSet.maxReps ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, maxReps: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    maxReps: val,
+                  },
+                })
+              );
             }}
           />
           <SectionHeader title="Weight Increment Frequency" />
           <View style={CommonStyles.padding6}>
             <Picker
               style={CommonStyles.flexShrink}
-              selectedValue={setConfig.weightIncrFreq}
+              selectedValue={selectedSet.weightIncrFreq ?? ''}
               onValueChange={(freq) => {
-                setSetConfig((prev) => ({ ...prev, weightIncrFreq: freq }));
+                dispatch(
+                  updateSelectedSet({
+                    workoutIndex,
+                    exerciseIndex,
+                    setIndex,
+                    prop: {
+                      key: selectedSet.key,
+                      index: selectedSet.index,
+                      label: selectedSet.label,
+                      weightIncrFreq: freq,
+                    },
+                  })
+                );
               }}
             >
               <Picker.Item key="--" label="--" value="" />
+              {incrFreqList.data?.map((freq) => {
+                return (
+                  <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
+                );
+              })}
             </Picker>
           </View>
           <ConfigInput
             headerTitle="Weight Increment Amount"
-            inputValue={setConfig.weightIncrAmount}
+            inputValue={selectedSet.weightIncrAmount ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, weightIncrAmount: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    weightIncrAmount: val,
+                  },
+                })
+              );
             }}
           />
           <ConfigInput
             headerTitle="Max Weight Before Reset"
-            inputValue={setConfig.maxWeight}
+            inputValue={selectedSet.maxWeight ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, maxWeight: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    maxWeight: val,
+                  },
+                })
+              );
             }}
           />
           <SectionHeader title="Set Duration Increment Frequency" />
           <View style={CommonStyles.padding6}>
             <Picker
               style={CommonStyles.flexShrink}
-              selectedValue={setConfig.setDurationIncrFreq}
+              selectedValue={selectedSet.setDurationIncrFreq ?? ''}
               onValueChange={(freq) => {
-                setSetConfig((prev) => ({ ...prev, setDurationIncrFreq: freq }));
+                dispatch(
+                  updateSelectedSet({
+                    workoutIndex,
+                    exerciseIndex,
+                    setIndex,
+                    prop: {
+                      key: selectedSet.key,
+                      index: selectedSet.index,
+                      label: selectedSet.label,
+                      setDurationIncrFreq: freq,
+                    },
+                  })
+                );
               }}
             >
               <Picker.Item key="--" label="--" value="" />
+              {incrFreqList.data?.map((freq) => {
+                return (
+                  <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
+                );
+              })}
             </Picker>
           </View>
           <ConfigInput
             headerTitle="Set Duration Increment Amount"
-            inputValue={setConfig.setDurationIncrAmount}
+            inputValue={selectedSet.setDurationIncrAmount ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, setDurationIncrAmount: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    setDurationIncrAmount: val,
+                  },
+                })
+              );
             }}
           />
           <ConfigInput
             headerTitle="Max Set Duration Before Reset"
-            inputValue={setConfig.maxSetDuration}
+            inputValue={selectedSet.maxSetDuration ?? ''}
             setValue={(val) => {
-              setSetConfig((prev) => ({ ...prev, maxSetDuration: val }));
+              dispatch(
+                updateSelectedSet({
+                  workoutIndex,
+                  exerciseIndex,
+                  setIndex,
+                  prop: {
+                    key: selectedSet.key,
+                    index: selectedSet.index,
+                    label: selectedSet.label,
+                    maxSetDuration: val,
+                  },
+                })
+              );
             }}
           />
         </ScrollView>
-        <View style={[CommonStyles.flexNoShrink]}>
-          <TouchableOpacity
-            style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-            disabled={buttonDisabled}
-            onPress={async () => {}}
-          >
-            <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Save</Text>
-          </TouchableOpacity>
-        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

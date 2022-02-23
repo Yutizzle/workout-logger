@@ -28,17 +28,91 @@ export type ListItem = {
   label: string;
 };
 
-export type NewProgramSets = ListItem & {
-  
+export type RenderItem = ListItem | NewProgramSets;
+
+export type SetConfig = {
+  weight: string;
+  reps: string;
+  setDuration: string;
+  restDuration: string;
+  repsIncrFreq: string;
+  repsIncrAmount: string;
+  maxReps: string;
+  weightIncrFreq: string;
+  weightIncrAmount: string;
+  maxWeight: string;
+  setDurationIncrFreq: string;
+  setDurationIncrAmount: string;
+  maxSetDuration: string;
 };
 
+export type NewProgramSets = ListItem & Partial<SetConfig>;
+
 export type NewProgramExercises = ListItem & {
-  sets?: ListItem[];
+  sets?: NewProgramSets[];
 };
 
 export type NewProgramWorkouts = ListItem & {
   exercises?: NewProgramExercises[];
 };
+
+export interface NewWorkout {
+  workout: NewProgramWorkouts,
+  workoutIndex: number
+}
+
+export interface WorkoutName {
+  workoutIndex: number,
+  workoutName: string
+}
+
+export interface NewExercise {
+  workoutIndex: number,
+  exerciseIndex: number
+  exercise: NewProgramExercises
+}
+
+export interface RemoveExercise {
+  workoutIndex: number,
+  exerciseIndex: number
+}
+
+export interface UpdateExercise {
+  workoutIndex: number,
+  exercises: NewProgramExercises[]
+}
+
+export interface ExerciseName {
+  workoutIndex: number,
+  exerciseIndex: number,
+  exerciseName: string
+}
+
+export interface NewSet {
+  workoutIndex: number,
+  exerciseIndex: number,
+  setIndex: number,
+  set: NewProgramSets
+}
+
+export interface RemoveSet {
+  workoutIndex: number,
+  exerciseIndex: number,
+  setIndex: number
+}
+
+export interface UpdateSets {
+  workoutIndex: number,
+  exerciseIndex: number
+  sets: NewProgramSets[]
+}
+
+export interface UpdateSingleSet {
+  workoutIndex: number,
+  exerciseIndex: number,
+  setIndex: number,
+  prop: NewProgramSets
+}
 
 export type AppStackParamList = {
   WelcomeScreen: undefined;
