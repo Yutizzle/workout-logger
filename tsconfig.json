@@ -2,6 +2,7 @@
   "extends": "expo/tsconfig.base",
   "jsx": "react-jsx",
   "compilerOptions": {
+    "jsx": "react",
     "strict": true
   },
   "include": [".eslintrc.js", "app.config.js", "App.tsx", "src"]

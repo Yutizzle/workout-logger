@@ -24,43 +24,24 @@ import { EditWorkoutScreenNavigationProp } from '../types';
 
 export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScreenNavigationProp) {
   const { workoutIndex } = route.params;
-  const workoutName = useSelector(
-    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].label || ''
+  const workout = useSelector(
+    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex]
   );
-  const exercises = useSelector(
-    (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex].exercises || []
+  const exercises = useSelector((state: RootState) =>
+    state.newProgramWorkouts.exercises.filter((item) => item.workoutId === workout.key)
   );
   const dispatch = useDispatch();
-  const [uniqueId, setUniqueId] = useState(2);
   const [refresh, toggleRefresh] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [, setButtonDisabled] = useState(false);
 
-  const saveWorkout = () => {};
+  // const saveWorkout = () => {};
 
   const addNewExercise = (idx: number) => {
     // disable all buttons
     setButtonDisabled(true);
 
-    // generate unique id
-    setUniqueId((prev) => prev + 1);
-
-    // create data for new row
-    const index = exercises?.length ?? 0;
-    const newData = {
-      key: `item-${uniqueId}`,
-      index,
-      label: `New Exercise #${uniqueId}`,
-      sets: [
-        {
-          key: 'item-0',
-          index: 0,
-          label: 'Set #1',
-        },
-      ],
-    };
-
     // update store
-    dispatch(addExercise({ workoutIndex, exercise: newData, exerciseIndex: idx }));
+    dispatch(addExercise({ workoutId: workout.key, exerciseIndex: idx }));
 
     // refresh flatlist
     toggleRefresh((prev) => !prev);
@@ -101,7 +82,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
             style: 'destructive',
             onPress: () => {
               // remove selected exercise
-              dispatch(removeExercise({ workoutIndex, exerciseIndex: idx }));
+              dispatch(removeExercise({ workoutId: workout.key, exerciseId: exercises[idx].key }));
 
               // refresh flatlist
               toggleRefresh((prev) => !prev);
@@ -133,9 +114,9 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
           <View style={CommonStyles.padding6}>
             <View style={CommonStyles.inputContainer}>
               <TextInput
-                style={CommonStyles.inputs}
+                style={[CommonStyles.inputs, CommonStyles.flex]}
                 placeholder="Workout Name"
-                value={workoutName}
+                value={workout.label}
                 onChangeText={(name) =>
                   dispatch(updateWorkoutName({ workoutIndex, workoutName: name }))
                 }
@@ -152,14 +133,16 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
             flatListData={exercises}
             refresh={refresh}
             setData={(data) => {
-              dispatch(updateExercises({ workoutIndex, exercises: data }));
+              dispatch(updateExercises({ workoutId: workout.key, exercises: data }));
             }}
             addItem={addNewExercise}
             removeItem={removeNewExercise}
             goToSettings={(item) => {
               navigation.navigate('EditExerciseScreen', {
                 workoutIndex,
-                exerciseIndex: item.index,
+                exerciseIndex: exercises.findIndex(
+                  (ex) => ex.workoutId === workout.key && ex.key === item.key
+                ),
               });
             }}
           />

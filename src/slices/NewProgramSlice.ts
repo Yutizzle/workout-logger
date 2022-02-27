@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { 
-  NewProgramWorkouts, 
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  NewProgramWorkouts,
   NewWorkout,
   WorkoutName,
   NewExercise,
@@ -10,108 +10,294 @@ import {
   NewSet,
   RemoveSet,
   UpdateSets,
-  UpdateSingleSet
+  UpdateSingleSet,
+  ListItem,
+  NewProgramSets,
+  NewProgramExercises,
 } from '../types';
 
-const initialWorkouts: NewProgramWorkouts[] = [...Array(1)].map((_, index) => {
-    const item = {
-      key: `item-${index}`,
-      index,
-    };
+interface NewProgram {
+  workouts: ListItem[];
+  exercises: NewProgramExercises[];
+  sets: NewProgramSets[];
+}
+const program: NewProgram = {
+  workouts: [],
+  exercises: [],
+  sets: [],
+};
 
-    return {
-      ...item,
-      label: `New Workout #${index + 1}`,
-      exercises: [
-        {
-          ...item,
-          label: `New Exercise #${index + 1}`,
-          sets: [
-            {
-              ...item,
-              label: `Set #${index + 1}`,
-            },
-          ],
-        },
-      ],
-    };
-});
+const newWorkout = { key: `workout-0`, index: 0, label: `New Workout` };
+
+const newExercise = {
+  key: `exercise-0`,
+  index: 0,
+  label: `New Exercise`,
+  workoutId: `workout-0`,
+};
+
+const newSet = {
+  key: `set-0`,
+  index: 0,
+  label: `Set #1`,
+  weight: '',
+  reps: '',
+  setDuration: '',
+  restDuration: '',
+  repsIncrFreq: '',
+  repsIncrAmount: '',
+  maxReps: '',
+  weightIncrFreq: '',
+  weightIncrAmount: '',
+  maxWeight: '',
+  setDurationIncrFreq: '',
+  setDurationIncrAmount: '',
+  maxSetDuration: '',
+  workoutId: `workout-0`,
+  exerciseId: `exercise-0`,
+};
+
+// init new program data
+program.workouts.push(newWorkout);
+program.exercises.push(newExercise);
+program.sets.push(newSet);
 
 export const NewProgramSlice = createSlice({
-    name: "newProgramWorkouts",
-    initialState: { workouts: initialWorkouts},
-    reducers: {
-        addWorkout: ({workouts}, action: PayloadAction<NewWorkout>) => {
-          workouts.splice(action.payload.workoutIndex + 1, 0, action.payload.workout);
-          workouts.forEach((data, i) => {data.index = i;});
-        },
-        removeWorkout: ({workouts}, action: PayloadAction<number>) => {
-          workouts.splice(action.payload, 1);
-          workouts.forEach((data, i) => {data.index = i;});
-        },
-        updateWorkouts: ({workouts}, action: PayloadAction<NewProgramWorkouts[]>) => {
-          workouts.splice(0, workouts.length, ...action.payload);
-        },
-        updateWorkoutName: ({workouts}, action: PayloadAction<WorkoutName>) => {
-          const {workoutIndex, workoutName} = action.payload;
-          workouts[workoutIndex].label = workoutName;
-        },
-        resetWorkouts: ({workouts}) => {
-          workouts.splice(0, workouts.length, initialWorkouts[0]);
-        },
-        addExercise: ({workouts}, action: PayloadAction<NewExercise>) => {
-          const {workoutIndex, exerciseIndex, exercise} = action.payload;
-          workouts[workoutIndex].exercises?.splice(exerciseIndex + 1, 0, exercise);
-          workouts[workoutIndex].exercises?.forEach((data, i) => {data.index = i;});
-        },
-        removeExercise: ({workouts}, action: PayloadAction<RemoveExercise>) => {
-          const {workoutIndex, exerciseIndex} = action.payload;
-          workouts[workoutIndex].exercises?.splice(exerciseIndex, 1);
-          workouts[workoutIndex].exercises?.forEach((data, i) => {data.index = i;});
-        }, 
-        updateExercises: ({workouts}, action: PayloadAction<UpdateExercise>) => {
-          const {workoutIndex, exercises} = action.payload;
-          const workout = workouts[workoutIndex];
-          const originalExercises = workout.exercises ?? [];
-          originalExercises.splice(0, originalExercises.length, ...exercises);
-        },
-        updateExerciseName: ({workouts}, action: PayloadAction<ExerciseName>) => {
-          const {workoutIndex, exerciseIndex, exerciseName} = action.payload;
-          const workout = workouts[workoutIndex];
-          const exercises = workout.exercises ?? [];
-          exercises[exerciseIndex].label = exerciseName;
-        },
-        addSet: ({workouts}, action: PayloadAction<NewSet>) => {
-          const {workoutIndex, exerciseIndex, setIndex, set} = action.payload;
-          const workout = workouts[workoutIndex];
-          const exercises = workout.exercises ?? [];
-          const sets = exercises[exerciseIndex].sets ?? [];
-          sets.splice(setIndex + 1, 0, set);
-          sets.forEach((data, i) => {data.index = i;});
-        },
-        removeSet: ({workouts}, action: PayloadAction<RemoveSet>) => {
-          const {workoutIndex, exerciseIndex, setIndex} = action.payload;
-          const workout = workouts[workoutIndex];
-          const exercises = workout.exercises ?? [];
-          const sets = exercises[exerciseIndex].sets ?? [];
-          sets.splice(setIndex, 1);
-          sets.forEach((data, i) => {data.index = i;});
-        }, 
-        updateSets: ({workouts}, action: PayloadAction<UpdateSets>) => {
-          const {workoutIndex, exerciseIndex, sets} = action.payload;
-          const workout = workouts[workoutIndex];
-          const exercises = workout.exercises ?? [];
-          const originalSets = exercises[exerciseIndex].sets ?? [];
-          originalSets.splice(0, originalSets.length, ...sets);
-        },
-        updateSelectedSet: ({workouts}, action: PayloadAction<UpdateSingleSet>) => {
-          const {workoutIndex, exerciseIndex, setIndex, prop} = action.payload;
-          const workout = workouts[workoutIndex];
-          const exercises = workout.exercises ?? [];
-          const originalSets = exercises[exerciseIndex].sets ?? [];
-          originalSets[setIndex] = {...originalSets[setIndex], ...prop};
-        }
-    }
+  name: 'newProgramWorkouts',
+  initialState: { ...program, uniqueId: 1 },
+  reducers: {
+    addWorkout: (state, action: PayloadAction<NewWorkout>) => {
+      const { workoutIndex } = action.payload;
+      const { workouts, exercises, sets, uniqueId } = state;
+
+      // generate unique Ids
+      const uid = uniqueId + 1;
+      state.uniqueId = uid;
+      const workoutId = `workout-${uid}`;
+      const exerciseId = `exercise-${uid}`;
+      const setId = `set-${uid}`;
+
+      // generate new workout, exercise, and set
+      const newWorkoutItem = {
+        key: workoutId,
+        index: workoutIndex,
+        label: `New Workout`,
+      };
+      const newExerciseItem = { ...newExercise, key: exerciseId, workoutId };
+      const newSetItem = { ...newSet, key: setId, workoutId, exerciseId };
+
+      // add workout after selected index
+      workouts.splice(workoutIndex + 1, 0, newWorkoutItem);
+
+      // update workout indices
+      workouts.forEach((data, i) => {
+        data.index = i;
+      });
+
+      // add new exercise
+      exercises.push(newExerciseItem);
+
+      // add new set
+      sets.push(newSetItem);
+    },
+    removeWorkout: (state, action: PayloadAction<number>) => {
+      const workoutIndex = action.payload;
+      const { workouts, sets, exercises } = state;
+
+      const workoutId = workouts[workoutIndex].key;
+      // remove workout at selected index
+      workouts.splice(workoutIndex, 1);
+
+      // update workout indices
+      workouts.forEach((data, i) => {
+        data.index = i;
+      });
+
+      // remove all exercises in workout
+      state.exercises = exercises.filter((item) => item.workoutId !== workoutId);
+
+      // remove all sets in workout
+      state.sets = sets.filter((item) => item.workoutId !== workoutId);
+    },
+    updateWorkouts: ({ workouts }, action: PayloadAction<NewProgramWorkouts[]>) => {
+      workouts.splice(0, workouts.length, ...action.payload);
+    },
+    updateWorkoutName: ({ workouts }, action: PayloadAction<WorkoutName>) => {
+      const { workoutIndex, workoutName } = action.payload;
+      workouts[workoutIndex].label = workoutName;
+    },
+    resetWorkouts: (state) => {
+      const { workouts, exercises, sets } = state;
+
+      // reset unique id
+      state.uniqueId = 1;
+
+      // remove all workouts, exercises, sets
+      workouts.splice(0, workouts.length, newWorkout);
+      exercises.splice(0, exercises.length, newExercise);
+      sets.splice(0, sets.length, newSet);
+    },
+    addExercise: (state, action: PayloadAction<NewExercise>) => {
+      const { workoutId, exerciseIndex } = action.payload;
+      const { exercises, sets, uniqueId } = state;
+
+      // generate unique Ids
+      const uid = uniqueId + 1;
+      state.uniqueId = uid;
+      const exerciseId = `exercise-${uid}`;
+      const setId = `set-${uid}`;
+
+      // generate new exercise, and set
+      const newExerciseItem = {
+        ...newExercise,
+        key: exerciseId,
+        index: exerciseIndex + 1,
+        label: `New Exercise`,
+        workoutId,
+      };
+      const newSetItem = { ...newSet, key: setId, workoutId, exerciseId };
+
+      // add exercise after selected index
+      const tmpExercises = exercises.filter((item) => item.workoutId === workoutId);
+      tmpExercises.splice(exerciseIndex + 1, 0, newExerciseItem);
+
+      // update exercise indices
+      tmpExercises.forEach((data, i) => {
+        data.index = i;
+      });
+
+      // update state
+      state.exercises = [
+        ...exercises.filter((item) => item.workoutId !== workoutId),
+        ...tmpExercises,
+      ];
+
+      // add new set
+      sets.push(newSetItem);
+    },
+    removeExercise: (state, action: PayloadAction<RemoveExercise>) => {
+      const { workoutId, exerciseId } = action.payload;
+      const { exercises, sets } = state;
+
+      // remove exercise
+      let tmpExercises = exercises.filter((item) => item.workoutId === workoutId);
+      tmpExercises = tmpExercises.filter((item) => item.key !== exerciseId);
+
+      // update exercise indices
+      tmpExercises.forEach((data, i) => {
+        data.index = i;
+      });
+
+      // update state
+      state.exercises = [
+        ...exercises.filter((item) => item.workoutId !== workoutId),
+        ...tmpExercises,
+      ];
+
+      // remove sets
+      state.sets = sets.filter((item) => item.exerciseId !== exerciseId);
+    },
+    updateExercises: (state, action: PayloadAction<UpdateExercise>) => {
+      const { workoutId, exercises } = action.payload;
+
+      // get exercises in workout
+      const tmpExercises = state.exercises.filter((item) => item.workoutId === workoutId);
+
+      // replace exercises with updated data
+      tmpExercises.splice(0, tmpExercises.length, ...exercises);
+
+      // update state
+      state.exercises = [
+        ...exercises.filter((item) => item.workoutId !== workoutId),
+        ...tmpExercises,
+      ];
+    },
+    updateExerciseName: ({ exercises }, action: PayloadAction<ExerciseName>) => {
+      const { workoutId, exerciseId, exerciseName } = action.payload;
+      const idx = exercises.findIndex(
+        (item) => item.workoutId === workoutId && item.key === exerciseId
+      );
+      exercises[idx].label = exerciseName;
+    },
+    addSet: (state, action: PayloadAction<NewSet>) => {
+      const { workoutId, exerciseId } = action.payload;
+      const { sets, uniqueId } = state;
+
+      const tmpSets = sets.filter(
+        (item) => item.workoutId === workoutId && item.exerciseId === exerciseId
+      );
+
+      // generate unique Ids
+      const uid = uniqueId + 1;
+      state.uniqueId = uid;
+      const setId = `set-${uid}`;
+
+      // generate new exercise, and set
+      const newSetItem = {
+        ...newSet,
+        key: setId,
+        index: tmpSets.length,
+        label: `Set #${tmpSets.length + 1}`,
+        workoutId,
+        exerciseId,
+      };
+
+      // add set
+      sets.push(newSetItem);
+    },
+    removeSet: (state, action: PayloadAction<RemoveSet>) => {
+      const { workoutId, exerciseId, setIndex } = action.payload;
+      const { sets } = state;
+
+      // get sets in selected exercise
+      const tmpSets = sets.filter(
+        (item) => item.workoutId === workoutId && item.exerciseId === exerciseId
+      );
+
+      // remove set
+      tmpSets.splice(setIndex, 1);
+
+      // update indices
+      tmpSets.forEach((data, i) => {
+        data.index = i;
+        data.label = `Set #${i + 1}`;
+      });
+
+      // update state
+      state.sets = [
+        ...sets.filter((item) => item.workoutId === workoutId && item.exerciseId !== exerciseId),
+        ...tmpSets,
+      ];
+    },
+    updateSets: ({ workouts }, action: PayloadAction<UpdateSets>) => {
+      const { workoutIndex, exerciseIndex, sets } = action.payload;
+      const workout = workouts[workoutIndex];
+      const exercises = workout.exercises ?? [];
+      const originalSets = exercises[exerciseIndex].sets ?? [];
+      originalSets.splice(0, originalSets.length, ...sets);
+    },
+    updateSelectedSet: ({ workouts }, action: PayloadAction<UpdateSingleSet>) => {
+      const { workoutIndex, exerciseIndex, setIndex, prop } = action.payload;
+      const workout = workouts[workoutIndex];
+      const exercises = workout.exercises ?? [];
+      const originalSets = exercises[exerciseIndex].sets ?? [];
+      originalSets[setIndex] = { ...originalSets[setIndex], ...prop };
+    },
+  },
 });
-export const { addWorkout, removeWorkout, updateWorkouts, resetWorkouts, addExercise, removeExercise, updateExercises, updateWorkoutName, addSet, removeSet, updateSets, updateExerciseName, updateSelectedSet } = NewProgramSlice.actions;
+export const {
+  addWorkout,
+  removeWorkout,
+  updateWorkouts,
+  resetWorkouts,
+  addExercise,
+  removeExercise,
+  updateExercises,
+  updateWorkoutName,
+  addSet,
+  removeSet,
+  updateSets,
+  updateExerciseName,
+  updateSelectedSet,
+} = NewProgramSlice.actions;
 export default NewProgramSlice.reducer;

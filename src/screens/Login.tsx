@@ -58,7 +58,7 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={CommonStyles.viewContainer}>
           {/* Status Bar */}
-          <StatusBar />
+          <StatusBar style="light" />
 
           {/* Background Image */}
           <ImageBackground style={CommonStyles.backgroundImage} source={plateLogo}>
@@ -72,7 +72,7 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
               {/* Username Field */}
               <View style={CommonStyles.inputContainer}>
                 <TextInput
-                  style={CommonStyles.inputs}
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
                   placeholder="Username"
                   keyboardType="email-address"
                   onChangeText={(em) => setEmail(em)}
@@ -82,7 +82,7 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
               {/* Password Field */}
               <View style={CommonStyles.inputContainer}>
                 <TextInput
-                  style={CommonStyles.inputs}
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
                   placeholder="Password"
                   secureTextEntry={passHide}
                   textContentType="password"

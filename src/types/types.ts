@@ -46,9 +46,14 @@ export type SetConfig = {
   maxSetDuration: string;
 };
 
-export type NewProgramSets = ListItem & Partial<SetConfig>;
+export type NewProgramSets = ListItem &
+  Partial<SetConfig> & {
+    workoutId: string;
+    exerciseId: string;
+  };
 
 export type NewProgramExercises = ListItem & {
+  workoutId?: string;
   sets?: NewProgramSets[];
 };
 
@@ -57,61 +62,57 @@ export type NewProgramWorkouts = ListItem & {
 };
 
 export interface NewWorkout {
-  workout: NewProgramWorkouts,
-  workoutIndex: number
+  workoutIndex: number;
 }
 
 export interface WorkoutName {
-  workoutIndex: number,
-  workoutName: string
+  workoutIndex: number;
+  workoutName: string;
 }
 
 export interface NewExercise {
-  workoutIndex: number,
-  exerciseIndex: number
-  exercise: NewProgramExercises
+  workoutId: string;
+  exerciseIndex: number;
 }
 
 export interface RemoveExercise {
-  workoutIndex: number,
-  exerciseIndex: number
+  workoutId: string;
+  exerciseId: string;
 }
 
 export interface UpdateExercise {
-  workoutIndex: number,
-  exercises: NewProgramExercises[]
+  workoutId: string;
+  exercises: NewProgramExercises[];
 }
 
 export interface ExerciseName {
-  workoutIndex: number,
-  exerciseIndex: number,
-  exerciseName: string
+  workoutId: string;
+  exerciseId: string;
+  exerciseName: string;
 }
 
 export interface NewSet {
-  workoutIndex: number,
-  exerciseIndex: number,
-  setIndex: number,
-  set: NewProgramSets
+  workoutId: string;
+  exerciseId: string;
 }
 
 export interface RemoveSet {
-  workoutIndex: number,
-  exerciseIndex: number,
-  setIndex: number
+  workoutId: string;
+  exerciseId: string;
+  setIndex: number;
 }
 
 export interface UpdateSets {
-  workoutIndex: number,
-  exerciseIndex: number
-  sets: NewProgramSets[]
+  workoutIndex: number;
+  exerciseIndex: number;
+  sets: NewProgramSets[];
 }
 
 export interface UpdateSingleSet {
-  workoutIndex: number,
-  exerciseIndex: number,
-  setIndex: number,
-  prop: NewProgramSets
+  workoutIndex: number;
+  exerciseIndex: number;
+  setIndex: number;
+  prop: NewProgramSets;
 }
 
 export type AppStackParamList = {

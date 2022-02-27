@@ -21,13 +21,12 @@ import {
 } from '../slices/NewProgramSlice';
 import { RootState } from '../store';
 import CommonStyles from '../styles/Common';
-import { NewProgramScreenNavigationProp, NewProgramWorkouts } from '../types';
+import { NewProgramScreenNavigationProp } from '../types';
 
 export default function NewProgramScreen({ navigation }: NewProgramScreenNavigationProp) {
   const workouts = useSelector((state: RootState) => state.newProgramWorkouts.workouts);
   const dispatch = useDispatch();
   const [programName, setProgramName] = useState('');
-  const [uniqueId, setUniqueId] = useState(2);
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
@@ -37,33 +36,8 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
     // disable buttons
     setButtonDisabled(true);
 
-    // generate unique id
-    setUniqueId((prev) => prev + 1);
-
-    // create data for new row
-    const index = workouts.length;
-    const newData: NewProgramWorkouts = {
-      key: `item-${uniqueId}`,
-      index,
-      label: `New Workout #${uniqueId}`,
-      exercises: [
-        {
-          key: 'item-0',
-          index: 0,
-          label: `New Exercise #1`,
-          sets: [
-            {
-              key: 'item-0',
-              index: 0,
-              label: `Set #1`,
-            },
-          ],
-        },
-      ],
-    };
-
     // update store
-    dispatch(addWorkout({ workout: newData, workoutIndex: idx }));
+    dispatch(addWorkout({ workoutIndex: idx }));
 
     // refresh grid
     toggleRefresh((prev) => !prev);
@@ -160,7 +134,7 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
           <View style={CommonStyles.padding6}>
             <View style={CommonStyles.inputContainer}>
               <TextInput
-                style={CommonStyles.inputs}
+                style={[CommonStyles.inputs, CommonStyles.flex]}
                 placeholder="Program Name"
                 value={programName}
                 onChangeText={(name) => setProgramName(name)}

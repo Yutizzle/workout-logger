@@ -1,9 +1,9 @@
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
+import React from 'react';
 import { Keyboard, KeyboardAvoidingView, Platform, TextInput, View } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
-import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
+import { useSelect } from 'react-supabase';
 
 import { HeaderBackOnly, SectionHeader } from '../components';
 import { updateSelectedSet } from '../slices/NewProgramSlice';
@@ -28,7 +28,7 @@ function ConfigInput({ headerTitle, inputValue, setValue }: InputProps) {
       <View style={CommonStyles.padding6}>
         <View style={CommonStyles.inputContainer}>
           <TextInput
-            style={CommonStyles.inputs}
+            style={[CommonStyles.inputs, CommonStyles.flex]}
             placeholder={headerTitle}
             keyboardType="numeric"
             value={inputValue}
@@ -42,7 +42,7 @@ function ConfigInput({ headerTitle, inputValue, setValue }: InputProps) {
   );
 }
 
-export default function EditSetScreen({ navigation, route }: EditSetScreenNavigationProp) {
+export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
   const { workoutIndex, exerciseIndex, setIndex } = route.params;
   const workout = useSelector(
     (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex]
@@ -53,7 +53,7 @@ export default function EditSetScreen({ navigation, route }: EditSetScreenNaviga
   const selectedSet = exerciseSets[setIndex];
   const dispatch = useDispatch();
   const [incrFreqList] = useSelect<IncrFrequency>('increment_frequency', { columns: 'frequency' });
-
+  console.log(incrFreqList);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -166,11 +166,9 @@ export default function EditSetScreen({ navigation, route }: EditSetScreenNaviga
               }}
             >
               <Picker.Item key="--" label="--" value="" />
-              {incrFreqList.data?.map((freq) => {
-                return (
-                  <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
-                );
-              })}
+              {incrFreqList.data?.map((freq) => (
+                <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
+              ))}
             </Picker>
           </View>
           <ConfigInput
@@ -233,11 +231,9 @@ export default function EditSetScreen({ navigation, route }: EditSetScreenNaviga
               }}
             >
               <Picker.Item key="--" label="--" value="" />
-              {incrFreqList.data?.map((freq) => {
-                return (
-                  <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
-                );
-              })}
+              {incrFreqList.data?.map((freq) => (
+                <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
+              ))}
             </Picker>
           </View>
           <ConfigInput
@@ -300,11 +296,9 @@ export default function EditSetScreen({ navigation, route }: EditSetScreenNaviga
               }}
             >
               <Picker.Item key="--" label="--" value="" />
-              {incrFreqList.data?.map((freq) => {
-                return (
-                  <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
-                );
-              })}
+              {incrFreqList.data?.map((freq) => (
+                <Picker.Item key={freq.frequency} label={freq.frequency} value={freq.frequency} />
+              ))}
             </Picker>
           </View>
           <ConfigInput

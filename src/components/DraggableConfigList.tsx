@@ -13,6 +13,7 @@ type Props = {
   flatListData: ListItem[];
   refresh: boolean;
   renderItem?: (props: RenderItemParams<RenderItem>) => JSX.Element;
+  disableDrag?: boolean;
   setData: (data: ListItem[]) => void;
   addItem: (index: number) => void;
   removeItem: (index: number) => void;
@@ -23,6 +24,7 @@ export default function DraggableConfigList({
   flatListData,
   refresh,
   renderItem,
+  disableDrag,
   setData,
   addItem,
   removeItem,
@@ -33,7 +35,7 @@ export default function DraggableConfigList({
     <ScaleDecorator>
       <TouchableOpacity
         onLongPress={drag}
-        disabled={isActive}
+        disabled={isActive && !disableDrag}
         style={[
           CommonStyles.flexDirectionRow,
           CommonStyles.alignCenter,
@@ -114,5 +116,6 @@ export default function DraggableConfigList({
 
 DraggableConfigList.defaultProps = {
   renderItem: null,
+  disableDrag: false,
   goToSettings: null,
 };

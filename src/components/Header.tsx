@@ -1,6 +1,6 @@
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { Header } from 'react-native-elements';
 
@@ -12,8 +12,10 @@ type HeaderProps = {
   onGoBack?: () => void;
 };
 
-export function HeaderMenuOnly({ headerTitle }: HeaderProps) {
+export function HeaderMenuOnly({ headerTitle, onGoBack }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   return (
     <Header
       backgroundColor=""
@@ -24,8 +26,12 @@ export function HeaderMenuOnly({ headerTitle }: HeaderProps) {
       containerStyle={CommonStyles.headerContainer}
       leftComponent={
         <TouchableOpacity
+          disabled={buttonDisabled}
           onPress={() => {
-            navigation.navigate('MenuScreen');
+            setButtonDisabled(true);
+            if (onGoBack) onGoBack();
+            else navigation.navigate('MenuScreen');
+            setButtonDisabled(false);
           }}
         >
           <View style={CommonStyles.rotate90}>
@@ -44,6 +50,8 @@ export function HeaderMenuOnly({ headerTitle }: HeaderProps) {
 
 export function HeaderBackOnly({ headerTitle, onGoBack }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   return (
     <Header
       backgroundColor=""
@@ -54,9 +62,12 @@ export function HeaderBackOnly({ headerTitle, onGoBack }: HeaderProps) {
       containerStyle={CommonStyles.headerContainer}
       leftComponent={
         <TouchableOpacity
+          disabled={buttonDisabled}
           onPress={() => {
+            setButtonDisabled(true);
             if (onGoBack) onGoBack();
             else navigation.goBack();
+            setButtonDisabled(false);
           }}
         >
           <AntDesign name="arrowleft" style={CommonStyles.headerIcons} />
@@ -73,6 +84,8 @@ export function HeaderBackOnly({ headerTitle, onGoBack }: HeaderProps) {
 
 export function HeaderBackAndMenu({ headerTitle, onGoBack }: HeaderProps) {
   const navigation = useNavigation<MenuScreenUseNavigationProp>();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   return (
     <Header
       backgroundColor=""
@@ -83,9 +96,12 @@ export function HeaderBackAndMenu({ headerTitle, onGoBack }: HeaderProps) {
       containerStyle={CommonStyles.headerContainer}
       leftComponent={
         <TouchableOpacity
+          disabled={buttonDisabled}
           onPress={() => {
+            setButtonDisabled(true);
             if (onGoBack) onGoBack();
             else navigation.goBack();
+            setButtonDisabled(false);
           }}
         >
           <AntDesign name="arrowleft" style={CommonStyles.headerIcons} />

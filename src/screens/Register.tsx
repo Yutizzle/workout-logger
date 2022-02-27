@@ -316,7 +316,7 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
               }
             >
               <TextInput
-                style={CommonStyles.inputs}
+                style={[CommonStyles.inputs, CommonStyles.flex]}
                 placeholder="Email"
                 keyboardType="email-address"
                 onChangeText={(email) => validateEmail(email)}
@@ -327,7 +327,7 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
             <Text style={CommonStyles.inputLabel}>Password</Text>
             <View style={CommonStyles.inputContainer}>
               <TextInput
-                style={CommonStyles.inputs}
+                style={[CommonStyles.inputs, CommonStyles.flex]}
                 placeholder="Password"
                 secureTextEntry={passHide}
                 textContentType="password"
@@ -351,7 +351,7 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
               }
             >
               <TextInput
-                style={CommonStyles.inputs}
+                style={[CommonStyles.inputs, CommonStyles.flex]}
                 placeholder="Confirm Password"
                 secureTextEntry={confirmPassHide}
                 textContentType="password"
