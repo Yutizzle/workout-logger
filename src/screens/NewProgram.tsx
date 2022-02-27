@@ -25,12 +25,15 @@ import { NewProgramScreenNavigationProp } from '../types';
 
 export default function NewProgramScreen({ navigation }: NewProgramScreenNavigationProp) {
   const workouts = useSelector((state: RootState) => state.newProgramWorkouts.workouts);
+  // const program = useSelector((state: RootState) => state.newProgramWorkouts);
   const dispatch = useDispatch();
   const [programName, setProgramName] = useState('');
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
-  const createNewProgram = () => {};
+  const createNewProgram = () => {
+    // console.log(program);
+  };
 
   const addNewWorkout = (idx: number) => {
     // disable buttons
@@ -93,6 +96,9 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
   };
 
   const onGoBack = () => {
+    // disable all buttons
+    setButtonDisabled(true);
+
     Alert.alert(
       'Leave New Program',
       `Are you sure you want to leave without saving this program?`,
@@ -162,18 +168,18 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
             }}
           />
         </View>
-        <View style={[CommonStyles.flexShrink]}>
-          <TouchableOpacity
-            style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-            disabled={buttonDisabled}
-            onPress={async () => {
-              await createNewProgram();
-            }}
-          >
-            <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Create</Text>
-          </TouchableOpacity>
-        </View>
       </TouchableWithoutFeedback>
+      <View style={[CommonStyles.flexShrink]}>
+        <TouchableOpacity
+          style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
+          disabled={buttonDisabled}
+          onPress={async () => {
+            await createNewProgram();
+          }}
+        >
+          <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Create</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 }

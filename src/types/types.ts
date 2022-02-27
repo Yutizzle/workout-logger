@@ -48,8 +48,8 @@ export type SetConfig = {
 
 export type NewProgramSets = ListItem &
   Partial<SetConfig> & {
-    workoutId: string;
-    exerciseId: string;
+    workoutId?: string;
+    exerciseId?: string;
   };
 
 export type NewProgramExercises = ListItem & {
@@ -103,16 +103,16 @@ export interface RemoveSet {
 }
 
 export interface UpdateSets {
-  workoutIndex: number;
-  exerciseIndex: number;
+  workoutId: string;
+  exerciseId: string;
   sets: NewProgramSets[];
 }
 
 export interface UpdateSingleSet {
-  workoutIndex: number;
-  exerciseIndex: number;
-  setIndex: number;
-  prop: NewProgramSets;
+  workoutId: string;
+  exerciseId: string;
+  setId: string;
+  prop: Partial<SetConfig>;
 }
 
 export type AppStackParamList = {

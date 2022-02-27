@@ -199,16 +199,16 @@ export const NewProgramSlice = createSlice({
     },
     updateExercises: (state, action: PayloadAction<UpdateExercise>) => {
       const { workoutId, exercises } = action.payload;
-
+      
       // get exercises in workout
       const tmpExercises = state.exercises.filter((item) => item.workoutId === workoutId);
 
       // replace exercises with updated data
       tmpExercises.splice(0, tmpExercises.length, ...exercises);
-
+      
       // update state
       state.exercises = [
-        ...exercises.filter((item) => item.workoutId !== workoutId),
+        ...state.exercises.filter((item) => item.workoutId !== workoutId),
         ...tmpExercises,
       ];
     },
@@ -265,23 +265,21 @@ export const NewProgramSlice = createSlice({
 
       // update state
       state.sets = [
-        ...sets.filter((item) => item.workoutId === workoutId && item.exerciseId !== exerciseId),
+        ...sets.filter((item) => item.exerciseId !== exerciseId),
         ...tmpSets,
       ];
     },
-    updateSets: ({ workouts }, action: PayloadAction<UpdateSets>) => {
-      const { workoutIndex, exerciseIndex, sets } = action.payload;
-      const workout = workouts[workoutIndex];
-      const exercises = workout.exercises ?? [];
-      const originalSets = exercises[exerciseIndex].sets ?? [];
-      originalSets.splice(0, originalSets.length, ...sets);
-    },
-    updateSelectedSet: ({ workouts }, action: PayloadAction<UpdateSingleSet>) => {
-      const { workoutIndex, exerciseIndex, setIndex, prop } = action.payload;
-      const workout = workouts[workoutIndex];
-      const exercises = workout.exercises ?? [];
-      const originalSets = exercises[exerciseIndex].sets ?? [];
-      originalSets[setIndex] = { ...originalSets[setIndex], ...prop };
+    updateSets: (state, action: PayloadAction<UpdateSets>) => {
+      const { workoutId, exerciseId, sets } = action.payload;
+
+      state.sets = [
+        ...state.sets.filter((item) => item.workoutId !== workoutId && item.exerciseId !== exerciseId),
+        ...sets];
+      },
+    updateSelectedSet: ({sets}, action: PayloadAction<UpdateSingleSet>) => {
+      const { workoutId, exerciseId, setId, prop } = action.payload;
+      const idx = sets.findIndex((s) => s.workoutId === workoutId && s.exerciseId === exerciseId && s.key === setId);
+      sets[idx] = {...sets[idx], ...prop };
     },
   },
 });

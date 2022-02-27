@@ -47,13 +47,13 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
   const workout = useSelector(
     (state: RootState) => state.newProgramWorkouts.workouts[workoutIndex]
   );
-  const exercises = workout.exercises ?? [];
-  const selectedExercise = exercises[exerciseIndex] ?? [];
-  const exerciseSets = selectedExercise.sets ?? [];
-  const selectedSet = exerciseSets[setIndex];
+  const exercise = useSelector(
+    (state: RootState) => state.newProgramWorkouts.exercises[exerciseIndex]
+  );
+  const selectedSet = useSelector((state: RootState) => state.newProgramWorkouts.sets[setIndex]);
   const dispatch = useDispatch();
   const [incrFreqList] = useSelect<IncrFrequency>('increment_frequency', { columns: 'frequency' });
-  console.log(incrFreqList);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -74,13 +74,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     weight: val,
                   },
                 })
@@ -93,13 +90,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     reps: val,
                   },
                 })
@@ -112,13 +106,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     setDuration: val,
                   },
                 })
@@ -131,13 +122,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     restDuration: val,
                   },
                 })
@@ -152,13 +140,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
               onValueChange={(freq) => {
                 dispatch(
                   updateSelectedSet({
-                    workoutIndex,
-                    exerciseIndex,
-                    setIndex,
+                    workoutId: workout.key,
+                    exerciseId: exercise.key,
+                    setId: selectedSet.key,
                     prop: {
-                      key: selectedSet.key,
-                      index: selectedSet.index,
-                      label: selectedSet.label,
                       repsIncrFreq: freq,
                     },
                   })
@@ -177,13 +162,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     repsIncrAmount: val,
                   },
                 })
@@ -196,13 +178,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     maxReps: val,
                   },
                 })
@@ -217,13 +196,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
               onValueChange={(freq) => {
                 dispatch(
                   updateSelectedSet({
-                    workoutIndex,
-                    exerciseIndex,
-                    setIndex,
+                    workoutId: workout.key,
+                    exerciseId: exercise.key,
+                    setId: selectedSet.key,
                     prop: {
-                      key: selectedSet.key,
-                      index: selectedSet.index,
-                      label: selectedSet.label,
                       weightIncrFreq: freq,
                     },
                   })
@@ -242,13 +218,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     weightIncrAmount: val,
                   },
                 })
@@ -261,13 +234,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     maxWeight: val,
                   },
                 })
@@ -282,13 +252,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
               onValueChange={(freq) => {
                 dispatch(
                   updateSelectedSet({
-                    workoutIndex,
-                    exerciseIndex,
-                    setIndex,
+                    workoutId: workout.key,
+                    exerciseId: exercise.key,
+                    setId: selectedSet.key,
                     prop: {
-                      key: selectedSet.key,
-                      index: selectedSet.index,
-                      label: selectedSet.label,
                       setDurationIncrFreq: freq,
                     },
                   })
@@ -307,13 +274,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     setDurationIncrAmount: val,
                   },
                 })
@@ -326,13 +290,10 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
             setValue={(val) => {
               dispatch(
                 updateSelectedSet({
-                  workoutIndex,
-                  exerciseIndex,
-                  setIndex,
+                  workoutId: workout.key,
+                  exerciseId: exercise.key,
+                  setId: selectedSet.key,
                   prop: {
-                    key: selectedSet.key,
-                    index: selectedSet.index,
-                    label: selectedSet.label,
                     maxSetDuration: val,
                   },
                 })

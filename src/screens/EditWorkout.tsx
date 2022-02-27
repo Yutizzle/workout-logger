@@ -30,6 +30,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
   const exercises = useSelector((state: RootState) =>
     state.newProgramWorkouts.exercises.filter((item) => item.workoutId === workout.key)
   );
+  const allExercises = useSelector((state: RootState) => state.newProgramWorkouts.exercises);
   const dispatch = useDispatch();
   const [refresh, toggleRefresh] = useState(false);
   const [, setButtonDisabled] = useState(false);
@@ -140,7 +141,7 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
             goToSettings={(item) => {
               navigation.navigate('EditExerciseScreen', {
                 workoutIndex,
-                exerciseIndex: exercises.findIndex(
+                exerciseIndex: allExercises.findIndex(
                   (ex) => ex.workoutId === workout.key && ex.key === item.key
                 ),
               });

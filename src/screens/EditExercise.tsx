@@ -1,5 +1,5 @@
 import { Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Keyboard,
@@ -36,6 +36,7 @@ export default function EditExerciseScreen({
       (item) => item.workoutId === workout.key && item.exerciseId === exercise.key
     )
   );
+  const allSets = useSelector((state: RootState) => state.newProgramWorkouts.sets);
   const dispatch = useDispatch();
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -62,7 +63,7 @@ export default function EditExerciseScreen({
 
     // must have at least one set, cannot remove last set
     if (sets.length === 1) {
-      Alert.alert('Remove Exercise', `Your workout must contain at least one exercise.`, [
+      Alert.alert('Remove Set', `Your exercise must contain at least one set.`, [
         {
           text: 'OK',
           onPress: () => {
@@ -72,8 +73,8 @@ export default function EditExerciseScreen({
       ]);
     } else {
       Alert.alert(
-        'Remove Exercise',
-        `Are you sure you want to remove ${sets[idx].label} from this workout?`,
+        'Remove Set',
+        `Are you sure you want to remove ${sets[idx].label} from this exercise?`,
         [
           {
             text: 'Cancel',
@@ -133,7 +134,12 @@ export default function EditExerciseScreen({
               navigation.navigate('EditSetScreen', {
                 workoutIndex,
                 exerciseIndex,
-                setIndex: item.index,
+                setIndex: allSets.findIndex(
+                  (s) =>
+                    s.workoutId === workout.key &&
+                    s.exerciseId === exercise.key &&
+                    s.key === item.key
+                ),
               });
             }}
           >
@@ -209,7 +215,9 @@ export default function EditExerciseScreen({
             flatListData={sets}
             refresh={refresh}
             setData={(data) => {
-              dispatch(updateSets({ workoutIndex, exerciseIndex, sets: data }));
+              dispatch(
+                updateSets({ workoutId: workout.key, exerciseId: exercise.key, sets: data })
+              );
             }}
             addItem={() => {}}
             removeItem={() => {}}
