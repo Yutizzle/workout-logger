@@ -223,10 +223,7 @@ export default StyleSheet.create({
     marginLeft: 2.5,
   },
   titleContainer: {
-    flexShrink: 1,
-    flexGrow: 0,
     alignItems: 'center',
-    justifyContent: 'center',
     paddingBottom: 10,
   },
   title: {
@@ -237,20 +234,14 @@ export default StyleSheet.create({
     color: '#2B3A39',
   },
   backgroundImage: {
-    // height: '100%',
-    // width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
   loginContainer: {
-    // height: '75%',
-    // width: '100%',
-    padding: 20,
-    borderRadius: 50,
-    backgroundColor: '#fff',
-  },
-  registerContainer: {
-    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 40,
+    paddingBottom: 40,
     borderRadius: 50,
     backgroundColor: '#fff',
   },

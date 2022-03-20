@@ -17,7 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSignIn } from 'react-supabase';
 
 import ErrorMessages from '../api/constants';
-import plateLogo from '../assets/images/plate-weight.jpg';
+import plateLogo from '../assets/images/rack-weights.jpg';
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
 import { LoginScreenNavigationProp } from '../types';
@@ -63,12 +63,7 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[
-          CommonStyles.flex,
-          CommonStyles.flexGrow,
-          CommonStyles.fullWidth,
-          CommonStyles.justifyFlexEnd,
-        ]}
+        style={[CommonStyles.flex, CommonStyles.flexGrow, CommonStyles.fullWidth]}
       >
         <TouchableWithoutFeedback
           style={[CommonStyles.flex, CommonStyles.flexGrow]}
@@ -77,73 +72,73 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
           {/* Login Area */}
           <SafeAreaView
             style={[
-              CommonStyles.loginContainer,
               CommonStyles.flex,
-              CommonStyles.flexShrink,
-              {
-                flexBasis: '75%',
-              },
+              CommonStyles.flexGrow,
+              CommonStyles.justifyCenter,
+              CommonStyles.padding10,
             ]}
           >
             {/* Status Bar */}
             <StatusBar style="light" />
 
-            {/* App Title */}
-            <View style={CommonStyles.titleContainer}>
-              <Text style={CommonStyles.title}>Workout Logger</Text>
-            </View>
+            <View style={[CommonStyles.loginContainer]}>
+              {/* App Title */}
+              <View style={CommonStyles.titleContainer}>
+                <Text style={CommonStyles.title}>Workout Logger</Text>
+              </View>
 
-            {/* Username Field */}
-            <View style={CommonStyles.inputContainer}>
-              <TextInput
-                style={[CommonStyles.inputs, CommonStyles.flex]}
-                placeholder="Username"
-                keyboardType="email-address"
-                onChangeText={(em) => setEmail(em)}
-              />
-            </View>
+              {/* Username Field */}
+              <View style={CommonStyles.inputContainer}>
+                <TextInput
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
+                  placeholder="Username"
+                  keyboardType="email-address"
+                  onChangeText={(em) => setEmail(em)}
+                />
+              </View>
 
-            {/* Password Field */}
-            <View style={CommonStyles.inputContainer}>
-              <TextInput
-                style={[CommonStyles.inputs, CommonStyles.flex]}
-                placeholder="Password"
-                secureTextEntry={passHide}
-                textContentType="password"
-                autoCompleteType="password"
-                onChangeText={(pass) => setPassword(pass)}
-              />
-              <Ionicons
-                name={passHide ? 'eye-off-sharp' : 'eye-sharp'}
-                size={20}
-                color="gray"
-                onPress={() => togglePassHide(!passHide)}
-              />
-            </View>
+              {/* Password Field */}
+              <View style={CommonStyles.inputContainer}>
+                <TextInput
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
+                  placeholder="Password"
+                  secureTextEntry={passHide}
+                  textContentType="password"
+                  autoCompleteType="password"
+                  onChangeText={(pass) => setPassword(pass)}
+                />
+                <Ionicons
+                  name={passHide ? 'eye-off-sharp' : 'eye-sharp'}
+                  size={20}
+                  color="gray"
+                  onPress={() => togglePassHide(!passHide)}
+                />
+              </View>
 
-            {/* Error message */}
-            {loginError ? <ErrorMessage error={loginError} visible /> : null}
+              {/* Error message */}
+              {loginError ? <ErrorMessage error={loginError} visible /> : null}
 
-            {/* Login Button */}
-            <TouchableOpacity
-              style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-              onPress={async () => {
-                await onLogin();
-              }}
-            >
-              {buttonDisabled ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Login</Text>
-              )}
-            </TouchableOpacity>
-
-            {/* Register Link */}
-            <View style={CommonStyles.linkContainer}>
-              <Text style={CommonStyles.registerText}>Don&apos;t have an account?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
-                <Text style={CommonStyles.links}> Sign Up!</Text>
+              {/* Login Button */}
+              <TouchableOpacity
+                style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
+                onPress={async () => {
+                  await onLogin();
+                }}
+              >
+                {buttonDisabled ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Login</Text>
+                )}
               </TouchableOpacity>
+
+              {/* Register Link */}
+              <View style={CommonStyles.linkContainer}>
+                <Text style={CommonStyles.registerText}>Don&apos;t have an account?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
+                  <Text style={CommonStyles.links}> Sign Up!</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </SafeAreaView>
         </TouchableWithoutFeedback>

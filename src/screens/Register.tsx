@@ -20,7 +20,7 @@ import CommonStyles from '../styles/Common';
 import { RegisterData, RegisterScreenNavigationProp } from '../types';
 import axiosInstance from '../api/axios';
 import supabase from '../api/supabase';
-import plateLogo from '../assets/images/plate-weight.jpg';
+import plateLogo from '../assets/images/rack-weights.jpg';
 
 function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
   const [passHide, togglePassHide] = useState(true);
@@ -173,7 +173,7 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
           CommonStyles.flex,
           CommonStyles.flexGrow,
           CommonStyles.fullWidth,
-          CommonStyles.justifyFlexEnd,
+          CommonStyles.justifyCenter,
         ]}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
@@ -181,12 +181,19 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
           style={[CommonStyles.flex, CommonStyles.flexGrow]}
           onPress={Keyboard.dismiss}
         >
-          <SafeAreaView style={[CommonStyles.flex, CommonStyles.flexGrow]}>
+          <SafeAreaView
+            style={[
+              CommonStyles.flex,
+              CommonStyles.flexGrow,
+              CommonStyles.justifyCenter,
+              CommonStyles.padding10,
+            ]}
+          >
             {/* Status Bar */}
             <StatusBar style="light" />
 
             {/* Register Area */}
-            <View style={[CommonStyles.registerContainer, CommonStyles.flexGrow]}>
+            <View style={[CommonStyles.loginContainer]}>
               {/* App Title */}
               <View style={CommonStyles.titleContainer}>
                 <Text style={CommonStyles.title}>Register</Text>
