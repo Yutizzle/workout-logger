@@ -9,18 +9,20 @@ import {
   Text,
   TextInput,
   TouchableWithoutFeedback,
+  ImageBackground,
   View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useClient } from 'react-supabase';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 import ErrorMessages from '../api/constants';
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
 import { RegisterData, RegisterScreenNavigationProp } from '../types';
+import axiosInstance from '../api/axios';
+import supabase from '../api/supabase';
+import plateLogo from '../assets/images/plate-weight.jpg';
 
 function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
-  const supabase = useClient();
   const [passHide, togglePassHide] = useState(true);
   const [confirmPassHide, toggleConfirmPassHide] = useState(true);
   const [signUpError, setSignUpError] = useState('');
@@ -118,23 +120,36 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
       registerData.confirmPassword !== '' &&
       registerData.passwordMatch
     ) {
-      const { error } = await supabase.auth.signUp(
-        {
-          email: registerData.email,
-          password: registerData.password,
-        },
-        {
+      await axiosInstance
+        .post('/users/register', {
           data: {
             first_name: registerData.firstName,
             last_name: registerData.lastName,
             date_of_birth: registerData.dateOfBirth,
+            email: registerData.email,
+            password: registerData.password,
           },
-        }
-      );
-      if (error) {
-        setSignUpError(error.message);
-        // console.log(error);
-      }
+        })
+        .then(async (response) => {
+          await supabase.auth.signIn({
+            refreshToken: response.data.refresh_token,
+          });
+        })
+        .catch((err) => {
+          if (err.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            setSignUpError(`Server responded with error code ${err.response.status}.`);
+          } else if (err.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            setSignUpError(`No response received from the server.`);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            setSignUpError(`Error: ${err.message}`);
+          }
+        });
     } else if (registerData.firstName === '' && registerData.lastName === '') {
       setSignUpError(ErrorMessages.EMPTY_NAME);
     } else if (!registerData.monthValid || !registerData.dayValid || !registerData.yearValid) {
@@ -149,247 +164,260 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={CommonStyles.viewContainer}
+    <ImageBackground
+      style={[CommonStyles.backgroundImage, CommonStyles.flex, CommonStyles.flexGrow]}
+      source={plateLogo}
     >
-      <TouchableWithoutFeedback style={CommonStyles.viewContainer} onPress={Keyboard.dismiss}>
-        <View style={CommonStyles.viewContainer}>
-          {/* Status Bar */}
-          <StatusBar />
+      <KeyboardAvoidingView
+        style={[
+          CommonStyles.flex,
+          CommonStyles.flexGrow,
+          CommonStyles.fullWidth,
+          CommonStyles.justifyFlexEnd,
+        ]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <TouchableWithoutFeedback
+          style={[CommonStyles.flex, CommonStyles.flexGrow]}
+          onPress={Keyboard.dismiss}
+        >
+          <SafeAreaView style={[CommonStyles.flex, CommonStyles.flexGrow]}>
+            {/* Status Bar */}
+            <StatusBar style="light" />
 
-          {/* Register Area */}
-          <View style={CommonStyles.registerContainer}>
-            {/* App Title */}
-            <View style={CommonStyles.titleContainer}>
-              <Text style={CommonStyles.title}>Register</Text>
-            </View>
-
-            {/* First & Last Name Field */}
-            <Text style={CommonStyles.inputLabel}>Name</Text>
-            <View style={CommonStyles.inlineInputRowContainer}>
-              <View
-                style={[
-                  CommonStyles.inputSpacerRight,
-                  CommonStyles.flexGrow,
-                  CommonStyles.halfBasis,
-                ]}
-              >
-                <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
-                  <TextInput
-                    placeholder="First Name"
-                    onChangeText={(firstName) =>
-                      setRegisterData({
-                        ...registerData,
-                        firstName: firstName.replace(/[^a-zA-Z]/g, ''),
-                      })
-                    }
-                    value={registerData.firstName}
-                  />
-                </View>
+            {/* Register Area */}
+            <View style={[CommonStyles.registerContainer, CommonStyles.flexGrow]}>
+              {/* App Title */}
+              <View style={CommonStyles.titleContainer}>
+                <Text style={CommonStyles.title}>Register</Text>
               </View>
-              <View
-                style={[
-                  CommonStyles.inputSpacerLeft,
-                  CommonStyles.flexGrow,
-                  CommonStyles.halfBasis,
-                ]}
-              >
-                <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
-                  <TextInput
-                    placeholder="Last Name"
-                    onChangeText={(lastName) =>
-                      setRegisterData({
-                        ...registerData,
-                        lastName: lastName.replace(/[^a-zA-Z]/g, ''),
-                      })
-                    }
-                    value={registerData.lastName}
-                  />
-                </View>
-              </View>
-            </View>
 
-            {/* DOB Field */}
-            <Text style={CommonStyles.inputLabel}>Date of Birth</Text>
-            <View style={CommonStyles.inlineInputRowContainer}>
-              <View
-                style={[
-                  CommonStyles.inputSpacerRight,
-                  CommonStyles.flexGrow,
-                  CommonStyles.thirdBasis,
-                ]}
-              >
+              {/* First & Last Name Field */}
+              <Text style={CommonStyles.inputLabel}>Name</Text>
+              <View style={CommonStyles.inlineInputRowContainer}>
                 <View
-                  style={
-                    registerData.monthValid
-                      ? [CommonStyles.inputContainer, CommonStyles.flexGrow]
-                      : [
-                          CommonStyles.inputInvalidContainer,
-                          CommonStyles.flexGrow,
-                          CommonStyles.marginRightSm,
-                        ]
-                  }
+                  style={[
+                    CommonStyles.inputSpacerRight,
+                    CommonStyles.flexGrow,
+                    CommonStyles.halfBasis,
+                  ]}
                 >
-                  <TextInput
-                    placeholder="MM"
-                    keyboardType="numeric"
-                    maxLength={2}
-                    onChangeText={(month) =>
-                      validateDateOfBirth(registerData.year, month, registerData.day)
-                    }
-                    value={registerData.month}
-                    style={CommonStyles.inlineInput}
-                  />
+                  <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
+                    <TextInput
+                      placeholder="First Name"
+                      onChangeText={(firstName) =>
+                        setRegisterData({
+                          ...registerData,
+                          firstName: firstName.replace(/[^a-zA-Z]/g, ''),
+                        })
+                      }
+                      value={registerData.firstName}
+                    />
+                  </View>
                 </View>
-              </View>
-              <View
-                style={[
-                  CommonStyles.inputSpacerLeft,
-                  CommonStyles.inputSpacerRight,
-                  CommonStyles.flexGrow,
-                  CommonStyles.thirdBasis,
-                ]}
-              >
                 <View
-                  style={
-                    registerData.dayValid
-                      ? [
-                          CommonStyles.inputContainer,
-                          CommonStyles.flexGrow,
-                          CommonStyles.marginRightSm,
-                        ]
-                      : [
-                          CommonStyles.inputInvalidContainer,
-                          CommonStyles.flexGrow,
-                          CommonStyles.marginRightSm,
-                        ]
-                  }
+                  style={[
+                    CommonStyles.inputSpacerLeft,
+                    CommonStyles.flexGrow,
+                    CommonStyles.halfBasis,
+                  ]}
                 >
-                  <TextInput
-                    placeholder="DD"
-                    keyboardType="numeric"
-                    maxLength={2}
-                    onChangeText={(day) =>
-                      validateDateOfBirth(registerData.year, registerData.month, day)
-                    }
-                    value={registerData.day}
-                    style={CommonStyles.inlineInput}
-                  />
+                  <View style={[CommonStyles.inputContainer, CommonStyles.flexGrow]}>
+                    <TextInput
+                      placeholder="Last Name"
+                      onChangeText={(lastName) =>
+                        setRegisterData({
+                          ...registerData,
+                          lastName: lastName.replace(/[^a-zA-Z]/g, ''),
+                        })
+                      }
+                      value={registerData.lastName}
+                    />
+                  </View>
                 </View>
               </View>
-              <View
-                style={[
-                  CommonStyles.inputSpacerLeft,
-                  CommonStyles.flexGrow,
-                  CommonStyles.thirdBasis,
-                ]}
-              >
+
+              {/* DOB Field */}
+              <Text style={CommonStyles.inputLabel}>Date of Birth</Text>
+              <View style={CommonStyles.inlineInputRowContainer}>
                 <View
-                  style={
-                    registerData.yearValid
-                      ? [CommonStyles.inputContainer, CommonStyles.flexGrow]
-                      : [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow]
-                  }
+                  style={[
+                    CommonStyles.inputSpacerRight,
+                    CommonStyles.flexGrow,
+                    CommonStyles.thirdBasis,
+                  ]}
                 >
-                  <TextInput
-                    placeholder="YYYY"
-                    keyboardType="numeric"
-                    maxLength={4}
-                    onChangeText={(year) =>
-                      validateDateOfBirth(year, registerData.month, registerData.day)
+                  <View
+                    style={
+                      registerData.monthValid
+                        ? [CommonStyles.inputContainer, CommonStyles.flexGrow]
+                        : [
+                            CommonStyles.inputInvalidContainer,
+                            CommonStyles.flexGrow,
+                            CommonStyles.marginRightSm,
+                          ]
                     }
-                    value={registerData.year}
-                    style={CommonStyles.inlineInput}
-                  />
+                  >
+                    <TextInput
+                      placeholder="MM"
+                      keyboardType="numeric"
+                      maxLength={2}
+                      onChangeText={(month) =>
+                        validateDateOfBirth(registerData.year, month, registerData.day)
+                      }
+                      value={registerData.month}
+                      style={CommonStyles.inlineInput}
+                    />
+                  </View>
+                </View>
+                <View
+                  style={[
+                    CommonStyles.inputSpacerLeft,
+                    CommonStyles.inputSpacerRight,
+                    CommonStyles.flexGrow,
+                    CommonStyles.thirdBasis,
+                  ]}
+                >
+                  <View
+                    style={
+                      registerData.dayValid
+                        ? [
+                            CommonStyles.inputContainer,
+                            CommonStyles.flexGrow,
+                            CommonStyles.marginRightSm,
+                          ]
+                        : [
+                            CommonStyles.inputInvalidContainer,
+                            CommonStyles.flexGrow,
+                            CommonStyles.marginRightSm,
+                          ]
+                    }
+                  >
+                    <TextInput
+                      placeholder="DD"
+                      keyboardType="numeric"
+                      maxLength={2}
+                      onChangeText={(day) =>
+                        validateDateOfBirth(registerData.year, registerData.month, day)
+                      }
+                      value={registerData.day}
+                      style={CommonStyles.inlineInput}
+                    />
+                  </View>
+                </View>
+                <View
+                  style={[
+                    CommonStyles.inputSpacerLeft,
+                    CommonStyles.flexGrow,
+                    CommonStyles.thirdBasis,
+                  ]}
+                >
+                  <View
+                    style={
+                      registerData.yearValid
+                        ? [CommonStyles.inputContainer, CommonStyles.flexGrow]
+                        : [CommonStyles.inputInvalidContainer, CommonStyles.flexGrow]
+                    }
+                  >
+                    <TextInput
+                      placeholder="YYYY"
+                      keyboardType="numeric"
+                      maxLength={4}
+                      onChangeText={(year) =>
+                        validateDateOfBirth(year, registerData.month, registerData.day)
+                      }
+                      value={registerData.year}
+                      style={CommonStyles.inlineInput}
+                    />
+                  </View>
                 </View>
               </View>
-            </View>
 
-            {/* Username Field */}
-            <Text style={CommonStyles.inputLabel}>Email</Text>
-            <View
-              style={
-                registerData.emailValid
-                  ? CommonStyles.inputContainer
-                  : CommonStyles.inputInvalidContainer
-              }
-            >
-              <TextInput
-                style={[CommonStyles.inputs, CommonStyles.flex]}
-                placeholder="Email"
-                keyboardType="email-address"
-                onChangeText={(email) => validateEmail(email)}
-              />
-            </View>
+              {/* Username Field */}
+              <Text style={CommonStyles.inputLabel}>Email</Text>
+              <View
+                style={
+                  registerData.emailValid
+                    ? CommonStyles.inputContainer
+                    : CommonStyles.inputInvalidContainer
+                }
+              >
+                <TextInput
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  onChangeText={(email) => validateEmail(email)}
+                />
+              </View>
 
-            {/* Password Field */}
-            <Text style={CommonStyles.inputLabel}>Password</Text>
-            <View style={CommonStyles.inputContainer}>
-              <TextInput
-                style={[CommonStyles.inputs, CommonStyles.flex]}
-                placeholder="Password"
-                secureTextEntry={passHide}
-                textContentType="password"
-                autoCompleteType="password"
-                onChangeText={(pass) => setRegisterData({ ...registerData, password: pass })}
-              />
-              <Ionicons
-                name={passHide ? 'eye-off-sharp' : 'eye-sharp'}
-                size={20}
-                color="gray"
-                onPress={() => togglePassHide(!passHide)}
-              />
-            </View>
+              {/* Password Field */}
+              <Text style={CommonStyles.inputLabel}>Password</Text>
+              <View style={CommonStyles.inputContainer}>
+                <TextInput
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
+                  placeholder="Password"
+                  secureTextEntry={passHide}
+                  textContentType="password"
+                  autoCompleteType="password"
+                  onChangeText={(pass) => setRegisterData({ ...registerData, password: pass })}
+                />
+                <Ionicons
+                  name={passHide ? 'eye-off-sharp' : 'eye-sharp'}
+                  size={20}
+                  color="gray"
+                  onPress={() => togglePassHide(!passHide)}
+                />
+              </View>
 
-            {/* Confirm Password Field */}
-            <View
-              style={
-                registerData.passwordMatch
-                  ? CommonStyles.inputContainer
-                  : CommonStyles.inputInvalidContainer
-              }
-            >
-              <TextInput
-                style={[CommonStyles.inputs, CommonStyles.flex]}
-                placeholder="Confirm Password"
-                secureTextEntry={confirmPassHide}
-                textContentType="password"
-                autoCompleteType="password"
-                onChangeText={(pass) => validatePasswordMatch(pass)}
-              />
-              <Ionicons
-                name={confirmPassHide ? 'eye-off-sharp' : 'eye-sharp'}
-                size={20}
-                color="gray"
-                onPress={() => toggleConfirmPassHide(!confirmPassHide)}
-              />
-            </View>
+              {/* Confirm Password Field */}
+              <View
+                style={
+                  registerData.passwordMatch
+                    ? CommonStyles.inputContainer
+                    : CommonStyles.inputInvalidContainer
+                }
+              >
+                <TextInput
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
+                  placeholder="Confirm Password"
+                  secureTextEntry={confirmPassHide}
+                  textContentType="password"
+                  autoCompleteType="password"
+                  onChangeText={(pass) => validatePasswordMatch(pass)}
+                />
+                <Ionicons
+                  name={confirmPassHide ? 'eye-off-sharp' : 'eye-sharp'}
+                  size={20}
+                  color="gray"
+                  onPress={() => toggleConfirmPassHide(!confirmPassHide)}
+                />
+              </View>
 
-            {/* Error message */}
-            {signUpError ? <ErrorMessage error={signUpError} visible /> : null}
+              {/* Error message */}
+              {signUpError ? <ErrorMessage error={signUpError} visible /> : null}
 
-            {/* Login Button */}
-            <TouchableOpacity
-              style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-              onPress={async () => {
-                await onRegister();
-              }}
-            >
-              <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Register</Text>
-            </TouchableOpacity>
-
-            {/* Register Link */}
-            <View style={CommonStyles.linkContainer}>
-              <Text style={CommonStyles.registerText}>Already have a account?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-                <Text style={CommonStyles.links}> Login!</Text>
+              {/* Login Button */}
+              <TouchableOpacity
+                style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
+                onPress={async () => {
+                  await onRegister();
+                }}
+              >
+                <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Register</Text>
               </TouchableOpacity>
+
+              {/* Register Link */}
+              <View style={CommonStyles.linkContainer}>
+                <Text style={CommonStyles.registerText}>Already have a account?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+                  <Text style={CommonStyles.links}> Login!</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+          </SafeAreaView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 

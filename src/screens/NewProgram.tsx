@@ -11,8 +11,10 @@ import {
 } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
+import { useInsert } from 'react-supabase';
 
 import { DraggableConfigList, HeaderBackOnly, SectionHeader } from '../components';
+import useAuth from '../hooks/useAuth';
 import {
   addWorkout,
   removeWorkout,
@@ -23,18 +25,97 @@ import { RootState } from '../store';
 import CommonStyles from '../styles/Common';
 import { NewProgramScreenNavigationProp } from '../types';
 
+interface WorkoutId {
+  id: number;
+  key: string;
+  workout_name: string;
+  created_by: string;
+}
+
 export default function NewProgramScreen({ navigation }: NewProgramScreenNavigationProp) {
+  const { user } = useAuth();
   const workouts = useSelector((state: RootState) => state.newProgramWorkouts.workouts);
-  // const program = useSelector((state: RootState) => state.newProgramWorkouts);
+  const program = useSelector((state: RootState) => state.newProgramWorkouts);
   const dispatch = useDispatch();
   const [programName, setProgramName] = useState('');
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
-  const createNewProgram = () => {
-    // console.log(program);
-  };
+  const [programState, insertProgram] = useInsert('program');
+  const [programDetailState, insertProgramDetail] = useInsert('program_detail');
+  const [workoutState, insertWorkout] = useInsert<WorkoutId>('workout');
+  // const [workoutExerciseState, insertWorkoutExercise] = useInsert('workout');
 
+  const createNewProgram = async () => {
+    // disable all buttons
+    setButtonDisabled(true);
+
+    // validate program name
+    if (programName === '') {
+      Alert.alert('Empty Program Name', `Your program does not have a name.`, [
+        {
+          text: 'OK',
+          onPress: () => {
+            // enable all buttons
+            setButtonDisabled(false);
+          },
+        },
+      ]);
+      return;
+    }
+    // validate workouts, exercises, and sets exist
+    if (program.workouts.length > 0 && program.exercises.length > 0 && program.sets.length > 0) {
+      // insert program
+      await insertProgram({
+        program_name: programName,
+        total_cycle_days: program.workouts.length,
+        created_by: user?.id,
+      });
+      console.log('program', programState.data);
+      const programId = programState.data.id;
+      if (programState.error) {
+        console.error(programState.error);
+        return;
+      }
+
+      // insert workouts
+      await insertWorkout(
+        program.workouts.map((workout) => ({ workout_name: workout.label, created_by: user?.id }))
+      );
+      if (workoutState.error) {
+        console.error(workoutState.error);
+        return;
+      }
+      console.log('workout', workoutState.data);
+      if (workoutState.data) {
+        const workoutIds = workoutState.data;
+        workoutIds.forEach((item, idx) => {
+          item.key = workoutIds[idx].id;
+        });
+      }
+      console.log('workouts', workouts);
+      // insert program_detail
+      await insertProgramDetail(
+        program.workouts.map((item, idx) => ({
+          program_id: programId,
+          workout_id: workoutIds[idx],
+          sequence_num: item.index,
+          cycle_day_num: item.index + 1,
+          created_by: user?.id,
+        }))
+      );
+
+      console.log('program_detail', programDetailState.data);
+
+      if (programDetailState.error) {
+        console.error(programDetailState.error);
+        return;
+      }
+
+      // insert workout_exercise
+      // await insertWorkoutExercise(program.exercises.map((item) => {}));
+    }
+  };
   const addNewWorkout = (idx: number) => {
     // disable buttons
     setButtonDisabled(true);

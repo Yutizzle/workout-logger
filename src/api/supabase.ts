@@ -6,9 +6,7 @@ import 'react-native-url-polyfill/auto';
 const supabaseUrl = Constants.manifest?.extra?.devSupabaseURL;
 const supabaseAnonKey = Constants.manifest?.extra?.devSupabaseAnonKey;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export default createClient(supabaseUrl, supabaseAnonKey, {
   localStorage: AsyncStorage as any,
   detectSessionInUrl: false,
 });
-
-export default supabase;

@@ -4,7 +4,7 @@ import React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Provider as SupabaseProvider } from 'react-supabase';
 
-import { supabase } from './src/api/supabase';
+import supabase from './src/api/supabase';
 import Routes from './src/navigation';
 import { store } from './src/store';
 

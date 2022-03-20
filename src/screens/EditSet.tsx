@@ -78,7 +78,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    weight: val,
+                    weight: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -94,7 +94,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    reps: val,
+                    reps: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -110,7 +110,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    setDuration: val,
+                    setDuration: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -126,7 +126,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    restDuration: val,
+                    restDuration: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -166,7 +166,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    repsIncrAmount: val,
+                    repsIncrAmount: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -182,7 +182,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    maxReps: val,
+                    maxReps: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -222,7 +222,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    weightIncrAmount: val,
+                    weightIncrAmount: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -238,7 +238,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    maxWeight: val,
+                    maxWeight: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -278,7 +278,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    setDurationIncrAmount: val,
+                    setDurationIncrAmount: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );
@@ -294,7 +294,7 @@ export default function EditSetScreen({ route }: EditSetScreenNavigationProp) {
                   exerciseId: exercise.key,
                   setId: selectedSet.key,
                   prop: {
-                    maxSetDuration: val,
+                    maxSetDuration: val.replace(/[^0-9]/g, ''),
                   },
                 })
               );

@@ -22,7 +22,7 @@ export function HeaderMenuOnly({ headerTitle, onGoBack }: HeaderProps) {
       backgroundImageStyle={{}}
       barStyle="default"
       centerComponent={<Text style={CommonStyles.headerTitle}>{headerTitle}</Text>}
-      centerContainerStyle={CommonStyles.justifyCenter}
+      centerContainerStyle={{}}
       containerStyle={CommonStyles.headerContainer}
       leftComponent={
         <TouchableOpacity

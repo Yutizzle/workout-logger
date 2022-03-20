@@ -12,7 +12,7 @@ export default StyleSheet.create({
   headerContainer: {
     paddingTop: StatusBar.currentHeight,
     backgroundColor: '#f9f9f9',
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   headerTitle: {
     fontFamily: 'OpenSans_700Bold',
@@ -198,6 +198,9 @@ export default StyleSheet.create({
   justifyCenter: {
     justifyContent: 'center',
   },
+  justifyFlexEnd: {
+    justifyContent: 'flex-end',
+  },
   alignCenter: {
     alignItems: 'center',
   },
@@ -234,25 +237,21 @@ export default StyleSheet.create({
     color: '#2B3A39',
   },
   backgroundImage: {
-    height: '100%',
-    width: '100%',
+    // height: '100%',
+    // width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
   loginContainer: {
-    height: '75%',
-    width: '100%',
+    // height: '75%',
+    // width: '100%',
     padding: 20,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    borderRadius: 50,
     backgroundColor: '#fff',
   },
   registerContainer: {
-    height: '100%',
-    width: '100%',
     padding: 20,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    borderRadius: 50,
     backgroundColor: '#fff',
   },
   inputContainer: {
