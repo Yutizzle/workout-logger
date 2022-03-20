@@ -81,7 +81,7 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
               CommonStyles.flex,
               CommonStyles.flexShrink,
               {
-                flexBasis: '75%%',
+                flexBasis: '75%',
               },
             ]}
           >
