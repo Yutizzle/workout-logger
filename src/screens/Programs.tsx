@@ -3,6 +3,7 @@ import { Picker } from '@react-native-picker/picker';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
 
 import { HeaderBackOnly } from '../components/Header';
@@ -289,107 +290,118 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   };
 
   return (
-    <View style={CommonStyles.viewContainer}>
-      <StatusBar />
-      <HeaderBackOnly headerTitle="My Programs" />
-      {/* Workout */}
-      <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
-        <View style={[CommonStyles.viewContainer, CommonStyles.padding10]}>
-          <View
-            style={[
-              CommonStyles.flexDirectionRow,
-              CommonStyles.alignCenter,
-              CommonStyles.flexShrink,
-            ]}
-          >
-            <Text style={[CommonStyles.headerTitle, CommonStyles.flexShrink]}>
-              Current Program:
-            </Text>
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor]}>
+      <View style={CommonStyles.viewContainer}>
+        <StatusBar />
+        <HeaderBackOnly headerTitle="My Programs" />
+        {/* Workout */}
+        <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
+          <View style={[CommonStyles.viewContainer, CommonStyles.padding10]}>
             <View
-              style={[CommonStyles.flexDirectionRow, CommonStyles.flexGrow, CommonStyles.flexEnd]}
+              style={[
+                CommonStyles.flexDirectionRow,
+                CommonStyles.alignCenter,
+                CommonStyles.flexShrink,
+              ]}
             >
-              <TouchableOpacity
-                style={[CommonStyles.flexEndSelf, CommonStyles.padding6]}
-                disabled={buttonDisabled}
-                onPress={async () => {
-                  navigation.navigate('NewProgramScreen');
-                }}
+              <Text style={[CommonStyles.headerTitle, CommonStyles.flexShrink]}>
+                Current Program:
+              </Text>
+              <View
+                style={[CommonStyles.flexDirectionRow, CommonStyles.flexGrow, CommonStyles.flexEnd]}
               >
-                <MaterialCommunityIcons name="plus" style={CommonStyles.headerIcons} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[CommonStyles.flexEndSelf, CommonStyles.padding6]}
-                disabled={buttonDisabled}
-                onPress={async () => {}}
-              >
-                <MaterialCommunityIcons name="pencil" style={CommonStyles.headerIcons} />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[CommonStyles.flexEndSelf, CommonStyles.padding6]}
+                  disabled={buttonDisabled}
+                  onPress={async () => {
+                    navigation.navigate('NewProgramScreen');
+                  }}
+                >
+                  <MaterialCommunityIcons name="plus" style={CommonStyles.headerIcons} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[CommonStyles.flexEndSelf, CommonStyles.padding6]}
+                  disabled={buttonDisabled}
+                  onPress={async () => {}}
+                >
+                  <MaterialCommunityIcons name="pencil" style={CommonStyles.headerIcons} />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <Picker
-            style={CommonStyles.flexShrink}
-            selectedValue={selectedProgramId}
-            onValueChange={(id) => {
-              setSelectedProgramId(id);
-            }}
-          >
-            <Picker.Item key="--" label="--" value={0} />
-            {programList.map((program) => (
-              <Picker.Item
-                key={program.program_name}
-                label={program.program_name}
-                value={program.program_id}
-              />
-            ))}
-          </Picker>
+            <Picker
+              style={CommonStyles.flexShrink}
+              selectedValue={selectedProgramId}
+              onValueChange={(id) => {
+                setSelectedProgramId(id);
+              }}
+            >
+              <Picker.Item key="--" label="--" value={0} />
+              {programList.map((program) => (
+                <Picker.Item
+                  key={program.program_name}
+                  label={program.program_name}
+                  value={program.program_id}
+                />
+              ))}
+            </Picker>
 
-          <View
-            style={[CommonStyles.flexDirectionColumn, CommonStyles.flexGrow, CommonStyles.flexEnd]}
-          >
-            {currUserProgramId > 0 && (
+            <View
+              style={[
+                CommonStyles.flexDirectionColumn,
+                CommonStyles.flexGrow,
+                CommonStyles.flexEnd,
+              ]}
+            >
+              {currUserProgramId > 0 && (
+                <TouchableOpacity
+                  style={[
+                    CommonStyles.buttons,
+                    CommonStyles.buttonsSecondary,
+                    CommonStyles.flexShrink,
+                  ]}
+                  disabled={buttonDisabled}
+                  onPress={async () => {
+                    await onReset(
+                      currUserProgramId,
+                      lastProgramRun,
+                      firstWorkoutId,
+                      openWorkoutIdList
+                    );
+                  }}
+                >
+                  {upsertState.fetching ? (
+                    <ActivityIndicator size="small" color="#284b63" />
+                  ) : (
+                    <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>
+                      Reset Current Program Cycle
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              )}
+
               <TouchableOpacity
-                style={[
-                  CommonStyles.buttons,
-                  CommonStyles.buttonsSecondary,
-                  CommonStyles.flexShrink,
-                ]}
+                style={[CommonStyles.buttons, CommonStyles.buttonsPrimary, CommonStyles.flexShrink]}
                 disabled={buttonDisabled}
                 onPress={async () => {
-                  await onReset(
-                    currUserProgramId,
+                  await onSave(
+                    selectedProgramId,
                     lastProgramRun,
                     firstWorkoutId,
                     openWorkoutIdList
                   );
                 }}
               >
-                {upsertState.fetching ? (
-                  <ActivityIndicator size="small" color="#284b63" />
+                {buttonDisabled ? (
+                  <ActivityIndicator size="small" color="#fff" />
                 ) : (
-                  <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>
-                    Reset Current Program Cycle
-                  </Text>
+                  <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Save</Text>
                 )}
               </TouchableOpacity>
-            )}
-
-            <TouchableOpacity
-              style={[CommonStyles.buttons, CommonStyles.buttonsPrimary, CommonStyles.flexShrink]}
-              disabled={buttonDisabled}
-              onPress={async () => {
-                await onSave(selectedProgramId, lastProgramRun, firstWorkoutId, openWorkoutIdList);
-              }}
-            >
-              {buttonDisabled ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Save</Text>
-              )}
-            </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 

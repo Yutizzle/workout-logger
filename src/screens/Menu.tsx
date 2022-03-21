@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSignOut } from 'react-supabase';
 
 import { HeaderBackOnly } from '../components/Header';
@@ -38,36 +39,38 @@ function MenuScreen() {
   };
 
   return (
-    <View style={CommonStyles.viewContainer}>
-      <StatusBar />
-      <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
-        <HeaderBackOnly headerTitle="Menu" />
-        <View style={[CommonStyles.flexGrow, CommonStyles.flexDirectionColumn]}>
-          <View style={CommonStyles.flexGrow}>
-            <MenuItem
-              name="My Programs"
-              onPress={() => {
-                navigation.navigate('ProgramsScreen');
-              }}
-            />
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor]}>
+      <View style={CommonStyles.viewContainer}>
+        <StatusBar />
+        <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
+          <HeaderBackOnly headerTitle="Menu" />
+          <View style={[CommonStyles.flexGrow, CommonStyles.flexDirectionColumn]}>
+            <View style={CommonStyles.flexGrow}>
+              <MenuItem
+                name="My Programs"
+                onPress={() => {
+                  navigation.navigate('ProgramsScreen');
+                }}
+              />
+            </View>
+            <View style={CommonStyles.flexShrink}>
+              <TouchableOpacity
+                style={[CommonStyles.buttons, CommonStyles.buttonsSecondary]}
+                onPress={async () => {
+                  await signout();
+                }}
+              >
+                {buttonDisabled ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>Logout</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={CommonStyles.flexShrink}>
-            <TouchableOpacity
-              style={[CommonStyles.buttons, CommonStyles.buttonsSecondary]}
-              onPress={async () => {
-                await signout();
-              }}
-            >
-              {buttonDisabled ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>Logout</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 

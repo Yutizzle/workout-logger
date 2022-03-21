@@ -1,8 +1,11 @@
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 // LoginScreen styles
 // TODO: create variables for colors and fonts to make it easier to change everywhere
 export default StyleSheet.create({
+  backgroundColor: {
+    backgroundColor: '#f9f9f9',
+  },
   viewContainer: {
     flexDirection: 'column',
     flexGrow: 1,
@@ -10,7 +13,6 @@ export default StyleSheet.create({
     backgroundColor: '#f9f9f9',
   },
   headerContainer: {
-    paddingTop: StatusBar.currentHeight,
     backgroundColor: '#f9f9f9',
     alignItems: 'center',
   },
@@ -28,13 +30,13 @@ export default StyleSheet.create({
     borderRadius: 25,
     borderWidth: 0,
     borderColor: '#284b63',
+    elevation: 5,
     shadowOpacity: 0.3,
     shadowOffset: {
       width: -1,
       height: 2,
     },
     shadowRadius: 6,
-    elevation: 3,
     shadowColor: '#284b63',
   },
   cardTitle: {
@@ -106,6 +108,7 @@ export default StyleSheet.create({
     borderRadius: 1,
   },
   setTodoGradientContainer: {
+    elevation: 5,
     shadowColor: '#2B3A39',
     shadowRadius: 2,
     shadowOpacity: 0.3,
@@ -113,7 +116,6 @@ export default StyleSheet.create({
       height: 0,
       width: -2,
     },
-    elevation: 3,
     backgroundColor: '#f9f9f9',
     borderRadius: 15,
   },
@@ -285,10 +287,10 @@ export default StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-
     borderRadius: 30,
     padding: 15,
     margin: 10,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { height: 3, width: 3 },
     shadowRadius: 3,
@@ -299,6 +301,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { height: 3, width: 3 },
     shadowRadius: 3,

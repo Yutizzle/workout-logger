@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInsert } from 'react-supabase';
 
@@ -204,63 +205,65 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[CommonStyles.viewContainer]}
-    >
-      <View style={CommonStyles.flexShrink}>
-        <HeaderBackOnly headerTitle="Create New Program" onGoBack={onGoBack} />
-      </View>
-      <TouchableWithoutFeedback
-        containerStyle={CommonStyles.flexGrow}
-        style={CommonStyles.flexGrow}
-        onPress={Keyboard.dismiss}
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={[CommonStyles.viewContainer]}
       >
-        <View style={[CommonStyles.padding10, CommonStyles.flexShrink]}>
-          <SectionHeader title="Program Name" />
-          <View style={CommonStyles.padding6}>
-            <View style={CommonStyles.inputContainer}>
-              <TextInput
-                style={[CommonStyles.inputs, CommonStyles.flex]}
-                placeholder="Program Name"
-                value={programName}
-                onChangeText={(name) => setProgramName(name)}
-              />
+        <View style={CommonStyles.flexShrink}>
+          <HeaderBackOnly headerTitle="Create New Program" onGoBack={onGoBack} />
+        </View>
+        <TouchableWithoutFeedback
+          containerStyle={CommonStyles.flexGrow}
+          style={CommonStyles.flexGrow}
+          onPress={Keyboard.dismiss}
+        >
+          <View style={[CommonStyles.padding10, CommonStyles.flexShrink]}>
+            <SectionHeader title="Program Name" />
+            <View style={CommonStyles.padding6}>
+              <View style={CommonStyles.inputContainer}>
+                <TextInput
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
+                  placeholder="Program Name"
+                  value={programName}
+                  onChangeText={(name) => setProgramName(name)}
+                />
+              </View>
+            </View>
+            <SectionHeader title="Workouts" />
+            <View style={[CommonStyles.paddingTop6, CommonStyles.alignCenter]}>
+              <Text style={[CommonStyles.placeholderText]}>(Press & hold to re-order)</Text>
             </View>
           </View>
-          <SectionHeader title="Workouts" />
-          <View style={[CommonStyles.paddingTop6, CommonStyles.alignCenter]}>
-            <Text style={[CommonStyles.placeholderText]}>(Press & hold to re-order)</Text>
+          <View style={[CommonStyles.flexGrow, CommonStyles.flexBasis0]}>
+            <DraggableConfigList
+              flatListData={workouts}
+              refresh={refresh}
+              setData={(data) => {
+                dispatch(updateWorkouts(data));
+              }}
+              addItem={addNewWorkout}
+              removeItem={removeNewWorkout}
+              goToSettings={(item) => {
+                navigation.navigate('EditWorkoutScreen', {
+                  workoutIndex: item.index,
+                });
+              }}
+            />
           </View>
-        </View>
-        <View style={[CommonStyles.flexGrow, CommonStyles.flexBasis0]}>
-          <DraggableConfigList
-            flatListData={workouts}
-            refresh={refresh}
-            setData={(data) => {
-              dispatch(updateWorkouts(data));
+        </TouchableWithoutFeedback>
+        <View style={[CommonStyles.flexShrink]}>
+          <TouchableOpacity
+            style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
+            disabled={buttonDisabled}
+            onPress={async () => {
+              await createNewProgram();
             }}
-            addItem={addNewWorkout}
-            removeItem={removeNewWorkout}
-            goToSettings={(item) => {
-              navigation.navigate('EditWorkoutScreen', {
-                workoutIndex: item.index,
-              });
-            }}
-          />
+          >
+            <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Create</Text>
+          </TouchableOpacity>
         </View>
-      </TouchableWithoutFeedback>
-      <View style={[CommonStyles.flexShrink]}>
-        <TouchableOpacity
-          style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
-          disabled={buttonDisabled}
-          onPress={async () => {
-            await createNewProgram();
-          }}
-        >
-          <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Create</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

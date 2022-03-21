@@ -23,25 +23,29 @@ function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
   }, [navigation, user?.id, session?.access_token]);
 
   return (
-    <View style={CommonStyles.viewContainer}>
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.flexGrow, CommonStyles.backgroundColor]}>
       <StatusBar />
-      <HeaderMenuOnly headerTitle="Today's Workout" />
-      {/* Workout */}
-      <ScrollView contentContainerStyle={CommonStyles.flexGrow}>
-        {data.length > 0 && <WorkoutCard workoutSets={data} />}
-        {data.length === 0 && (
-          <View
-            style={[
-              CommonStyles.viewContainer,
-              CommonStyles.justifyCenter,
-              CommonStyles.alignCenter,
-            ]}
-          >
-            <Text style={CommonStyles.cardTextHead}>Please select a program in My Programs.</Text>
-          </View>
-        )}
-      </ScrollView>
-    </View>
+      <View style={[CommonStyles.flexShrink]}>
+        <HeaderMenuOnly headerTitle="Today's Workout" />
+      </View>
+      <View style={[CommonStyles.viewContainer]}>
+        {/* Workout */}
+        <ScrollView contentContainerStyle={[CommonStyles.flex, CommonStyles.flexGrow]}>
+          {data.length > 0 && <WorkoutCard workoutSets={data} />}
+          {data.length === 0 && (
+            <View
+              style={[
+                CommonStyles.viewContainer,
+                CommonStyles.justifyCenter,
+                CommonStyles.alignCenter,
+              ]}
+            >
+              <Text style={CommonStyles.cardTextHead}>Please select a program in My Programs.</Text>
+            </View>
+          )}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 

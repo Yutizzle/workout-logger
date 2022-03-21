@@ -2,7 +2,6 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Header } from 'react-native-elements';
 
 import CommonStyles from '../styles/Common';
 import { MenuScreenUseNavigationProp } from '../types';
@@ -17,14 +16,10 @@ export function HeaderMenuOnly({ headerTitle, onGoBack }: HeaderProps) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   return (
-    <Header
-      backgroundColor=""
-      backgroundImageStyle={{}}
-      barStyle="default"
-      centerComponent={<Text style={CommonStyles.headerTitle}>{headerTitle}</Text>}
-      centerContainerStyle={{}}
-      containerStyle={CommonStyles.headerContainer}
-      leftComponent={
+    <View
+      style={[CommonStyles.flexDirectionRow, CommonStyles.headerContainer, CommonStyles.padding10]}
+    >
+      <View style={[CommonStyles.flexShrink, CommonStyles.alignCenter]}>
         <TouchableOpacity
           disabled={buttonDisabled}
           onPress={() => {
@@ -38,13 +33,16 @@ export function HeaderMenuOnly({ headerTitle, onGoBack }: HeaderProps) {
             <MaterialIcons name="bar-chart" style={CommonStyles.headerIcons} />
           </View>
         </TouchableOpacity>
-      }
-      leftContainerStyle={CommonStyles.justifyCenter}
-      placement="center"
-      rightComponent={{}}
-      rightContainerStyle={CommonStyles.justifyCenter}
-      statusBarProps={{}}
-    />
+      </View>
+      <View style={[CommonStyles.flex, CommonStyles.flexGrow, CommonStyles.alignCenter]}>
+        <Text style={CommonStyles.headerTitle}>{headerTitle}</Text>
+      </View>
+      <View style={[CommonStyles.flexShrink]}>
+        <View style={[CommonStyles.rotate90, CommonStyles.opacityNone]}>
+          <MaterialIcons name="bar-chart" style={CommonStyles.headerIcons} />
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -53,14 +51,10 @@ export function HeaderBackOnly({ headerTitle, onGoBack }: HeaderProps) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   return (
-    <Header
-      backgroundColor=""
-      backgroundImageStyle={{}}
-      barStyle="default"
-      centerComponent={<Text style={CommonStyles.headerTitle}>{headerTitle}</Text>}
-      centerContainerStyle={CommonStyles.justifyCenter}
-      containerStyle={CommonStyles.headerContainer}
-      leftComponent={
+    <View
+      style={[CommonStyles.flexDirectionRow, CommonStyles.headerContainer, CommonStyles.padding10]}
+    >
+      <View style={[CommonStyles.flexShrink, CommonStyles.alignCenter]}>
         <TouchableOpacity
           disabled={buttonDisabled}
           onPress={() => {
@@ -72,13 +66,16 @@ export function HeaderBackOnly({ headerTitle, onGoBack }: HeaderProps) {
         >
           <AntDesign name="arrowleft" style={CommonStyles.headerIcons} />
         </TouchableOpacity>
-      }
-      leftContainerStyle={CommonStyles.justifyCenter}
-      placement="center"
-      rightComponent={{}}
-      rightContainerStyle={CommonStyles.justifyCenter}
-      statusBarProps={{}}
-    />
+      </View>
+      <View style={[CommonStyles.flex, CommonStyles.flexGrow, CommonStyles.alignCenter]}>
+        <Text style={CommonStyles.headerTitle}>{headerTitle}</Text>
+      </View>
+      <View style={[CommonStyles.flexShrink]}>
+        <View style={[CommonStyles.rotate90, CommonStyles.opacityNone]}>
+          <AntDesign name="arrowleft" style={CommonStyles.headerIcons} />
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -87,14 +84,10 @@ export function HeaderBackAndMenu({ headerTitle, onGoBack }: HeaderProps) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   return (
-    <Header
-      backgroundColor=""
-      backgroundImageStyle={{}}
-      barStyle="default"
-      centerComponent={<Text style={CommonStyles.headerTitle}>{headerTitle}</Text>}
-      centerContainerStyle={CommonStyles.justifyCenter}
-      containerStyle={CommonStyles.headerContainer}
-      leftComponent={
+    <View
+      style={[CommonStyles.flexDirectionRow, CommonStyles.headerContainer, CommonStyles.padding10]}
+    >
+      <View style={[CommonStyles.flexShrink, CommonStyles.alignCenter]}>
         <TouchableOpacity
           disabled={buttonDisabled}
           onPress={() => {
@@ -106,10 +99,11 @@ export function HeaderBackAndMenu({ headerTitle, onGoBack }: HeaderProps) {
         >
           <AntDesign name="arrowleft" style={CommonStyles.headerIcons} />
         </TouchableOpacity>
-      }
-      leftContainerStyle={CommonStyles.justifyCenter}
-      placement="center"
-      rightComponent={
+      </View>
+      <View style={[CommonStyles.flex, CommonStyles.flexGrow, CommonStyles.alignCenter]}>
+        <Text style={CommonStyles.headerTitle}>{headerTitle}</Text>
+      </View>
+      <View style={[CommonStyles.flexShrink]}>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('MenuScreen');
@@ -119,10 +113,8 @@ export function HeaderBackAndMenu({ headerTitle, onGoBack }: HeaderProps) {
             <MaterialIcons name="bar-chart" style={CommonStyles.headerIcons} />
           </View>
         </TouchableOpacity>
-      }
-      rightContainerStyle={CommonStyles.justifyCenter}
-      statusBarProps={{}}
-    />
+      </View>
+    </View>
   );
 }
 
