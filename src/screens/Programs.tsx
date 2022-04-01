@@ -1,21 +1,16 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
 
+import { getAllPrograms } from '../api/programs';
 import { HeaderBackOnly } from '../components/Header';
 import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
-import { ProgramsScreenNavigationProp } from '../types';
-
-type ProgramList = {
-  program_id: number;
-  program_name: string;
-  users: string[];
-};
+import { ProgramList, ProgramsScreenNavigationProp } from '../types';
 
 type UserProgramId = {
   program_id: number;
@@ -45,6 +40,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   const userIdFilter = useFilter((query) => query.eq('user_id', user?.id), [user?.id]);
 
   // get all programs
+  /*
   const [programs] = useSelect<ProgramList>('program', {
     columns: `
             program_id:id,
@@ -53,6 +49,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
         `,
     options: { count: 'exact' },
   });
+  */
 
   // get user's current program
   const [userProgram] = useSelect<UserProgramId>('user_program', {
@@ -103,13 +100,15 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     options: { onConflict: 'user_id' },
   });
 
+  const asyncGetPrograms = useCallback(async () => {
+    const programs = await getAllPrograms(user?.id ?? '');
+    setProgramList(programs);
+  }, [user?.id]);
+
   // init program list and user's current program
   useEffect(() => {
-    if (!programs.fetching && programs.count && programs.data) {
-      if (programs.count > 0) {
-        setProgramList(programs.data);
-      }
-    }
+    asyncGetPrograms();
+
     if (!userProgram.fetching && userProgram.count && userProgram.data) {
       if (userProgram.count > 0) {
         const data = userProgram.data[0];
@@ -118,14 +117,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     }
 
     return () => {};
-  }, [
-    programs.fetching,
-    programs.count,
-    programs.data,
-    userProgram.fetching,
-    userProgram.count,
-    userProgram.data,
-  ]);
+  }, [asyncGetPrograms]);
 
   // init selected program
   useEffect(() => {
@@ -290,8 +282,8 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   };
 
   return (
-    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor]}>
-      <View style={CommonStyles.viewContainer}>
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor, CommonStyles.padding10]}>
+      <View style={[CommonStyles.viewContainer]}>
         <StatusBar />
         <HeaderBackOnly headerTitle="My Programs" />
         {/* Workout */}

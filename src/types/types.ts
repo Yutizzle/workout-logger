@@ -1,6 +1,16 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackNavigationProp } from '@react-navigation/stack';
 
+export type ProgramList = {
+  id: number;
+  program_name: string;
+};
+
+export interface IncrFrequency {
+  id: number;
+  frequency: string;
+}
+
 export type WorkoutExecutionData = {
   program_id: number;
   program_run: number;
@@ -35,13 +45,13 @@ export type SetConfig = {
   reps: string;
   setDuration: string;
   restDuration: string;
-  repsIncrFreq: string;
+  repsIncrFreq: number;
   repsIncrAmount: string;
   maxReps: string;
-  weightIncrFreq: string;
+  weightIncrFreq: number;
   weightIncrAmount: string;
   maxWeight: string;
-  setDurationIncrFreq: string;
+  setDurationIncrFreq: number;
   setDurationIncrAmount: string;
   maxSetDuration: string;
 };

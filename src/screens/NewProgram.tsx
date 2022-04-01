@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -205,19 +206,19 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
   };
 
   return (
-    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor]}>
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor, CommonStyles.padding10]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={[CommonStyles.viewContainer]}
       >
-        <View style={CommonStyles.flexShrink}>
-          <HeaderBackOnly headerTitle="Create New Program" onGoBack={onGoBack} />
-        </View>
         <TouchableWithoutFeedback
-          containerStyle={CommonStyles.flexGrow}
-          style={CommonStyles.flexGrow}
+          containerStyle={[CommonStyles.flex, CommonStyles.flexGrow]}
+          style={[CommonStyles.flex, CommonStyles.flexGrow]}
           onPress={Keyboard.dismiss}
         >
+          {/* Status Bar */}
+          <StatusBar />
+          <HeaderBackOnly headerTitle="Create New Program" onGoBack={onGoBack} />
           <View style={[CommonStyles.padding10, CommonStyles.flexShrink]}>
             <SectionHeader title="Program Name" />
             <View style={CommonStyles.padding6}>

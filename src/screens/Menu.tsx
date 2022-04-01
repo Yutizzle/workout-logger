@@ -39,7 +39,7 @@ function MenuScreen() {
   };
 
   return (
-    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor]}>
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor, CommonStyles.padding10]}>
       <View style={CommonStyles.viewContainer}>
         <StatusBar />
         <ScrollView contentContainerStyle={CommonStyles.flexGrow}>

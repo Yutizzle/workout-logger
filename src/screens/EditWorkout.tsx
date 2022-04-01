@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { DraggableConfigList, HeaderBackOnly, SectionHeader } from '../components';
@@ -98,57 +99,59 @@ export default function EditWorkoutScreen({ navigation, route }: EditWorkoutScre
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[CommonStyles.viewContainer]}
-    >
-      <View style={CommonStyles.flexShrink}>
-        <HeaderBackOnly headerTitle="Edit Workout" />
-      </View>
-      <TouchableWithoutFeedback
-        containerStyle={CommonStyles.flexGrow}
-        style={CommonStyles.flexGrow}
-        onPress={Keyboard.dismiss}
+    <SafeAreaView style={[CommonStyles.flex, CommonStyles.backgroundColor, CommonStyles.padding10]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={[CommonStyles.viewContainer]}
       >
-        <View style={[CommonStyles.padding10, CommonStyles.flexShrink]}>
-          <SectionHeader title="Workout Name" />
-          <View style={CommonStyles.padding6}>
-            <View style={CommonStyles.inputContainer}>
-              <TextInput
-                style={[CommonStyles.inputs, CommonStyles.flex]}
-                placeholder="Workout Name"
-                value={workout.label}
-                onChangeText={(name) =>
-                  dispatch(updateWorkoutName({ workoutIndex, workoutName: name }))
-                }
-              />
+        <View style={CommonStyles.flexShrink}>
+          <HeaderBackOnly headerTitle="Edit Workout" />
+        </View>
+        <TouchableWithoutFeedback
+          containerStyle={CommonStyles.flexGrow}
+          style={CommonStyles.flexGrow}
+          onPress={Keyboard.dismiss}
+        >
+          <View style={[CommonStyles.padding10, CommonStyles.flexShrink]}>
+            <SectionHeader title="Workout Name" />
+            <View style={CommonStyles.padding6}>
+              <View style={CommonStyles.inputContainer}>
+                <TextInput
+                  style={[CommonStyles.inputs, CommonStyles.flex]}
+                  placeholder="Workout Name"
+                  value={workout.label}
+                  onChangeText={(name) =>
+                    dispatch(updateWorkoutName({ workoutIndex, workoutName: name }))
+                  }
+                />
+              </View>
+            </View>
+            <SectionHeader title="Exercises" />
+            <View style={[CommonStyles.paddingTop6, CommonStyles.alignCenter]}>
+              <Text style={[CommonStyles.placeholderText]}>(Press & hold to re-order)</Text>
             </View>
           </View>
-          <SectionHeader title="Exercises" />
-          <View style={[CommonStyles.paddingTop6, CommonStyles.alignCenter]}>
-            <Text style={[CommonStyles.placeholderText]}>(Press & hold to re-order)</Text>
+          <View style={[CommonStyles.flexGrow, CommonStyles.flexBasis0]}>
+            <DraggableConfigList
+              flatListData={exercises}
+              refresh={refresh}
+              setData={(data) => {
+                dispatch(updateExercises({ workoutId: workout.key, exercises: data }));
+              }}
+              addItem={addNewExercise}
+              removeItem={removeNewExercise}
+              goToSettings={(item) => {
+                navigation.navigate('EditExerciseScreen', {
+                  workoutIndex,
+                  exerciseIndex: allExercises.findIndex(
+                    (ex) => ex.workoutId === workout.key && ex.key === item.key
+                  ),
+                });
+              }}
+            />
           </View>
-        </View>
-        <View style={[CommonStyles.flexGrow, CommonStyles.flexBasis0]}>
-          <DraggableConfigList
-            flatListData={exercises}
-            refresh={refresh}
-            setData={(data) => {
-              dispatch(updateExercises({ workoutId: workout.key, exercises: data }));
-            }}
-            addItem={addNewExercise}
-            removeItem={removeNewExercise}
-            goToSettings={(item) => {
-              navigation.navigate('EditExerciseScreen', {
-                workoutIndex,
-                exerciseIndex: allExercises.findIndex(
-                  (ex) => ex.workoutId === workout.key && ex.key === item.key
-                ),
-              });
-            }}
-          />
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

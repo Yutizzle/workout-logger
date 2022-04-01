@@ -3,16 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { getCurrentExercises } from '../api/workouts';
 import { HeaderMenuOnly } from '../components/Header';
 import WorkoutCard from '../components/WorkoutCard';
 import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
 import { WelcomeScreenNavigationProp, WorkoutExecutionData } from '../types';
-import { getCurrentExercises } from '../api/workouts';
 
 function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
   // get AuthContext
-  const { session, user } = useAuth();
+  const { user } = useAuth();
   const [data, setData] = useState<WorkoutExecutionData[]>([]);
 
   useEffect(() => {
@@ -20,10 +20,17 @@ function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
       const exercises = await getCurrentExercises(user?.id ?? '');
       setData(exercises);
     });
-  }, [navigation, user?.id, session?.access_token]);
+  }, [navigation, user?.id]);
 
   return (
-    <SafeAreaView style={[CommonStyles.flex, CommonStyles.flexGrow, CommonStyles.backgroundColor]}>
+    <SafeAreaView
+      style={[
+        CommonStyles.flex,
+        CommonStyles.flexGrow,
+        CommonStyles.backgroundColor,
+        CommonStyles.padding10,
+      ]}
+    >
       <StatusBar />
       <View style={[CommonStyles.flexShrink]}>
         <HeaderMenuOnly headerTitle="Today's Workout" />
@@ -31,8 +38,8 @@ function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
       <View style={[CommonStyles.viewContainer]}>
         {/* Workout */}
         <ScrollView contentContainerStyle={[CommonStyles.flex, CommonStyles.flexGrow]}>
-          {data.length > 0 && <WorkoutCard workoutSets={data} />}
-          {data.length === 0 && (
+          {data && data.length > 0 && <WorkoutCard workoutSets={data} />}
+          {(!data || data.length === 0) && (
             <View
               style={[
                 CommonStyles.viewContainer,
