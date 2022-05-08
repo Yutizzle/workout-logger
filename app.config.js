@@ -4,9 +4,9 @@ export default {
   name: 'WorkoutLogger',
   version: '1.0.0',
   extra: {
-    devSupabaseURL: process.env.REACT_APP_SUPABASE_URL,
+    devSupabaseUrl: process.env.REACT_APP_SUPABASE_URL,
     devSupabaseAnonKey: process.env.REACT_APP_SUPABASE_ANON_KEY,
-    baseURL: process.env.BASE_URL,
+    strengthifyApi: process.env.STRENGTHIFY_API,
   },
   android: {
     package: 'com.yutizzle.workoutlogger',

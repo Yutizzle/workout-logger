@@ -221,9 +221,9 @@ export type RegisterData = {
 };
 
 export type NewUserData = {
-  first_name: string;
-  last_name: string;
-  date_of_birth: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
   email: string;
   password: string;
 };

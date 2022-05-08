@@ -1,14 +1,14 @@
-import axios, { HeadersDefaults } from 'axios';
+import axios from 'axios';
 import Constants from 'expo-constants';
 
 export const instance = axios.create({
-  baseURL: Constants.manifest?.extra?.baseURL,
+  baseURL: Constants.manifest?.extra?.strengthifyApi,
   headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json;charset=UTF-8',
     Authorization: `Bearer ${Constants.manifest?.extra?.devSupabaseAnonKey}`,
   },
 });
-
-export const headers = instance.defaults.headers as HeadersDefaults & { Authorization: string };
 
 export const errorLogging = (err: any) => {
   if (err.response) {
