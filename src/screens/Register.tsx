@@ -3,24 +3,25 @@ import { format, getYear, isExists, subYears } from 'date-fns';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
+  ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   Text,
   TextInput,
   TouchableWithoutFeedback,
-  ImageBackground,
   View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import ErrorMessages from '../api/constants';
+import supabase from '../api/supabase';
+import { registerUser } from '../api/users';
+import plateLogo from '../assets/images/rack-weights.jpg';
 import { ErrorMessage } from '../components';
 import CommonStyles from '../styles/Common';
 import { RegisterData, RegisterScreenNavigationProp } from '../types';
-import axiosInstance from '../api/axios';
-import supabase from '../api/supabase';
-import plateLogo from '../assets/images/rack-weights.jpg';
 
 function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
   const [passHide, togglePassHide] = useState(true);
@@ -120,37 +121,26 @@ function RegisterScreen({ navigation }: RegisterScreenNavigationProp) {
       registerData.confirmPassword !== '' &&
       registerData.passwordMatch
     ) {
-      await axiosInstance
-        .post('/users/register', {
-          data: {
-            first_name: registerData.firstName,
-            last_name: registerData.lastName,
-            date_of_birth: registerData.dateOfBirth,
-            email: registerData.email,
-            password: registerData.password,
-          },
-        })
-        .then(async (response) => {
-          await supabase.auth.signIn({
-            refreshToken: response.data.refresh_token,
-          });
-        })
-        .catch((err) => {
-          if (err.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            // setSignUpError(`Server responded with error code ${err.response.status}.`);
-            setSignUpError(`Error: ${err.response.data}.`);
-          } else if (err.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            setSignUpError(`No response received from the server.`);
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            setSignUpError(`Error: ${err.message}`);
-          }
-        });
+      const userToken = await registerUser(registerData, (err) => {
+        if (err.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          // setSignUpError(`Server responded with error code ${err.response.status}.`);
+          setSignUpError(`Error: ${err.response.data}.`);
+        } else if (err.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          setSignUpError(`No response received from the server.`);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          setSignUpError(`Error: ${err.message}`);
+        }
+      });
+
+      if (userToken) {
+        supabase.auth.signIn({ refreshToken: userToken });
+      }
     } else if (registerData.firstName === '' && registerData.lastName === '') {
       setSignUpError(ErrorMessages.EMPTY_NAME);
     } else if (!registerData.monthValid || !registerData.dayValid || !registerData.yearValid) {

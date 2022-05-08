@@ -2,10 +2,8 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 import {
   ExerciseName,
-  ListItem,
   NewExercise,
-  NewProgramExercises,
-  NewProgramSets,
+  NewProgram,
   NewProgramWorkouts,
   NewSet,
   NewWorkout,
@@ -17,12 +15,8 @@ import {
   WorkoutName,
 } from '../types';
 
-interface NewProgram {
-  workouts: ListItem[];
-  exercises: NewProgramExercises[];
-  sets: NewProgramSets[];
-}
 const program: NewProgram = {
+  program_name: '',
   workouts: [],
   exercises: [],
   sets: [],
@@ -67,6 +61,9 @@ export const NewProgramSlice = createSlice({
   name: 'newProgramWorkouts',
   initialState: { ...program, uniqueId: 1 },
   reducers: {
+    updateProgramName: (state, action: PayloadAction<string>) => {
+      state.program_name = action.payload;
+    },
     addWorkout: (state, action: PayloadAction<NewWorkout>) => {
       const { workoutIndex } = action.payload;
       const { workouts, exercises, sets, uniqueId } = state;
@@ -287,6 +284,7 @@ export const NewProgramSlice = createSlice({
   },
 });
 export const {
+  updateProgramName,
   addWorkout,
   removeWorkout,
   updateWorkouts,

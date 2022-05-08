@@ -1,4 +1,4 @@
-import { IncrFrequency, ProgramList } from '../types';
+import { IncrFrequency, NewProgram, ProgramList } from '../types';
 import axiosInstance, { errorLogging, headers } from './axios';
 import supabase from './supabase';
 
@@ -26,6 +26,19 @@ export const getAllIncrementFreq = async () => {
     .catch((err) => {
       errorLogging(err);
     });
-  console.log(frequencies);
   return frequencies;
+};
+
+export const createNewProgram = async (program: NewProgram) => {
+  const session = supabase.auth.session();
+  headers.Authorization = `Bearer ${session?.access_token}`;
+
+  const programId: number = await axiosInstance
+    .put(`/programs/create`, program)
+    .then((response) => response.data.programId)
+    .catch((err) => {
+      errorLogging(err);
+    });
+
+  return programId;
 };

@@ -11,6 +11,13 @@ export interface IncrFrequency {
   frequency: string;
 }
 
+export interface NewProgram {
+  program_name: string;
+  workouts: ListItem[];
+  exercises: NewProgramExercises[];
+  sets: NewProgramSets[];
+}
+
 export type WorkoutExecutionData = {
   program_id: number;
   program_run: number;
@@ -211,6 +218,14 @@ export type RegisterData = {
   dayValid: boolean;
   emailValid: boolean;
   passwordMatch: boolean;
+};
+
+export type NewUserData = {
+  first_name: string;
+  last_name: string;
+  date_of_birth: string;
+  email: string;
+  password: string;
 };
 
 export type Workouts = {

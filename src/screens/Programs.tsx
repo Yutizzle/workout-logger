@@ -7,14 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
 
 import { getAllPrograms } from '../api/programs';
+import { getUserProgram } from '../api/users';
 import { HeaderBackOnly } from '../components/Header';
 import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
 import { ProgramList, ProgramsScreenNavigationProp } from '../types';
-
-type UserProgramId = {
-  program_id: number;
-};
 
 type FirstWorkoutId = {
   workout_id: number;
@@ -37,27 +34,6 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   const [lastProgramRun, setLastProgramRun] = useState(0);
   const [openWorkoutIdList, setOpenWorkoutIdList] = useState<OpenWorkout[]>([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const userIdFilter = useFilter((query) => query.eq('user_id', user?.id), [user?.id]);
-
-  // get all programs
-  /*
-  const [programs] = useSelect<ProgramList>('program', {
-    columns: `
-            program_id:id,
-            program_name,
-            users:user_program(user_id)
-        `,
-    options: { count: 'exact' },
-  });
-  */
-
-  // get user's current program
-  const [userProgram] = useSelect<UserProgramId>('user_program', {
-    columns: 'program_id',
-    filter: userIdFilter,
-    pause: user?.id === null,
-    options: { count: 'exact' },
-  });
 
   // get first workout in current program
   const firstWorkoutFilter = useFilter(
@@ -105,19 +81,18 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     setProgramList(programs);
   }, [user?.id]);
 
+  const asyncGetUserProgram = useCallback(async () => {
+    const programId = await getUserProgram(user?.id ?? '');
+    setCurrUserProgramId(programId);
+  }, [user?.id]);
+
   // init program list and user's current program
   useEffect(() => {
     asyncGetPrograms();
-
-    if (!userProgram.fetching && userProgram.count && userProgram.data) {
-      if (userProgram.count > 0) {
-        const data = userProgram.data[0];
-        setCurrUserProgramId(data.program_id);
-      }
-    }
+    asyncGetUserProgram();
 
     return () => {};
-  }, [asyncGetPrograms]);
+  }, [asyncGetPrograms, asyncGetUserProgram]);
 
   // init selected program
   useEffect(() => {
@@ -257,7 +232,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     setButtonDisabled(true);
 
     // get program name
-    const program = programList.find((data) => data.program_id === programId);
+    const program = programList.find((data) => data.id === programId);
 
     Alert.alert(
       'Reset Program Cycle',
@@ -332,7 +307,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
                 <Picker.Item
                   key={program.program_name}
                   label={program.program_name}
-                  value={program.program_id}
+                  value={program.id}
                 />
               ))}
             </Picker>

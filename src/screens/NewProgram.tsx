@@ -13,42 +13,29 @@ import {
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import { useInsert } from 'react-supabase';
 
+import { createNewProgram } from '../api/programs';
 import { DraggableConfigList, HeaderBackOnly, SectionHeader } from '../components';
-import useAuth from '../hooks/useAuth';
 import {
   addWorkout,
   removeWorkout,
   resetWorkouts,
+  updateProgramName,
   updateWorkouts,
 } from '../slices/NewProgramSlice';
 import { RootState } from '../store';
 import CommonStyles from '../styles/Common';
 import { NewProgramScreenNavigationProp } from '../types';
 
-interface WorkoutId {
-  id: number;
-  key: string;
-  workout_name: string;
-  created_by: string;
-}
-
 export default function NewProgramScreen({ navigation }: NewProgramScreenNavigationProp) {
-  const { user } = useAuth();
   const workouts = useSelector((state: RootState) => state.newProgramWorkouts.workouts);
   const program = useSelector((state: RootState) => state.newProgramWorkouts);
+  const programName = useSelector((state: RootState) => state.newProgramWorkouts.program_name);
   const dispatch = useDispatch();
-  const [programName, setProgramName] = useState('');
   const [refresh, toggleRefresh] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
-  const [programState, insertProgram] = useInsert('program');
-  const [programDetailState, insertProgramDetail] = useInsert('program_detail');
-  const [workoutState, insertWorkout] = useInsert<WorkoutId>('workout');
-  // const [workoutExerciseState, insertWorkoutExercise] = useInsert('workout');
-
-  const createNewProgram = async () => {
+  const createProgram = async () => {
     // disable all buttons
     setButtonDisabled(true);
 
@@ -67,55 +54,9 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
     }
     // validate workouts, exercises, and sets exist
     if (program.workouts.length > 0 && program.exercises.length > 0 && program.sets.length > 0) {
-      // insert program
-      await insertProgram({
-        program_name: programName,
-        total_cycle_days: program.workouts.length,
-        created_by: user?.id,
-      });
-      console.log('program', programState.data);
-      const programId = programState.data.id;
-      if (programState.error) {
-        console.error(programState.error);
-        return;
-      }
-
-      // insert workouts
-      await insertWorkout(
-        program.workouts.map((workout) => ({ workout_name: workout.label, created_by: user?.id }))
-      );
-      if (workoutState.error) {
-        console.error(workoutState.error);
-        return;
-      }
-      console.log('workout', workoutState.data);
-      if (workoutState.data) {
-        const workoutIds = workoutState.data;
-        workoutIds.forEach((item, idx) => {
-          item.key = workoutIds[idx].id;
-        });
-      }
-      console.log('workouts', workouts);
-      // insert program_detail
-      await insertProgramDetail(
-        program.workouts.map((item, idx) => ({
-          program_id: programId,
-          workout_id: workoutIds[idx],
-          sequence_num: item.index,
-          cycle_day_num: item.index + 1,
-          created_by: user?.id,
-        }))
-      );
-
-      console.log('program_detail', programDetailState.data);
-
-      if (programDetailState.error) {
-        console.error(programDetailState.error);
-        return;
-      }
-
-      // insert workout_exercise
-      // await insertWorkoutExercise(program.exercises.map((item) => {}));
+      console.log('program: ', program);
+      createNewProgram(program);
+      setButtonDisabled(false);
     }
   };
   const addNewWorkout = (idx: number) => {
@@ -227,7 +168,7 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
                   style={[CommonStyles.inputs, CommonStyles.flex]}
                   placeholder="Program Name"
                   value={programName}
-                  onChangeText={(name) => setProgramName(name)}
+                  onChangeText={(name) => dispatch(updateProgramName(name))}
                 />
               </View>
             </View>
@@ -258,7 +199,7 @@ export default function NewProgramScreen({ navigation }: NewProgramScreenNavigat
             style={[CommonStyles.buttons, CommonStyles.buttonsPrimary]}
             disabled={buttonDisabled}
             onPress={async () => {
-              await createNewProgram();
+              await createProgram();
             }}
           >
             <Text style={[CommonStyles.buttonText, CommonStyles.textLight]}>Create</Text>
