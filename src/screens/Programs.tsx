@@ -1,16 +1,16 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import axios from 'axios';
 import { getAllPrograms } from '../api/programs';
-import { getUserProgram } from '../api/users';
+import { getUserProgram, putUserProgram } from '../api/users';
 import { HeaderBackOnly } from '../components/Header';
 import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
-import { ProgramList, ProgramsScreenNavigationProp } from '../types';
+import { Program, ProgramsScreenNavigationProp } from '../types';
 
 type FirstWorkoutId = {
   workout_id: number;
@@ -24,89 +24,106 @@ type OpenWorkout = {
   id: number;
 };
 
+const initProgram: Program = {
+  ProgramId: 0,
+  ProgramName: '',
+  TotalCycleDays: 0,
+};
+
 function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   const { user } = useAuth();
-  const [programList, setProgramList] = useState<ProgramList[]>([]);
+  const [programList, setProgramList] = useState<Program[]>([]);
   const [selectedProgramId, setSelectedProgramId] = useState(0);
-  const [currUserProgramId, setCurrUserProgramId] = useState(0);
-  const [firstWorkoutId, setFirstWorkoutId] = useState(0);
-  const [lastProgramRun, setLastProgramRun] = useState(0);
-  const [openWorkoutIdList, setOpenWorkoutIdList] = useState<OpenWorkout[]>([]);
+  const [currUserProgram, setCurrUserProgram] = useState<Program>(initProgram);
+  // const [firstWorkoutId, setFirstWorkoutId] = useState(0);
+  // const [lastProgramRun, setLastProgramRun] = useState(0);
+  // const [openWorkoutIdList, setOpenWorkoutIdList] = useState<OpenWorkout[]>([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-
-  // get first workout in current program
-  const asyncGetPrograms = useCallback(async () => {
-    const programs = await getAllPrograms();
-    setProgramList(programs);
-  }, []);
-
-  const asyncGetUserProgram = useCallback(async () => {
-    const programId = await getUserProgram(user?.id ?? '');
-    setCurrUserProgramId(programId);
-  }, [user?.id]);
 
   // init program list and user's current program
   useEffect(() => {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
+    let isUnmounting = false;
+
+    // get first workout in current program
+    const asyncGetPrograms = async () => {
+      // disable all buttons
+      setButtonDisabled(true);
+
+      // get all programs
+      const programs = await getAllPrograms(source);
+
+      if (!isUnmounting) {
+        // set program list
+        setProgramList(programs);
+
+        // enable all buttons
+        setButtonDisabled(false);
+      }
+    };
+
+    const asyncGetUserProgram = async () => {
+      // disable all buttons
+      setButtonDisabled(true);
+
+      // get user's current program
+      const program = await getUserProgram(source, user?.id ?? '');
+
+      if (!isUnmounting) {
+        // set current program id
+        setCurrUserProgram(program);
+
+        // enable all buttons
+        setButtonDisabled(false);
+      }
+    };
+
     asyncGetPrograms();
     asyncGetUserProgram();
 
-    return () => {};
-  }, [asyncGetPrograms, asyncGetUserProgram]);
+    // cleanup
+    return () => {
+      source.cancel();
+      isUnmounting = true;
+    };
+  }, [user?.id]);
 
   // init selected program
   useEffect(() => {
-    setSelectedProgramId(currUserProgramId);
-  }, [currUserProgramId]);
+    let isUnmounting = false;
+
+    if (!isUnmounting) setSelectedProgramId(currUserProgram.ProgramId);
+
+    // cleanup
+    return () => {
+      isUnmounting = true;
+    };
+  }, [currUserProgram.ProgramId]);
 
   // save current program
-  const onSave = async (
-    programId: number,
-    programRunId: number,
-    workoutId: number,
-    openWorkoutIds: OpenWorkout[]
-  ) => {
+  const onSave = async (programId: number) => {
     // disable all buttons
-    /*
     setButtonDisabled(true);
 
-    if (programId > 0 && programId !== currUserProgramId) {
-      // check if there is an open/started workout and close it
-      if (openWorkoutIds.length > 0) {
-        openWorkoutIds.forEach(async (workout) => {
-          await closeOpenWorkouts({ end_time: new Date() }, (query) => query.eq('id', workout.id));
-        });
-      }
-
-      // upsert selected program id into user_program
-      const res = await upsertUserProgram({
-        user_id: user?.id,
-        program_id: programId,
-        current_workout_id: workoutId,
-        current_program_cycle: 1,
-        program_run: programRunId + 1,
-        created_by: user?.id,
-        updated_by: user?.id,
-        updated_at: new Date(),
-      });
-
-      // log errors
-      if (upsertState.error) {
-        // console.log(upsertState.error);
-      } else {
-        // update current program id state
-        setCurrUserProgramId(res.data[0].program_id);
-      }
+    if (user && programId > 0 && programId !== currUserProgram.ProgramId) {
+      // update user with program id
+      const resProgramId = await putUserProgram(user?.id, programId);
+      setCurrUserProgram((prev) => ({ ...prev, ProgramId: resProgramId }));
     } else if (programId === 0) {
       Alert.alert('No Program Selected', `Please select a program before saving.`, [
         {
           text: 'OK',
+          onPress: () => {
+            // enable all buttons
+            setButtonDisabled(false);
+          },
         },
       ]);
     }
 
     // enable all buttons
     setButtonDisabled(false);
-    */
   };
 
   // reset current program cycle
@@ -254,43 +271,41 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
                 CommonStyles.flexEnd,
               ]}
             >
-              {currUserProgramId > 0 && (
-                <TouchableOpacity
-                  style={[
-                    CommonStyles.buttons,
-                    CommonStyles.buttonsSecondary,
-                    CommonStyles.flexShrink,
-                  ]}
-                  disabled={buttonDisabled}
-                  onPress={async () => {
-                    await onReset(
-                      currUserProgramId,
-                      lastProgramRun,
-                      firstWorkoutId,
-                      openWorkoutIdList
-                    );
-                  }}
-                >
-                  {false ? (
-                    <ActivityIndicator size="small" color="#284b63" />
-                  ) : (
-                    <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>
-                      Reset Current Program Cycle
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              )}
+              {currUserProgram.ProgramId > 0 &&
+                currUserProgram.ProgramId === selectedProgramId &&
+                currUserProgram.CurrentProgramCycle &&
+                currUserProgram.CurrentProgramCycle > 0 && (
+                  <TouchableOpacity
+                    style={[
+                      CommonStyles.buttons,
+                      CommonStyles.buttonsSecondary,
+                      CommonStyles.flexShrink,
+                    ]}
+                    disabled={buttonDisabled}
+                    onPress={async () => {
+                      await onReset(
+                        currUserProgram.ProgramId,
+                        lastProgramRun,
+                        firstWorkoutId,
+                        openWorkoutIdList
+                      );
+                    }}
+                  >
+                    {buttonDisabled ? (
+                      <ActivityIndicator size="small" color="#284b63" />
+                    ) : (
+                      <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>
+                        Reset Current Program Cycle
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                )}
 
               <TouchableOpacity
                 style={[CommonStyles.buttons, CommonStyles.buttonsPrimary, CommonStyles.flexShrink]}
                 disabled={buttonDisabled}
                 onPress={async () => {
-                  await onSave(
-                    selectedProgramId,
-                    lastProgramRun,
-                    firstWorkoutId,
-                    openWorkoutIdList
-                  );
+                  await onSave(selectedProgramId);
                 }}
               >
                 {buttonDisabled ? (

@@ -25,6 +25,7 @@ export const errorLogging = (err: any) => {
   } else {
     // Something happened in setting up the request that triggered an Error
     console.error(`Error: ${err.message}`);
+    console.error(JSON.stringify(err, null, 2));
   }
 };
 

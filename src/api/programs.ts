@@ -1,10 +1,11 @@
+import axios, { CancelTokenSource } from 'axios';
 import Constants from 'expo-constants';
-import { IncrFrequency, NewProgram, ProgramList } from '../types';
+import { IncrFrequency, NewProgram, Program } from '../types';
 import axiosInstance, { errorLogging } from './axios';
 
-export const getAllPrograms = async () => {
-  const programs: ProgramList[] = await axiosInstance
-    .get(`/Programs`)
+export const getAllPrograms = async (source: CancelTokenSource) => {
+  const programs: Program[] = await axiosInstance
+    .get(`/Programs`, { cancelToken: source.token })
     .then((response) => {
       if (Constants.manifest?.extra?.environment === 'Development')
         console.log(JSON.stringify(response, null, 2));
@@ -12,7 +13,7 @@ export const getAllPrograms = async () => {
       return response.data;
     })
     .catch((err) => {
-      errorLogging(err);
+      if (!axios.isCancel(err)) errorLogging(err);
     });
 
   return programs;
