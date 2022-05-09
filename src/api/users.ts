@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { NewUserData, RegisterData } from '../types';
 import axiosInstance, { errorLogging } from './axios';
 
@@ -23,8 +24,13 @@ export const registerUser = async (data: RegisterData, onError: (e: any) => void
 
 export const getUserProgram = async (uuid: string) => {
   const programId: number = await axiosInstance
-    .get(`/users/program?uuid=${uuid}`)
-    .then((response) => response.data.programs)
+    .get(`/Users/CurrentProgram`, { params: { Uuid: uuid } })
+    .then((response) => {
+      if (Constants.manifest?.extra?.environment === 'Development')
+        console.log(JSON.stringify(response, null, 2));
+
+      return response.data.ProgramId;
+    })
     .catch((err) => {
       errorLogging(err);
     });
