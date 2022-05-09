@@ -1,11 +1,7 @@
 import { WorkoutExecutionData } from '../types';
-import axiosInstance, { headers } from './axios';
-import supabase from './supabase';
+import axiosInstance from './axios';
 
 export const getCurrentExercises = async (uuid: string) => {
-  const session = supabase.auth.session();
-  headers.Authorization = `Bearer ${session?.access_token}`;
-
   let exercises: WorkoutExecutionData[] = [];
 
   await axiosInstance

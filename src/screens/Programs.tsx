@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFilter, useSelect, useUpdate, useUpsert } from 'react-supabase';
 
 import { getAllPrograms } from '../api/programs';
 import { getUserProgram } from '../api/users';
@@ -36,50 +35,10 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   // get first workout in current program
-  const firstWorkoutFilter = useFilter(
-    (query) => query.eq('sequence_num', 0).eq('program_id', selectedProgramId),
-    [selectedProgramId]
-  );
-  const [firstWorkout] = useSelect<FirstWorkoutId>('program_detail', {
-    columns: 'workout_id',
-    filter: firstWorkoutFilter,
-    pause: selectedProgramId === 0,
-    options: { count: 'exact' },
-  });
-
-  // get last program run for selected program
-  const programRunFilter = useFilter(
-    (query) =>
-      query.eq('program_id', selectedProgramId).order('created_at', { ascending: false }).limit(1),
-    [selectedProgramId]
-  );
-  const [programRun] = useSelect<ProgramRun>('user_workout_history', {
-    columns: 'program_run',
-    filter: programRunFilter,
-    pause: selectedProgramId === 0,
-    options: { count: 'exact' },
-  });
-
-  const openWorkoutFilter = useFilter(
-    (query) => query.eq('user_id', user?.id).is('end_time', null),
-    [user?.id]
-  );
-  const [openWorkout] = useSelect<OpenWorkout>('user_workout_history', {
-    columns: 'id',
-    filter: openWorkoutFilter,
-    options: { count: 'exact' },
-  });
-  const [, closeOpenWorkouts] = useUpdate('user_workout_history');
-
-  // update or insert user's current program
-  const [upsertState, upsertUserProgram] = useUpsert('user_program', {
-    options: { onConflict: 'user_id' },
-  });
-
   const asyncGetPrograms = useCallback(async () => {
-    const programs = await getAllPrograms(user?.id ?? '');
+    const programs = await getAllPrograms();
     setProgramList(programs);
-  }, [user?.id]);
+  }, []);
 
   const asyncGetUserProgram = useCallback(async () => {
     const programId = await getUserProgram(user?.id ?? '');
@@ -99,36 +58,6 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     setSelectedProgramId(currUserProgramId);
   }, [currUserProgramId]);
 
-  // init first workout in selected program
-  useEffect(() => {
-    if (!firstWorkout.fetching && firstWorkout.count && firstWorkout.data) {
-      if (firstWorkout.count > 0) {
-        setFirstWorkoutId(firstWorkout.data[0].workout_id);
-      }
-    }
-  }, [firstWorkout.fetching, firstWorkout.count, firstWorkout.data]);
-
-  // init last program run in selected program
-  useEffect(() => {
-    // console.log(programRun);
-    if (!programRun.fetching && programRun.count && programRun.data) {
-      if (programRun.count > 0) {
-        setLastProgramRun(programRun.data[0].program_run);
-      } else {
-        setLastProgramRun(0);
-      }
-    }
-  }, [programRun.fetching, programRun.count, programRun.data]);
-
-  // init open workout id list for current user
-  useEffect(() => {
-    if (!openWorkout.fetching && openWorkout.count && openWorkout.data) {
-      if (openWorkout.count > 0) {
-        setOpenWorkoutIdList(openWorkout.data);
-      }
-    }
-  }, [openWorkout.fetching, openWorkout.count, openWorkout.data]);
-
   // save current program
   const onSave = async (
     programId: number,
@@ -137,6 +66,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     openWorkoutIds: OpenWorkout[]
   ) => {
     // disable all buttons
+    /*
     setButtonDisabled(true);
 
     if (programId > 0 && programId !== currUserProgramId) {
@@ -176,6 +106,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
 
     // enable all buttons
     setButtonDisabled(false);
+    */
   };
 
   // reset current program cycle
@@ -185,6 +116,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     workoutId: number,
     openWorkoutIds: OpenWorkout[]
   ) => {
+    /*
     // disable all buttons
     setButtonDisabled(true);
 
@@ -219,6 +151,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
 
     // enable all buttons
     setButtonDisabled(false);
+    */
   };
 
   // confirmation alert before reset
@@ -228,6 +161,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
     workoutId: number,
     openWorkoutIds: OpenWorkout[]
   ) => {
+    /*
     // disable all buttons
     setButtonDisabled(true);
 
@@ -254,6 +188,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
         },
       ]
     );
+    */
   };
 
   return (
@@ -305,9 +240,9 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
               <Picker.Item key="--" label="--" value={0} />
               {programList.map((program) => (
                 <Picker.Item
-                  key={program.program_name}
-                  label={program.program_name}
-                  value={program.id}
+                  key={program.ProgramId}
+                  label={program.ProgramName}
+                  value={program.ProgramId}
                 />
               ))}
             </Picker>
@@ -336,7 +271,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
                     );
                   }}
                 >
-                  {upsertState.fetching ? (
+                  {false ? (
                     <ActivityIndicator size="small" color="#284b63" />
                   ) : (
                     <Text style={[CommonStyles.buttonText, CommonStyles.textDark]}>

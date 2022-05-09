@@ -1,6 +1,5 @@
 import { NewUserData, RegisterData } from '../types';
 import axiosInstance, { errorLogging } from './axios';
-import supabase from './supabase';
 
 export const registerUser = async (data: RegisterData, onError: (e: any) => void) => {
   const { firstName, lastName, dateOfBirth, email, password } = data;
@@ -23,9 +22,6 @@ export const registerUser = async (data: RegisterData, onError: (e: any) => void
 };
 
 export const getUserProgram = async (uuid: string) => {
-  const session = supabase.auth.session();
-  axiosInstance.defaults.headers.common.Authorization = `Bearer ${session?.access_token}`;
-
   const programId: number = await axiosInstance
     .get(`/users/program?uuid=${uuid}`)
     .then((response) => response.data.programs)

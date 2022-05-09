@@ -1,6 +1,8 @@
+import Constants from 'expo-constants';
 import { Session, User } from '@supabase/supabase-js';
 import React, { ReactNode, createContext, useEffect, useState } from 'react';
 import { useAuthStateChange, useClient } from 'react-supabase';
+import axiosInstance from '../api/axios';
 
 // init AuthContext prop types
 type AuthUser = {
@@ -30,6 +32,9 @@ export function AuthProvider({ children }: Props) {
 
   useAuthStateChange((event, session) => {
     setState({ session, user: session?.user ?? null });
+    axiosInstance.defaults.headers.common.Authorization = `Bearer ${
+      session?.access_token ?? Constants.manifest?.extra?.devSupabaseAnonKey
+    }`;
   });
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
