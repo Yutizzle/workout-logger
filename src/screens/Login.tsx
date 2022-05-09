@@ -14,8 +14,7 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSignIn } from 'react-supabase';
-
+import supabase from '../api/supabase';
 import ErrorMessages from '../api/constants';
 import plateLogo from '../assets/images/rack-weights.jpg';
 import { ErrorMessage } from '../components';
@@ -23,7 +22,6 @@ import CommonStyles from '../styles/Common';
 import { LoginScreenNavigationProp } from '../types';
 
 function LoginScreen({ navigation }: LoginScreenNavigationProp) {
-  const [, signIn] = useSignIn();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,19 +33,17 @@ function LoginScreen({ navigation }: LoginScreenNavigationProp) {
     setButtonDisabled(true);
 
     if (email !== '' && password !== '') {
-      const { error } = await signIn({
-        email,
-        password,
-      });
-
-      if (error) {
-        setLoginError(error.message);
+      try {
+        await supabase.auth.signIn({
+          email,
+          password,
+        });
+      } catch (err) {
+        console.error(JSON.stringify(err, null, 2));
+        setLoginError(JSON.stringify(err));
         setButtonDisabled(false);
-        return;
-        // console.log('error:', state.error);
       }
 
-      setButtonDisabled(false);
       return;
     }
 

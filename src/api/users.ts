@@ -25,7 +25,7 @@ export const registerUser = async (data: RegisterData, onError: (e: any) => void
 
 export const getUserProgram = async (source: CancelTokenSource, uuid: string) => {
   const program: Program = await axiosInstance
-    .get(`/Users/CurrentProgram`, { cancelToken: source.token, params: { Uuid: uuid } })
+    .get(`/Users/CurrentProgram`, { cancelToken: source.token, params: { uuid } })
     .then((response) => {
       if (Constants.manifest?.extra?.environment === 'Development')
         console.log(JSON.stringify(response, null, 2));
@@ -39,10 +39,10 @@ export const getUserProgram = async (source: CancelTokenSource, uuid: string) =>
   return program;
 };
 
-export const putUserProgram = async (uuid: string, programId: number) => {
+export const updateUserProgram = async (uuid: string, programId: number) => {
   // axiosInstance.interceptors.request.use((req) => console.log(JSON.stringify(req, null, 2)));
   const res: number = await axiosInstance
-    .put(`/Users/CurrentProgram`, { Uuid: uuid, ProgramId: programId })
+    .put(`/Users/CurrentProgram`, { uuid, programId })
     .then((response) => {
       if (Constants.manifest?.extra?.environment === 'Development')
         console.log(JSON.stringify(response, null, 2));

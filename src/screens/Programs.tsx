@@ -6,7 +6,7 @@ import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import { getAllPrograms } from '../api/programs';
-import { getUserProgram, putUserProgram } from '../api/users';
+import { getUserProgram, updateUserProgram } from '../api/users';
 import { HeaderBackOnly } from '../components/Header';
 import useAuth from '../hooks/useAuth';
 import CommonStyles from '../styles/Common';
@@ -25,9 +25,9 @@ type OpenWorkout = {
 };
 
 const initProgram: Program = {
-  ProgramId: 0,
-  ProgramName: '',
-  TotalCycleDays: 0,
+  programId: 0,
+  programName: '',
+  totalCycleDays: 0,
 };
 
 function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
@@ -93,23 +93,23 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
   useEffect(() => {
     let isUnmounting = false;
 
-    if (!isUnmounting) setSelectedProgramId(currUserProgram.ProgramId);
+    if (!isUnmounting) setSelectedProgramId(currUserProgram.programId);
 
     // cleanup
     return () => {
       isUnmounting = true;
     };
-  }, [currUserProgram.ProgramId]);
+  }, [currUserProgram.programId]);
 
   // save current program
   const onSave = async (programId: number) => {
     // disable all buttons
     setButtonDisabled(true);
 
-    if (user && programId > 0 && programId !== currUserProgram.ProgramId) {
+    if (user && programId > 0 && programId !== currUserProgram.programId) {
       // update user with program id
-      const resProgramId = await putUserProgram(user?.id, programId);
-      setCurrUserProgram((prev) => ({ ...prev, ProgramId: resProgramId }));
+      const resProgramId = await updateUserProgram(user?.id, programId);
+      setCurrUserProgram((prev) => ({ ...prev, programId: resProgramId }));
     } else if (programId === 0) {
       Alert.alert('No Program Selected', `Please select a program before saving.`, [
         {
@@ -257,9 +257,9 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
               <Picker.Item key="--" label="--" value={0} />
               {programList.map((program) => (
                 <Picker.Item
-                  key={program.ProgramId}
-                  label={program.ProgramName}
-                  value={program.ProgramId}
+                  key={program.programId}
+                  label={program.programName}
+                  value={program.programId}
                 />
               ))}
             </Picker>
@@ -271,10 +271,10 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
                 CommonStyles.flexEnd,
               ]}
             >
-              {currUserProgram.ProgramId > 0 &&
-                currUserProgram.ProgramId === selectedProgramId &&
-                currUserProgram.CurrentProgramCycle &&
-                currUserProgram.CurrentProgramCycle > 0 && (
+              {currUserProgram.programId > 0 &&
+                currUserProgram.programId === selectedProgramId &&
+                currUserProgram.currentProgramCycle &&
+                currUserProgram.currentProgramCycle > 0 && (
                   <TouchableOpacity
                     style={[
                       CommonStyles.buttons,
@@ -284,7 +284,7 @@ function ProgramsScreen({ navigation }: ProgramsScreenNavigationProp) {
                     disabled={buttonDisabled}
                     onPress={async () => {
                       await onReset(
-                        currUserProgram.ProgramId,
+                        currUserProgram.programId,
                         lastProgramRun,
                         firstWorkoutId,
                         openWorkoutIdList

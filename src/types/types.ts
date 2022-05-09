@@ -2,10 +2,10 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 export type Program = {
-  ProgramId: number;
-  ProgramName: string;
-  TotalCycleDays: number;
-  CurrentProgramCycle?: number;
+  programId: number;
+  programName: string;
+  totalCycleDays: number;
+  currentProgramCycle?: number;
 };
 
 export interface IncrFrequency {

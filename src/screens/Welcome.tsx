@@ -16,10 +16,17 @@ function WelcomeScreen({ navigation }: WelcomeScreenNavigationProp) {
   const [data, setData] = useState<WorkoutExecutionData[]>([]);
 
   useEffect(() => {
+    let isUnmounting = false;
     navigation.addListener('focus', async () => {
-      const exercises = await getCurrentExercises(user?.id ?? '');
-      setData(exercises);
+      if (!isUnmounting) {
+        const exercises = await getCurrentExercises(user?.id ?? '');
+        setData(exercises);
+      }
     });
+
+    return () => {
+      isUnmounting = true;
+    };
   }, [navigation, user?.id]);
 
   return (
